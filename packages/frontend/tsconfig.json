@@ -15,8 +15,7 @@
     "jsx": "preserve",
     "baseUrl": ".",
     "paths": {
-      "@/*": ["*"],
-      "@local-contracts/*": ["../contract/*"]
+      "@/*": ["*"]
     },
     "incremental": true
   },
