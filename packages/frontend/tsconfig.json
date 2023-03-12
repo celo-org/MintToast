@@ -16,7 +16,7 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["*"],
-      "@local-contracts/*": ["../hardhat/*"]
+      "@local-contracts/*": ["../contract/*"]
     },
     "incremental": true
   },

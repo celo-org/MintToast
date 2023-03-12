@@ -1,24 +1,38 @@
 {
-    "name": "toast",
-    "version": "1.0.0",
-    "description": "Custom Celo Composer project.",
-    "private": true,
-    "author": "Celo",
-    "license": "MIT",
-    "scripts": {},
-    "repository": {
-        "type": "git",
-        "url": "git+https://github.com/celo-org/celo-composer.git"
-    },
-    "bugs": {
-        "url": "https://github.com/celo-org/celo-composer/issues"
-    },
-    "homepage": "https://github.com/celo-org/celo-composer/blob/main/README.md",
-    "workspaces": [
-        "packages/*"
-    ],
-    "keywords": [
-        "celo-composer",
-        "celo"
-    ]
+  "name": "mint-toast",
+  "version": "1.0.0",
+  "description": "Celo MintToast",
+  "private": true,
+  "author": "viral-sangani",
+  "license": "MIT",
+  "scripts": {
+    "build": "turbo run build --parallel",
+    "dev": "turbo run dev --parallel",
+    "start": "turbo run start --parallel",
+    "lint": "turbo run lint --parallel",
+    "typecheck": "turbo run typecheck --parallel",
+    "prettier": "prettier --check \"**/*.{ts,tsx,md}\"",
+    "prettier:fix": "prettier --write \"**/*.{ts,tsx,md}\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/celo-org/celo-composer.git"
+  },
+  "workspaces": [
+    "packages/*"
+  ],
+  "devDependencies": {
+    "husky": "^8.0.3",
+    "prettier": "2.8.4",
+    "turbo": "1.8.3"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "packageManager": "yarn@1.22.19",
+  "keywords": [
+    "celo-composer",
+    "celo",
+    "mint-toast"
+  ]
 }
