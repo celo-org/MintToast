@@ -21,7 +21,12 @@ export default function Header() {
       <div className="mx-auto md:max-w-7xl w-full md:px-2 px-5 sm:px-6 lg:px-8">
         <div className="hidden relative md:flex h-16 justify-between">
           <div className="flex items-center justify-center">
-            <div className="text-4xl text-center md:flex items-center">🍞</div>
+            <Link
+              href="/"
+              className="text-4xl text-center md:flex items-center"
+            >
+              🍞
+            </Link>
             <div className="sm:ml-6">
               <Link
                 href="/collection"
@@ -65,7 +70,9 @@ export default function Header() {
           </div>
         </div>
         <div className="md:hidden flex h-16 flex-row justify-between items-center">
-          <div className="text-4xl text-center md:flex items-center">🍞</div>
+          <Link href="/" className="text-4xl text-center md:flex items-center">
+            🍞
+          </Link>
           <CustomConnectButton />
         </div>
       </div>

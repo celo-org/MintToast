@@ -10,7 +10,7 @@ const Layout: FC<Props> = ({ children }) => {
       <div className="bg-background overflow-hidden flex flex-col min-h-screen">
         <Header />
         <div className="w-full border-t-2 border-black"></div>
-        <div className="md:pt-16 md:pb-16 pt-8 pb-24 max-w-7xl mx-auto w-full md:space-y-8 sm:px-6 lg:px-8">
+        <div className="md:pt-12 md:pb-16 pt-8 pb-24 max-w-4xl mx-auto md:space-y-8 sm:px-6 lg:px-8 w-full">
           {children}
         </div>
         {/* <Footer /> */}
