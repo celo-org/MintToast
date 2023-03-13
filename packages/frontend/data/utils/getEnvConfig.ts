@@ -2,7 +2,7 @@ import {
   MAINNET_API_ENDPOINT,
   NETWORK_MODE,
   TESTNET_API_ENDPOINT,
-} from "constant";
+} from "../constant";
 
 export const getEnvConfig = (): {
   apiEndpoint: string;

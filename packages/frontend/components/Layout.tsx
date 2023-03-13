@@ -1,5 +1,4 @@
 import { FC, ReactNode } from "react";
-import Footer from "./Footer";
 import Header from "./Header";
 
 interface Props {
@@ -10,10 +9,11 @@ const Layout: FC<Props> = ({ children }) => {
     <>
       <div className="bg-background overflow-hidden flex flex-col min-h-screen">
         <Header />
-        <div className="py-16 max-w-7xl mx-auto space-y-8 sm:px-6 lg:px-8">
+        <div className="w-full border-t-2 border-black"></div>
+        <div className="md:pt-16 md:pb-16 pt-8 pb-24 max-w-7xl mx-auto w-full md:space-y-8 sm:px-6 lg:px-8">
           {children}
         </div>
-        <Footer />
+        {/* <Footer /> */}
       </div>
     </>
   );

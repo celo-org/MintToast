@@ -78,7 +78,7 @@ export const CustomConnectButton = () => {
                       leaveFrom="transform opacity-100 scale-100"
                       leaveTo="transform opacity-0 scale-95"
                     >
-                      <Menu.Items className="absolute right-0 mt-2 origin-top-right divide-y divide-gray-100 bg-background shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none w-[375px] border-2 border-black">
+                      <Menu.Items className="absolute right-0 mt-2 origin-top-right divide-y divide-gray-100 bg-background shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none md:w-[375px] w-[355px] border-2 border-black">
                         <div className="flex flex-row items-center justify-between p-4 border-b-2 border-black">
                           <div>👾 {account.displayName}</div>
                           <div className="flex flex-row space-x-2">
@@ -103,7 +103,7 @@ export const CustomConnectButton = () => {
                               <span className="text-sm font-thin">
                                 Celo Balance
                               </span>
-                              <span className="text-2xl font-semibold mt-1 text-center">
+                              <span className="md:text-2xl text-lg font-semibold mt-1 text-center">
                                 {account.displayBalance
                                   ? `${account.balanceFormatted} CELO`
                                   : ""}
@@ -113,7 +113,7 @@ export const CustomConnectButton = () => {
                               <span className="text-sm font-thin">
                                 MintToast Balance
                               </span>
-                              <span className="text-2xl font-semibold mt-1">
+                              <span className="md:text-2xl text-lg font-semibold mt-1">
                                 26 Toasts
                               </span>
                             </div>

@@ -1,4 +1,4 @@
-import { getEnvConfig } from "utils/getEnvConfig";
+import { getEnvConfig } from "./utils/getEnvConfig";
 
 export const NETWORK_MODE =
   process.env.NEXT_PUBLIC_LENS_NETWORK_MODE || "testnet";

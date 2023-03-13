@@ -1,92 +1,75 @@
-import { Disclosure } from "@headlessui/react";
-import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
-import { useState } from "react";
 import { CustomConnectButton } from "./CustomConnectButton";
 
 export default function Header() {
-  let [componentInitialized, setComponentInitialized] = useState(false);
-
   return (
-    <Disclosure as="nav" className="border-b-2 border-black">
-      {({ open }) => (
-        <>
-          <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
-            <div className="relative flex h-16 justify-between">
-              <div className="absolute inset-y-0 left-0 flex items-center sm:hidden">
-                {/* Mobile menu button */}
-                <Disclosure.Button className="inline-flex items-center justify-center rounded-md p-2 text-black focus:outline-none focus:ring-1 focus:ring-inset focus:rounded-none focus:ring-black">
-                  <span className="sr-only">Open main menu</span>
-                  {open ? (
-                    <XMarkIcon className="block h-6 w-6" aria-hidden="true" />
-                  ) : (
-                    <Bars3Icon className="block h-6 w-6" aria-hidden="true" />
-                  )}
-                </Disclosure.Button>
-              </div>
-              <div className="flex items-center justify-center sm:items-stretch sm:justify-start">
-                <div className="hidden text-4xl text-center md:flex items-center">
-                  🍞
-                </div>
-                <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
-                  <a
-                    href="#"
-                    className="inline-flex items-center font-bold text-base text-gray-900"
-                  >
-                    🫙 Collection
-                  </a>
-                </div>
-                <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
-                  <a
-                    href="#"
-                    className="inline-flex items-center font-bold text-base text-gray-900"
-                  >
-                    🫡 Mint
-                  </a>
-                </div>
-                <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
-                  <a
-                    href="#"
-                    className="inline-flex items-center font-bold text-base text-gray-900"
-                  >
-                    🍻 Create
-                  </a>
-                </div>
-              </div>
-              <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
-                {/* <PrimaryButton onClick={() => {}} text="👾 Connect Wallet" /> */}
-                <CustomConnectButton />
-              </div>
-            </div>
-          </div>
-
-          <Disclosure.Panel className="sm:hidden">
-            <div className="space-y-1 pt-2 pb-4">
-              <Disclosure.Button
-                as="a"
+    <>
+      <div className="mx-auto md:max-w-7xl w-full md:px-2 px-5 sm:px-6 lg:px-8">
+        <div className="hidden relative md:flex h-16 justify-between">
+          <div className=" md:flex items-center justify-center sm:items-stretch sm:justify-start">
+            <div className="text-4xl text-center md:flex items-center">🍞</div>
+            <div className="sm:ml-6 sm:flex sm:space-x-8">
+              <a
                 href="#"
-                className="block py-2 pl-3 pr-4 text-base font-bold text-black"
+                className="inline-flex items-center font-bold text-base text-gray-900"
               >
                 🫙 Collection
-              </Disclosure.Button>
-              <Disclosure.Button
-                as="a"
+              </a>
+            </div>
+            <div className="sm:ml-6 sm:flex sm:space-x-8">
+              <a
                 href="#"
-                className="block py-2 pl-3 pr-4 text-base font-bold text-black"
+                className="inline-flex items-center font-bold text-base text-gray-900"
               >
                 🫡 Mint
-              </Disclosure.Button>
-              <Disclosure.Button
-                as="a"
+              </a>
+            </div>
+            <div className="sm:ml-6 sm:flex sm:space-x-8">
+              <a
                 href="#"
-                className="block py-2 pl-3 pr-4 text-base font-bold text-black"
+                className="inline-flex items-center font-bold text-base text-gray-900"
               >
                 🍻 Create
-              </Disclosure.Button>
-              {/* Add here your custom menu elements */}
+              </a>
             </div>
-          </Disclosure.Panel>
-        </>
-      )}
-    </Disclosure>
+          </div>
+          <div className="md:absolute md:inset-y-0 md:right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
+            {/* <PrimaryButton onClick={() => {}} text="👾 Connect Wallet" /> */}
+            <CustomConnectButton />
+          </div>
+        </div>
+        <div className="md:hidden flex h-16 flex-row justify-between items-center">
+          <div className="text-4xl text-center md:flex items-center">🍞</div>
+          <CustomConnectButton />
+        </div>
+      </div>
+      <div className="md:hidden fixed bottom-0 left-0 z-50 w-full h-14 bg-background border-t-2 border-black">
+        <div className="h-full max-w-lg flex flex-row flex-nowrap justify-evenly items-center mx-auto">
+          <div className="sm:ml-6 sm:flex sm:space-x-8">
+            <a
+              href="#"
+              className="inline-flex items-center font-bold text-base text-gray-900"
+            >
+              🫙 Collection
+            </a>
+          </div>
+          <div className="sm:ml-6 sm:flex sm:space-x-8">
+            <a
+              href="#"
+              className="inline-flex items-center font-bold text-base text-gray-900"
+            >
+              🫡 Mint
+            </a>
+          </div>
+          <div className="sm:ml-6 sm:flex sm:space-x-8">
+            <a
+              href="#"
+              className="inline-flex items-center font-bold text-base text-gray-900"
+            >
+              🍻 Create
+            </a>
+          </div>
+        </div>
+      </div>
+    </>
   );
 }
