@@ -6,7 +6,7 @@ export default function Home() {
   return (
     <>
       <div className="flex flex-col justify-start items-start md:pt-2 pt-0 max-w-xl mx-auto">
-        <Link href="/collection" className="font-bold">
+        <Link href="/collection" className="font-bold mx-3">
           👈 Back to Collection
         </Link>
         <div className="flex flex-col justify-center w-full mt-16 items-center">
@@ -16,7 +16,7 @@ export default function Home() {
             <span className="font-semibold">10/240</span>
             <span className="font-semibold">#2458759</span>
           </div>
-          <div className="w-[400px] mt-8 flex flex-col">
+          <div className="md:w-[400px] w-full px-2 md:mx-0 mt-8 flex flex-col">
             <div className="text-gray-500">
               Donec pede justo, frin gilla vel, aliquet nec, vulputate eget,
               arcu. In enim justo, rhoncus ut, imperdiet a, venenatis vitae,
