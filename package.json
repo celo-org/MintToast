@@ -22,6 +22,7 @@
     "packages/*"
   ],
   "devDependencies": {
+    "@openzeppelin/hardhat-upgrades": "^1.22.1",
     "husky": "^8.0.3",
     "prettier": "2.8.4",
     "turbo": "1.8.3"
@@ -34,5 +35,9 @@
     "celo-composer",
     "celo",
     "mint-toast"
-  ]
+  ],
+  "dependencies": {
+    "@openzeppelin/contracts": "^4.8.2",
+    "@openzeppelin/contracts-upgradeable": "^4.8.2"
+  }
 }

@@ -1,10 +1,11 @@
-require("@nomiclabs/hardhat-waffle");
+// require("@nomiclabs/hardhat-waffle");
 require("dotenv").config({ path: ".env" });
 require("hardhat-deploy");
 const { task } = require("hardhat/config");
 require("@nomiclabs/hardhat-ethers");
 require("@typechain/hardhat");
 require("hardhat-celo");
+require("@openzeppelin/hardhat-upgrades");
 
 const defaultNetwork = "alfajores";
 const mnemonicPath = "m/44'/52752'/0'/0"; // derivation path used by Celo
@@ -46,7 +47,7 @@ module.exports = {
         },
     },
     solidity: {
-        version: "0.8.17",
+        version: "0.8.18",
     },
     namedAccounts: {
         deployer: 0,
