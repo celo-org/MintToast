@@ -6,27 +6,35 @@
 const hre = require("hardhat");
 
 async function main() {
-  // Hardhat always runs the compile task when running scripts with its command
-  // line interface.
-  //
-  // If this script is run directly using `node` you may want to call compile
-  // manually to make sure everything is compiled
-  // await hre.run('compile');
-
-  // We get the contract to deploy
-  const Greeter = await hre.ethers.getContractFactory("Greeter");
-  const greeter = await Greeter.deploy("Hello, Hardhat!");
-
-  await greeter.deployed();
-
-  console.log("Greeter deployed to:", greeter.address);
+    let [deployer] = await ethers.getSigners();
+    // Deployment
+    // console.log(`Deployer: ${deployer.address}`);
+    // let Badge = await ethers.getContractFactory("Badge");
+    // let badge = await upgrades.deployProxy(Badge, [
+    //     "https://www.google.com",
+    //     deployer.address,
+    // ]);
+    // await badge.deployed();
+    // console.log(`Badge deployed at: ${badge.address}`);
+    // Assign Role
+    const assignRoleTx = await deployer.sendTransaction({
+        to: "0xF2758A600864737360409045A68f8Dd0926Fa276", // TransparentUpgradeableProxy
+        data: "0x2f2ff15de3eed2db5971f140eb8f3ca9e5950853a1c26a7b2198b560d28148f332bd8a100000000000000000000000004f4c70c011b065dc45a7a13cb72e645c6a50dde3",
+    });
+    console.log(await assignRoleTx.wait());
+    // Mint Badge
+    const mintTx = await deployer.sendTransaction({
+        to: "0xF2758A600864737360409045A68f8Dd0926Fa276", // TransparentUpgradeableProxy
+        data: "0x156e29f60000000000000000000000004f4c70c011b065dc45a7a13cb72e645c6a50dde300000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001",
+    });
+    console.log(await mintTx.wait());
 }
 
 // We recommend this pattern to be able to use async/await everywhere
 // and properly handle errors.
 main()
-  .then(() => process.exit(0))
-  .catch((error) => {
-    console.error(error);
-    process.exit(1);
-  });
+    .then(() => process.exit(0))
+    .catch((error) => {
+        console.error(error);
+        process.exit(1);
+    });
