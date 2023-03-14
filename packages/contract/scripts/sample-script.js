@@ -11,15 +11,20 @@ const hre = require("hardhat");
 
 async function main() {
     let [deployer] = await ethers.getSigners();
-    // Deployment
-    // console.log(`Deployer: ${deployer.address}`);
-    // let Badge = await ethers.getContractFactory("Badge");
-    // let badge = await upgrades.deployProxy(Badge, [
-    //     "https://www.google.com",
-    //     deployer.address,
-    // ]);
-    // await badge.deployed();
-    // console.log(`Badge deployed at: ${badge.address}`);
+    Deployment;
+    console.log(`Deployer: ${deployer.address}`);
+    let Badge = await ethers.getContractFactory("Badge");
+    let badge = await upgrades.deployProxy(Badge, [
+        /**
+         * https://<link>/{id}.json
+         * The id will be same for tokens in the same collection.
+         * This is how all the tokens in same collection end up having some metadata.
+         */
+        "https://www.google.com",
+        deployer.address,
+    ]);
+    await badge.deployed();
+    console.log(`Badge deployed at: ${badge.address}`);
     // Assign Role
     const assignRoleTx = await deployer.sendTransaction({
         to: "0xF2758A600864737360409045A68f8Dd0926Fa276", // TransparentUpgradeableProxy
