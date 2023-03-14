@@ -5,16 +5,10 @@ import { CustomConnectButton } from "./CustomConnectButton";
 export default function Header() {
   const router = useRouter();
   const getActiveTab = () => {
-    switch (router.pathname) {
-      case "/collection":
-        return "collection";
-      case "/mint":
-        return "mint";
-      case "/create":
-        return "create";
-      default:
-        return "index";
-    }
+    if (router.pathname.includes("collection")) return "collection";
+    else if (router.pathname.includes("mint")) return "mint";
+    else if (router.pathname.includes("create")) return "create";
+    else return "index";
   };
   return (
     <>
