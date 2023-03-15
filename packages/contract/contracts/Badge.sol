@@ -39,7 +39,10 @@ contract Badge is ERC1155Upgradeable, AccessControlUpgradeable {
         return totalSupply[id] > 0;
     }
 
-    function createCollection(uint256 id, uint256 _totalSupply) public {
+    function createCollection(
+        uint256 id,
+        uint256 _totalSupply
+    ) public onlyRole(TOASTMASTER_ROLE) {
         totalSupply[id] = _totalSupply;
     }
 
