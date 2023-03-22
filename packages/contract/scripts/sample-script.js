@@ -11,32 +11,41 @@ const hre = require("hardhat");
 
 async function main() {
     let [deployer] = await ethers.getSigners();
-    Deployment;
+
     console.log(`Deployer: ${deployer.address}`);
+
     let Badge = await ethers.getContractFactory("Badge");
     let badge = await upgrades.deployProxy(Badge, [
-        /**
-         * https://<link>/{id}.json
-         * The id will be same for tokens in the same collection.
-         * This is how all the tokens in same collection end up having some metadata.
-         */
-        "https://www.google.com",
+        "ipfs://",
         deployer.address,
     ]);
+
     await badge.deployed();
     console.log(`Badge deployed at: ${badge.address}`);
+
     // Assign Role
-    const assignRoleTx = await deployer.sendTransaction({
-        to: "0xF2758A600864737360409045A68f8Dd0926Fa276", // TransparentUpgradeableProxy
-        data: "0x2f2ff15de3eed2db5971f140eb8f3ca9e5950853a1c26a7b2198b560d28148f332bd8a100000000000000000000000004f4c70c011b065dc45a7a13cb72e645c6a50dde3",
-    });
-    console.log(await assignRoleTx.wait());
-    // Mint Badge
-    const mintTx = await deployer.sendTransaction({
-        to: "0xF2758A600864737360409045A68f8Dd0926Fa276", // TransparentUpgradeableProxy
-        data: "0x156e29f60000000000000000000000004f4c70c011b065dc45a7a13cb72e645c6a50dde300000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001",
-    });
-    console.log(await mintTx.wait());
+    await badge.grantRole(badge.TOASTMASTER_ROLE(), deployer.address);
+
+    // Create Collection
+    // await badge.createCollection(0, 1, "23849u2384bjb");
+
+    // const createCollectionTx = await deployer.sendTransaction({
+    //     to: badge.address, // TransparentUpgradeableProxy
+    //     data: "0x0175c0f70000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000a0000000000000000000000000000000000000000000000000000000000000060000000000000000000000000000000000000000000000000000000000000000f627133323839667564666e776665770000000000000000000000000000000000",
+    // });
+
+    // console.log(await createCollectionTx.wait());
+    // await badge.mint(deployer.address, 0, 2);
+
+    // const mintTx = await deployer.sendTransaction({
+    //     to: badge.address,
+    //     data: "0x156e29f6000000000000000000000000f2758a600864737360409045a68f8dd0926fa27600000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001",
+    // });
+
+    // console.log(await mintTx.wait());
+
+    // console.log(await badge.uri(0));
+    // console.log(await badge.balanceOf(deployer.address, 0));
 }
 
 // We recommend this pattern to be able to use async/await everywhere
