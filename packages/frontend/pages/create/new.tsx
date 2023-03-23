@@ -2,6 +2,7 @@ import InputField from "@/components/common/InputField";
 import PrimaryButton from "@/components/common/PrimaryButton";
 import TextArea from "@/components/common/TextField";
 import axios from "axios";
+import Head from "next/head";
 import Link from "next/link";
 import { useState } from "react";
 import { toast } from "react-toastify";
@@ -87,6 +88,9 @@ export default function New() {
 
   return (
     <>
+      <Head>
+        <title>🍞 Mint Toast | Create New Event</title>
+      </Head>
       <div className="flex flex-col justify-start items-start md:pt-2 pt-0 max-w-xl mx-auto px-4 md:px-0">
         {view == View.IMAGE ? (
           <>

@@ -1,5 +1,6 @@
 import CollectionItem from "@/components/collection/CollectionItem";
 import { getUserCollection } from "@/graphql/queries/getUserCollection";
+import Head from "next/head";
 import { useEffect, useState } from "react";
 import { Puff } from "react-loader-spinner";
 import { useAccount } from "wagmi";
@@ -67,6 +68,9 @@ export default function Collections() {
 
   return (
     <>
+      <Head>
+        <title>🍞 Mint Toast | Collection</title>
+      </Head>
       <div className="flex flex-col justify-center items-center md:pt-20 pt-4 max-w-xl mx-auto">
         <div className="flex flex-col justify-start w-full">
           {data.length > 0 ? (

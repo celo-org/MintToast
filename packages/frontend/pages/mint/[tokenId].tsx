@@ -4,6 +4,7 @@ import { getMintCollectionData } from "@/graphql/queries/getMintCollectionData";
 import { formatIpfsData } from "@/utils/data";
 import { fetchImageUrl } from "@/utils/ipfs";
 import axios from "axios";
+import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
@@ -88,6 +89,9 @@ export default function QRPage() {
 
   return (
     <>
+      <Head>
+        <title>🍞 Mint Toast | Mint</title>
+      </Head>
       <div className="flex flex-col justify-center w-full mt-10 items-center">
         <div className="md:w-[400px] w-full px-2 md:mx-0 mt-0 flex flex-col">
           <InputField

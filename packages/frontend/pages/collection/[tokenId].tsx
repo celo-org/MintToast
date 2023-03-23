@@ -5,6 +5,7 @@ import { formatIpfsData } from "@/utils/data";
 import { fetchImageUrl } from "@/utils/ipfs";
 import { IPFSDataProps } from "@/utils/props";
 import { formatDateFromString } from "@/utils/utils";
+import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -41,6 +42,9 @@ export default function CollectionItem() {
 
   return (
     <>
+      <Head>
+        <title>🍞 Mint Toast | Collection</title>
+      </Head>
       <div className="flex flex-col justify-start items-start md:pt-2 pt-0 max-w-xl mx-auto">
         <Link href="/collection" className="font-bold mx-3">
           👈 Back to Collection

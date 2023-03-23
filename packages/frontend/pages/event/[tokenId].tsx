@@ -5,6 +5,7 @@ import { getMintCollectionData } from "@/graphql/queries/getMintCollectionData";
 import { formatIpfsData } from "@/utils/data";
 import { fetchImageUrl } from "@/utils/ipfs";
 import { IPFSDataProps } from "@/utils/props";
+import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -43,6 +44,9 @@ export default function EventPage() {
 
   return (
     <>
+      <Head>
+        <title>🍞 Mint Toast | Event</title>
+      </Head>
       <QRCodeModal
         isOpen={isQRCodeOpen}
         closeModal={() => {
