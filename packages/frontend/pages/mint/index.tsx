@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-export default function Home() {
+export default function Mint() {
   return (
     <>
       <div className="flex flex-col justify-center items-center md:pt-20 pt-4 max-w-xl mx-auto">

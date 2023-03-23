@@ -80,7 +80,7 @@ contract Badge is
     function createCollection(
         uint256 _totalSupply,
         string memory tokenURI_
-    ) public onlyRole(TOASTMASTER_ROLE) {
+    ) public returns (uint256) onlyRole(TOASTMASTER_ROLE) {
         uint256 id = collections;
         totalSupply[id] = _totalSupply;
         _setURI(id, tokenURI_);

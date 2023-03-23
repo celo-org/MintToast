@@ -1,8 +1,10 @@
 import InputField from "@/components/common/InputField";
 import PrimaryButton from "@/components/common/PrimaryButton";
 import TextArea from "@/components/common/TextField";
+import axios from "axios";
 import Link from "next/link";
 import { useState } from "react";
+import { toast } from "react-toastify";
 
 // create enum
 enum View {
@@ -12,13 +14,77 @@ enum View {
 
 export default function New() {
   const [view, setView] = useState<View>(View.IMAGE);
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
-  const [url, setUrl] = useState("");
-  const [toastCount, setToastCount] = useState(0);
-  const [email, setEmail] = useState("");
+  const [title, setTitle] = useState("GreenPill Festival");
+  const [description, setDescription] = useState(
+    "The GreenPill Festival is a transformative, eco-conscious event that celebrates sustainable living, cutting-edge technologies, and creative art, fostering a global community for a better future."
+  );
+  const [startDate, setStartDate] = useState("22/03/2023");
+  const [endDate, setEndDate] = useState("26/03/2023");
+  const [url, setUrl] = useState(
+    "https://www.atlantians.world/green-pill-fest"
+  );
+  const [toastCount, setToastCount] = useState(250);
+  const [email, setEmail] = useState("viral.sangani@celo.org");
+  const [imageSrc, setImageSrc] = useState<any>(null);
+  const [image, setImage] = useState<any>(null);
+  const [loading, setLoading] = useState(false);
+
+  const handleImageUpload = (e: any) => {
+    const file = e.target.files[0];
+    setImage(file);
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        setImageSrc(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleSubmit = async () => {
+    try {
+      setLoading(true);
+      toast.loading("Minting your toast, please wait...");
+      var bodyFormData = new FormData();
+      bodyFormData.append("title", title);
+      bodyFormData.append("description", description);
+      bodyFormData.append("startDate", startDate);
+      bodyFormData.append("endDate", endDate);
+      bodyFormData.append("websiteLink", url);
+      bodyFormData.append("totalToastSupply", toastCount.toString());
+      bodyFormData.append("email", email);
+      bodyFormData.append("image", image);
+
+      var res = await axios({
+        method: "post",
+        url: "/api/create-toast",
+        data: bodyFormData,
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      console.log("res", res);
+      toast.dismiss();
+      toast.success("💪🏼 Toast minted successfully!");
+    } catch (e) {
+      toast.dismiss();
+      toast.error("🚨 Oops, toast burned, please try again...");
+    } finally {
+      setLoading(false);
+      clearForm();
+    }
+  };
+
+  const clearForm = () => {
+    setTitle("");
+    setDescription("");
+    setStartDate("");
+    setEndDate("");
+    setUrl("");
+    setToastCount(0);
+    setEmail("");
+    setImageSrc("");
+    setImage("");
+  };
+
   return (
     <>
       <div className="flex flex-col justify-start items-start md:pt-2 pt-0 max-w-xl mx-auto px-4 md:px-0">
@@ -62,7 +128,12 @@ export default function New() {
                         SVG, PNG, JPG or GIF (MAX. 800x400px)
                       </p>
                     </div>
-                    <input id="dropzone-file" type="file" className="hidden" />
+                    <input
+                      onChange={handleImageUpload}
+                      id="dropzone-file"
+                      type="file"
+                      className="hidden"
+                    />
                   </label>
                 </div>
 
@@ -82,18 +153,29 @@ export default function New() {
                 <li className="text-gray-500 ml-5">
                   <span>This image cannot be edited after creation</span>
                 </li>
-                <p className="mt-8 text-gray-500">Here are Toasts cropped:</p>
-                <div className="w-full flex justify-center mt-8">
-                  <div className="justify-self-center w-[285px] h-[285px] bg-white border-2 border-black flex flex-col justify-end items-center pb-3"></div>
-                </div>
-                <div className="w-full flex justify-center mt-8">
-                  <PrimaryButton
-                    text="👉 Save and Next"
-                    onClick={() => {
-                      setView(View.ATTRIBUTES);
-                    }}
-                  />
-                </div>
+                {imageSrc && (
+                  <>
+                    <p className="mt-8 text-gray-500">
+                      Here are Toasts cropped:
+                    </p>
+                    <div className="w-full flex justify-center mt-8">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        className="justify-self-center w-[285px] h-[285px] bg-white border-2 border-black flex flex-col justify-end items-center3"
+                        src={imageSrc}
+                        alt="uploaded"
+                      />
+                    </div>
+                    <div className="w-full flex justify-center mt-8">
+                      <PrimaryButton
+                        text="👉 Save and Next"
+                        onClick={() => {
+                          setView(View.ATTRIBUTES);
+                        }}
+                      />
+                    </div>
+                  </>
+                )}
               </div>
               <div className="flex w-full justify-start px-8"></div>
             </div>
@@ -190,7 +272,28 @@ export default function New() {
                   <PrimaryButton
                     text="👉 Save and Next"
                     onClick={() => {
-                      setView(View.ATTRIBUTES);
+                      if (!title) {
+                        toast.error("Please enter a Title");
+                        return;
+                      } else if (!description) {
+                        toast.error("Please enter a Description");
+                        return;
+                      } else if (!startDate) {
+                        toast.error("Please enter a Start date");
+                        return;
+                      } else if (!endDate) {
+                        toast.error("Please enter a End date");
+                        return;
+                      } else if (!url) {
+                        toast.error("Please enter a URL");
+                        return;
+                      } else if (!toastCount) {
+                        toast.error("Please enter Total Supply for your toast");
+                        return;
+                      } else if (!email) {
+                        toast.error("Please enter a Email");
+                        return;
+                      } else handleSubmit();
                     }}
                   />
                 </div>

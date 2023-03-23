@@ -4,10 +4,13 @@ const nextConfig = {
   swcMinify: true,
   webpack: (config) => {
     config.resolve.fallback = {
-      fs: false
-    }
-    return config
-  }
-}
+      fs: false,
+    };
+    return config;
+  },
+  images: {
+    domains: ["mint-toast.infura-ipfs.io"],
+  },
+};
 
-module.exports = nextConfig
+module.exports = nextConfig;
