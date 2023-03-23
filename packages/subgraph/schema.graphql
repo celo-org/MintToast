@@ -1,0 +1,26 @@
+type User @entity {
+    id: ID!
+    collection: [Item!]! @derivedFrom(field: "owner")
+}
+
+type Serie @entity {
+    id: ID!
+    creationTimestamp: BigInt!
+    totalSupply: BigInt!
+    currentSupply: BigInt!
+    toaster: Bytes!
+    uri: String!
+    items: [Item!]! @derivedFrom(field: "serie")
+}
+
+type Item @entity {
+    id: ID!
+    serie: Serie!
+    timestamp: BigInt!
+    owner: User!
+}
+
+type SeriesBalance @entity {
+    id: ID!
+    balance: BigInt!
+}
