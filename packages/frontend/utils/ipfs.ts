@@ -1,11 +1,12 @@
+import { IPFS_API_KEY, IPFS_PROJECT_ID } from "@/data/constant";
 import axios from "axios";
 import formidable from "formidable";
 import fs from "fs";
 import { create } from "ipfs-http-client";
 
 export const getIPFSClient = () => {
-  const projectId = "2NM3m9pxz2rnDw0hBrgaMr1IAnQ";
-  const projectSecret = "c424caf1023087fe76bd08a0ee9e374c";
+  const projectId = IPFS_PROJECT_ID;
+  const projectSecret = IPFS_API_KEY;
   const auth =
     "Basic " + Buffer.from(projectId + ":" + projectSecret).toString("base64");
 

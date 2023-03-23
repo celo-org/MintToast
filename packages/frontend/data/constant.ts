@@ -22,3 +22,6 @@ export const API_ENDPOINT = getEnvConfig().apiEndpoint;
 export const RPC_ENDPOINT = getEnvConfig().rpcEndpoint;
 export const TOASTMASTER_PK = getEnvConfig().toastMasterPK;
 export const CONTRACT_ADDRESS = getEnvConfig().contractAddress;
+
+export const IPFS_PROJECT_ID = process.env.IPFS_PROJECT_ID;
+export const IPFS_API_KEY = process.env.IPFS_API_KEY;
