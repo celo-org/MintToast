@@ -44,7 +44,7 @@ export default function New() {
   const handleSubmit = async () => {
     try {
       setLoading(true);
-      toast.loading("Minting your toast, please wait...");
+      toast.loading("Creating your event, please wait...");
       var bodyFormData = new FormData();
       bodyFormData.append("title", title);
       bodyFormData.append("description", description);
@@ -63,7 +63,7 @@ export default function New() {
       });
       console.log("res", res);
       toast.dismiss();
-      toast.success("💪🏼 Toast minted successfully!");
+      toast.success("💪🏼 Event created successfully!");
     } catch (e) {
       toast.dismiss();
       toast.error("🚨 Oops, toast burned, please try again...");

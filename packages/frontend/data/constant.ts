@@ -14,6 +14,9 @@ export const MAINNET_TOASTMASTER_PK = process.env.MAINNET_TOASTMASTER_PK ?? "";
 
 export const WEBSITE_URL = "https://mint-toast.netlify.app";
 
+export const GRAPHQL_API =
+  "https://api.studio.thegraph.com/query/44292/mint-toast/v0.0.2";
+
 export const TESTNET_CONTRACT_ADDRESS =
   "0xE5316457883f99539118dC77fEC28DCd99f9Ae08";
 export const MAINNET_CONTRACT_ADDRESS = "";

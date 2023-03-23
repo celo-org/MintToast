@@ -1,15 +1,17 @@
 import PrimaryButton from "@/components/common/PrimaryButton";
 import TwitterIcon from "@/components/icons/TwitterIcon";
+import { getMintCollectionData } from "@/graphql/queries/getMintCollectionData";
 import { formatIpfsData } from "@/utils/data";
 import { fetchImageUrl } from "@/utils/ipfs";
 import { IPFSDataProps } from "@/utils/props";
 import { formatDateFromString } from "@/utils/utils";
-import axios from "axios";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { Puff } from "react-loader-spinner";
+import { toast } from "react-toastify";
+import { DataProps } from "../mint/[tokenId]";
 
 export default function CollectionItem() {
   const router = useRouter();
@@ -17,16 +19,22 @@ export default function CollectionItem() {
 
   const [data, setData] = useState<IPFSDataProps | null>(null);
   const [loading, setLoading] = useState(false);
+  const [uriData, setUriData] = useState<DataProps>();
 
   useEffect(() => {
     const getEventData = async () => {
       setLoading(true);
-      const res = await axios.post("/api/get-event", {
-        tokenId,
-      });
-      const formattedData = formatIpfsData(res.data.data);
-      setData(formattedData);
-      setLoading(false);
+      const res = await getMintCollectionData(tokenId as string);
+
+      if (!res) {
+        toast.error("Invalid Token ID");
+        router.push("/");
+      } else {
+        const ipfsData = formatIpfsData(res.uriData);
+        setUriData(ipfsData);
+        setData(res.event);
+        setLoading(false);
+      }
     };
     getEventData();
   }, []);
@@ -54,35 +62,35 @@ export default function CollectionItem() {
           </>
         ) : (
           <div className="flex flex-col justify-center w-full mt-16 items-center">
-            <span className="text-3xl font-bold">{data?.name ?? ""}</span>
+            <span className="text-3xl font-bold">{uriData?.name ?? ""}</span>
             <Image
-              src={fetchImageUrl(data?.imageHash ?? "") ?? "#"}
+              src={fetchImageUrl(uriData?.imageHash ?? "") ?? "#"}
               height="285"
               width="285"
               className="mt-8"
-              alt={data?.name + " Event Toast"}
+              alt={uriData?.name + " Event Toast"}
             />
             <div className="flex flex-row justify-between w-[285px] mt-3">
               <span className="font-semibold">
-                10/{data?.totalToastSupply ?? 0}
+                10/{uriData?.totalToastSupply ?? 0}
               </span>
               <span className="font-semibold">#</span>
             </div>
             <div className="md:w-[400px] w-full px-2 md:mx-0 mt-8 flex flex-col">
-              <div className="text-gray-500">{data?.description ?? ""}</div>
+              <div className="text-gray-500">{uriData?.description ?? ""}</div>
               <Link
                 className="justify-self-start mt-10 text-green"
-                href={data?.websiteLink ?? "#"}
+                href={uriData?.websiteLink ?? "#"}
                 target={"_blank"}
               >
-                🌐 {data?.websiteLink ?? ""}
+                🌐 {uriData?.websiteLink ?? ""}
               </Link>
               <div className="mt-4">
                 Start: 📆{" "}
-                {formatDateFromString(data?.startDate ?? "01/01/2023")}
+                {formatDateFromString(uriData?.startDate ?? "01/01/2023")}
               </div>
               <div className="mt-1">
-                End: 📆 {formatDateFromString(data?.endDate ?? "01/01/2023")}
+                End: 📆 {formatDateFromString(uriData?.endDate ?? "01/01/2023")}
               </div>
               <Link
                 href={"/event/" + tokenId}
@@ -91,7 +99,7 @@ export default function CollectionItem() {
                 🍻 View event page
               </Link>
               <Link
-                href={data?.websiteLink ?? "#"}
+                href={uriData?.websiteLink ?? "#"}
                 className="w-full py-3 px-2 bg-white border-2 border-black mt-7"
               >
                 🫡 View holder page

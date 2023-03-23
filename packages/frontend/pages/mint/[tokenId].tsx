@@ -1,5 +1,6 @@
 import InputField from "@/components/common/InputField";
 import PrimaryButton from "@/components/common/PrimaryButton";
+import { getMintCollectionData } from "@/graphql/queries/getMintCollectionData";
 import { formatIpfsData } from "@/utils/data";
 import { fetchImageUrl } from "@/utils/ipfs";
 import axios from "axios";
@@ -10,7 +11,7 @@ import { Puff } from "react-loader-spinner";
 import { toast } from "react-toastify";
 import { useAccount } from "wagmi";
 
-interface DataProps {
+export interface DataProps {
   name?: string;
   description?: string;
   totalToastSupply?: number;
@@ -31,20 +32,27 @@ export default function QRPage() {
   const [address, setAddress] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
   const [mintLoading, setMintLoading] = useState<boolean>(false);
-  const [data, setData] = useState<DataProps>({});
+  const [data, setData] = useState<any>({});
+  const [uriData, setUriData] = useState<DataProps>();
 
   useEffect(() => {
     const getEvent = async () => {
       setLoading(true);
-      const res = await axios.post("/api/get-event", {
-        tokenId,
-      });
-      const formattedData = formatIpfsData(res.data.data);
-      setData(formattedData);
-      setLoading(false);
+      const res = await getMintCollectionData(tokenId as string);
+      if (!res) {
+        toast.error("Invalid Token ID");
+        router.push("/");
+      } else {
+        const ipfsData = formatIpfsData(res.uriData);
+        setData(res?.event);
+        setUriData(ipfsData);
+        setLoading(false);
+      }
     };
-    getEvent();
-  }, [tokenId]);
+    if (tokenId) {
+      getEvent();
+    }
+  }, [router, tokenId]);
 
   useEffect(() => {
     if (isConnected) {
@@ -125,22 +133,22 @@ export default function QRPage() {
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               className="border-2 border-black w-[285px] h-[285px] mt-5"
-              src={fetchImageUrl(data.imageHash ?? "")}
-              alt={data.name + " Image"}
+              src={fetchImageUrl(uriData?.imageHash ?? "")}
+              alt={uriData?.name + " Image"}
             />
 
             <span className="font-semibold mt-8">
-              10/{data.totalToastSupply ?? "0"}
+              10/{uriData?.totalToastSupply ?? "0"}
             </span>
 
             <div className="md:w-[400px] w-full px-2 md:mx-0 mt-8 flex flex-col">
-              <div className="text-gray-500">{data.description ?? ""}</div>
+              <div className="text-gray-500">{uriData?.description ?? ""}</div>
               <Link
                 className="justify-self-start mt-10 text-green"
-                href={data.websiteLink ?? "#"}
+                href={uriData?.websiteLink ?? "#"}
                 target={"_blank"}
               >
-                🌐 {data.websiteLink ?? ""}
+                🌐 {uriData?.websiteLink ?? ""}
               </Link>
             </div>
           </>
