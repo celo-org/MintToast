@@ -9,6 +9,8 @@ import {
   walletConnectWallet,
 } from "@rainbow-me/rainbowkit/wallets";
 import type { AppProps } from "next/app";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import { configureChains, createClient, WagmiConfig } from "wagmi";
 import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
 import "../styles/custom.css";
@@ -57,6 +59,18 @@ function App({ Component, pageProps }: AppProps) {
       <RainbowKitProvider chains={chains} coolMode={true}>
         <Layout>
           <Component {...pageProps} />
+          <ToastContainer
+            position="top-right"
+            autoClose={5000}
+            hideProgressBar={false}
+            newestOnTop
+            closeOnClick
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+            theme="dark"
+          />
         </Layout>
       </RainbowKitProvider>
     </WagmiConfig>

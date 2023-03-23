@@ -14,7 +14,7 @@ function TextArea({ label, value, onChange, placeholder, className }: Props) {
       </label>
       <textarea
         id="message"
-        rows={4}
+        rows={6}
         className="block p-2.5 w-full text-sm text-black bg-white border border-black focus:ring-blue-500 focus:border-blue-500"
         placeholder={placeholder ?? ""}
         required
