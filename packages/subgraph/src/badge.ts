@@ -1,18 +1,15 @@
 import { BigInt } from "@graphprotocol/graph-ts";
 import {
   Badge,
-  CollectionCreated,
-  Initialized,
-  RoleAdminChanged,
+  CollectionCreated, RoleAdminChanged,
   RoleGranted,
-  RoleRevoked,
-  TransferBatch,
-  TransferSingle,
-  URI,
+  RoleRevoked, TransferSingle,
+  URI
 } from "../generated/Badge/Badge";
 import { Event, Item, User } from "../generated/schema";
 
 export function handleCollectionCreated(event: CollectionCreated): void {
+<<<<<<< HEAD
   let collectionId = event.params.collectionId;
   let events = new Event(collectionId.toString());
   events.currentSupply = new BigInt(0);
@@ -22,19 +19,33 @@ export function handleCollectionCreated(event: CollectionCreated): void {
 
   let contract = Badge.bind(event.address);
   events.uri = contract.uri(collectionId);
+=======
+    /**
+     * collectionId - Id of the serie.
+     */
+    let collectionId = event.params.collectionId;
+
+    let series = new Serie(collectionId.toString());
+    series.currentSupply = new BigInt(0);
+    series.creationTimestamp = event.block.timestamp;
+    series.totalSupply = event.params.supplyCollection;
+    series.toaster = event.params.creator;
+
+    /**
+     * Fetching the uri for the serie from the contract
+     */
+    let contract = Badge.bind(event.address);
+    series.uri = contract.uri(collectionId);
+>>>>>>> eccdc379cf5a084b7084fd557f0e4b4c7675bd1a
 
   events.save();
 }
-
-export function handleInitialized(event: Initialized): void {}
 
 export function handleRoleAdminChanged(event: RoleAdminChanged): void {}
 
 export function handleRoleGranted(event: RoleGranted): void {}
 
 export function handleRoleRevoked(event: RoleRevoked): void {}
-
-export function handleTransferBatch(event: TransferBatch): void {}
 
 export function handleTransferSingle(event: TransferSingle): void {
   // if (
