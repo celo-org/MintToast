@@ -10,7 +10,8 @@ import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useAccount } from "wagmi";
 import { DataProps } from "../mint/[tokenId]";
 
 interface Props {
@@ -22,6 +23,14 @@ interface Props {
 const EventPage: React.FC<Props> = ({ tokenId, uriData, data }) => {
   const router = useRouter();
   const [isQRCodeOpen, setIsQRCodeOpen] = useState(false);
+  const { address } = useAccount();
+  const [userAddress, setUserAddress] = useState("");
+
+  useEffect(() => {
+    if (address) {
+      setUserAddress(address);
+    }
+  }, [address]);
 
   if (router.isFallback) {
     return <div>Loading...</div>;
@@ -34,7 +43,7 @@ const EventPage: React.FC<Props> = ({ tokenId, uriData, data }) => {
       </Head>
 
       <div className="flex flex-col justify-start items-start md:pt-2 pt-0 max-w-xl mx-auto">
-        <Link href="/collection" className="font-bold mx-3">
+        <Link href={`/collections/${userAddress}`} className="font-bold mx-3">
           👈 Back
         </Link>
 

@@ -11,6 +11,15 @@ const nextConfig = {
   images: {
     domains: ["mint-toast.infura-ipfs.io"],
   },
+  async redirects() {
+    return [
+      {
+        source: "/collection",
+        destination: "/collections",
+        permanent: true,
+      },
+    ];
+  },
 };
 
 module.exports = nextConfig;

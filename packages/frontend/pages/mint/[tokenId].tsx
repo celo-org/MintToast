@@ -59,7 +59,7 @@ const QRPage: React.FC<Props> = ({ tokenId, uriData, data }) => {
           "💪🏼 Successfully minted Toast, redirecting to collection..."
         );
         setTimeout(() => {
-          router.push("/collection");
+          router.push("/collections");
         }, 5000);
       }
     } catch (e) {
