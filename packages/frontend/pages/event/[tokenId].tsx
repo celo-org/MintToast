@@ -42,8 +42,6 @@ export default function EventPage() {
     }
   }, [router, tokenId]);
 
-  console.log("data", data);
-
   return (
     <>
       <Head>

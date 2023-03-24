@@ -9,39 +9,20 @@ import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
-import { Puff } from "react-loader-spinner";
-import { toast } from "react-toastify";
 import { DataProps } from "../mint/[tokenId]";
 
-export default function CollectionItem() {
+interface Props {
+  tokenId: string;
+  uriData: DataProps;
+  data: any;
+}
+
+const CollectionItem: React.FC<Props> = ({ tokenId, uriData, data }) => {
   const router = useRouter();
-  const { tokenId } = router.query;
-  console.log("router.query", router.query);
-  const [data, setData] = useState<any>(null);
-  const [loading, setLoading] = useState(false);
-  const [uriData, setUriData] = useState<DataProps>();
 
-  useEffect(() => {
-    const getEventData = async () => {
-      setLoading(true);
-      const res = await getMintCollectionData(tokenId as string);
-
-      if (!res) {
-        toast.error("Invalid Token ID");
-        router.push("/");
-      } else {
-        const ipfsData = formatIpfsData(res.uriData);
-        setUriData(ipfsData);
-        setData(res.event);
-        setLoading(false);
-      }
-    };
-    if (tokenId != undefined) {
-      getEventData();
-    }
-  }, [tokenId]);
-
+  if (router.isFallback) {
+    return <div>Loading...</div>;
+  }
   return (
     <>
       <Head>
@@ -59,87 +40,89 @@ export default function CollectionItem() {
         <Link href="/collection" className="font-bold mx-3">
           👈 Back to Collection
         </Link>
-        {loading ? (
-          <>
-            <div className="h-full w-full mt-20 flex justify-center items-center">
-              <Puff
-                height="80"
-                width="80"
-                radius={1}
-                color="#FF84E2"
-                ariaLabel="puff-loading"
-                wrapperStyle={{}}
-                wrapperClass=""
-                visible={true}
+
+        <div className="flex flex-col justify-center w-full mt-16 items-center">
+          <span className="text-3xl font-bold text-center">
+            {uriData?.name ?? ""}
+          </span>
+          <Image
+            src={fetchImageUrl(uriData?.imageHash ?? "") ?? "#"}
+            height="285"
+            width="285"
+            className="mt-8"
+            alt={uriData?.name + " Event Toast"}
+          />
+          <div className="flex flex-row justify-between w-[285px] mt-3">
+            <span className="font-semibold">
+              {data?.currentSupply}/{uriData?.totalToastSupply ?? 0}
+            </span>
+            <span className="font-semibold">#</span>
+          </div>
+          <div className="md:w-[400px] w-full px-2 md:mx-0 mt-8 flex flex-col">
+            <div className="text-gray-500">{uriData?.description ?? ""}</div>
+            <Link
+              className="justify-self-start mt-10 text-green"
+              href={uriData?.websiteLink ?? "#"}
+              target={"_blank"}
+            >
+              🌐 {uriData?.websiteLink ?? ""}
+            </Link>
+            <div className="mt-4">
+              Start: 📆{" "}
+              {formatDateFromString(uriData?.startDate ?? "01/01/2023")}
+            </div>
+            <div className="mt-1">
+              End: 📆 {formatDateFromString(uriData?.endDate ?? "01/01/2023")}
+            </div>
+            <Link
+              href={"/event/" + tokenId}
+              className="w-full py-3 px-2 bg-white border-2 border-black mt-7"
+            >
+              🍻 View event page
+            </Link>
+            <Link
+              href={uriData?.websiteLink ?? "#"}
+              className="w-full py-3 px-2 bg-white border-2 border-black mt-7"
+            >
+              🫡 View holder page
+            </Link>
+            <div className="mt-12 w-full flex justify-center">
+              <PrimaryButton
+                onClick={() => {}}
+                text="Share on Twitter"
+                icon={<TwitterIcon />}
               />
             </div>
-          </>
-        ) : (
-          <div className="flex flex-col justify-center w-full mt-16 items-center">
-            <span className="text-3xl font-bold text-center">
-              {uriData?.name ?? ""}
-            </span>
-            <Image
-              src={fetchImageUrl(uriData?.imageHash ?? "") ?? "#"}
-              height="285"
-              width="285"
-              className="mt-8"
-              alt={uriData?.name + " Event Toast"}
-            />
-            <div className="flex flex-row justify-between w-[285px] mt-3">
-              <span className="font-semibold">
-                {data?.currentSupply}/{uriData?.totalToastSupply ?? 0}
-              </span>
-              <span className="font-semibold">#</span>
-            </div>
-            <div className="md:w-[400px] w-full px-2 md:mx-0 mt-8 flex flex-col">
-              <div className="text-gray-500">{uriData?.description ?? ""}</div>
-              <Link
-                className="justify-self-start mt-10 text-green"
-                href={uriData?.websiteLink ?? "#"}
-                target={"_blank"}
-              >
-                🌐 {uriData?.websiteLink ?? ""}
-              </Link>
-              <div className="mt-4">
-                Start: 📆{" "}
-                {formatDateFromString(uriData?.startDate ?? "01/01/2023")}
-              </div>
-              <div className="mt-1">
-                End: 📆 {formatDateFromString(uriData?.endDate ?? "01/01/2023")}
-              </div>
-              <Link
-                href={"/event/" + tokenId}
-                className="w-full py-3 px-2 bg-white border-2 border-black mt-7"
-              >
-                🍻 View event page
-              </Link>
-              <Link
-                href={uriData?.websiteLink ?? "#"}
-                className="w-full py-3 px-2 bg-white border-2 border-black mt-7"
-              >
-                🫡 View holder page
-              </Link>
-              <div className="mt-12 w-full flex justify-center">
-                <PrimaryButton
-                  onClick={() => {}}
-                  text="Share on Twitter"
-                  icon={<TwitterIcon />}
-                />
-              </div>
-            </div>
-            <div className="flex w-full justify-start px-8"></div>
           </div>
-        )}
+          <div className="flex w-full justify-start px-8"></div>
+        </div>
       </div>
     </>
   );
+};
+
+export async function getStaticPaths() {
+  const res = await getTokenCollectionCount();
+  const count = res.events[0].id;
+  // create an array number from 0 till count
+  const paths = Array.from(Array(count).keys());
+  return {
+    paths: paths.map((id) => ({ params: { tokenId: id.toString() } })),
+    fallback: true,
+  };
 }
 
-export async function getServerSideProps() {
-  // Fetch data from external API
-  const res = await getTokenCollectionCount();
-  console.log("res", res);
-  // Pass data to the page via props
-  return { props: {} };
+export async function getStaticProps({ params }: { params: any }) {
+  console.log("params.tokenId", params.tokenId);
+  const res = await getMintCollectionData(params.tokenId as string);
+  console.log("res", formatIpfsData(res.uriData));
+  return {
+    props: {
+      tokenId: params.tokenId,
+      data: res.event,
+      uriData: formatIpfsData(res.uriData),
+    },
+  };
 }
+
+export default CollectionItem;

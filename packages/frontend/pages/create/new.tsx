@@ -72,7 +72,6 @@ export default function New() {
         data: bodyFormData,
         headers: { "Content-Type": "multipart/form-data" },
       });
-      console.log("res", res);
       toast.dismiss();
       toast.success("💪🏼 Event created successfully!");
     } catch (e) {

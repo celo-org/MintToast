@@ -12,6 +12,5 @@ export default async function handler(
 ) {
   const contract = getContract();
   const tx = await contract.collections();
-  console.log("tx", tx);
   res.status(200).json({ name: "John Doe" });
 }

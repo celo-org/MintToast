@@ -3,7 +3,6 @@ import { fetchDataFromIPFS } from "@/utils/ipfs";
 import axios from "axios";
 
 export const getMintCollectionData = async (tokenId: string) => {
-  console.log("GRAPHQL_API", GRAPHQL_API);
   var res = await axios({
     url: GRAPHQL_API,
     method: "post",
