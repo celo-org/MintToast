@@ -113,9 +113,7 @@ export async function getStaticPaths() {
 }
 
 export async function getStaticProps({ params }: { params: any }) {
-  console.log("params.tokenId", params.tokenId);
   const res = await getMintCollectionData(params.tokenId as string);
-  console.log("res", formatIpfsData(res.uriData));
   return {
     props: {
       tokenId: params.tokenId,

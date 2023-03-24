@@ -1,6 +1,7 @@
 import InputField from "@/components/common/InputField";
 import PrimaryButton from "@/components/common/PrimaryButton";
 import { getMintCollectionData } from "@/graphql/queries/getMintCollectionData";
+import { getTokenCollectionCount } from "@/graphql/queries/getTokenCollectionCount";
 import { formatIpfsData } from "@/utils/data";
 import { fetchImageUrl } from "@/utils/ipfs";
 import axios from "axios";
@@ -8,7 +9,6 @@ import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import { Puff } from "react-loader-spinner";
 import { toast } from "react-toastify";
 import { useAccount } from "wagmi";
 
@@ -25,35 +25,18 @@ export interface DataProps {
   email?: string;
 }
 
-export default function QRPage() {
+interface Props {
+  tokenId: string;
+  uriData: DataProps;
+  data: any;
+}
+
+const QRPage: React.FC<Props> = ({ tokenId, uriData, data }) => {
   // get the id from the url
   const router = useRouter();
-  const { tokenId } = router.query;
   const { address: walletAddress, isConnected } = useAccount();
   const [address, setAddress] = useState<string>("");
-  const [loading, setLoading] = useState<boolean>(false);
   const [mintLoading, setMintLoading] = useState<boolean>(false);
-  const [data, setData] = useState<any>({});
-  const [uriData, setUriData] = useState<DataProps>();
-
-  useEffect(() => {
-    const getEvent = async () => {
-      setLoading(true);
-      const res = await getMintCollectionData(tokenId as string);
-      if (!res) {
-        toast.error("Invalid Token ID");
-        router.push("/");
-      } else {
-        const ipfsData = formatIpfsData(res.uriData);
-        setData(res?.event);
-        setUriData(ipfsData);
-        setLoading(false);
-      }
-    };
-    if (tokenId) {
-      getEvent();
-    }
-  }, [router, tokenId]);
 
   useEffect(() => {
     if (isConnected) {
@@ -106,6 +89,7 @@ export default function QRPage() {
           <div className="w-full flex justify-center mt-8">
             <PrimaryButton
               text="👉 Mint Toast"
+              isLoading={mintLoading}
               onClick={() => {
                 if (!address) {
                   toast.error("Please enter an Address");
@@ -115,51 +99,55 @@ export default function QRPage() {
             />
           </div>
         </div>
+        <span className="text-3xl font-bold mt-8 text-center">
+          {uriData?.name ?? ""}
+        </span>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          className="border-2 border-black w-[285px] h-[285px] mt-5"
+          src={fetchImageUrl(uriData?.imageHash ?? "")}
+          alt={uriData?.name + " Image"}
+        />
 
-        {loading ? (
-          <>
-            <div className="h-full w-full mt-20 flex justify-center items-center">
-              <Puff
-                height="80"
-                width="80"
-                radius={1}
-                color="#FF84E2"
-                ariaLabel="puff-loading"
-                wrapperStyle={{}}
-                wrapperClass=""
-                visible={true}
-              />
-            </div>
-          </>
-        ) : (
-          <>
-            <span className="text-3xl font-bold mt-8 text-center">
-              {uriData?.name ?? ""}
-            </span>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              className="border-2 border-black w-[285px] h-[285px] mt-5"
-              src={fetchImageUrl(uriData?.imageHash ?? "")}
-              alt={uriData?.name + " Image"}
-            />
+        <span className="font-semibold mt-8">
+          {data?.currentSupply}/{uriData?.totalToastSupply ?? "0"}
+        </span>
 
-            <span className="font-semibold mt-8">
-              {data?.currentSupply}/{uriData?.totalToastSupply ?? "0"}
-            </span>
-
-            <div className="md:w-[400px] w-full px-2 md:mx-0 mt-8 flex flex-col">
-              <div className="text-gray-500">{uriData?.description ?? ""}</div>
-              <Link
-                className="justify-self-start mt-10 text-green"
-                href={uriData?.websiteLink ?? "#"}
-                target={"_blank"}
-              >
-                🌐 {uriData?.websiteLink ?? ""}
-              </Link>
-            </div>
-          </>
-        )}
+        <div className="md:w-[400px] w-full px-2 md:mx-0 mt-8 flex flex-col">
+          <div className="text-gray-500">{uriData?.description ?? ""}</div>
+          <Link
+            className="justify-self-start mt-10 text-green"
+            href={uriData?.websiteLink ?? "#"}
+            target={"_blank"}
+          >
+            🌐 {uriData?.websiteLink ?? ""}
+          </Link>
+        </div>
       </div>
     </>
   );
+};
+
+export async function getStaticPaths() {
+  const res = await getTokenCollectionCount();
+  const count = res.events[0].id;
+  // create an array number from 0 till count
+  const paths = Array.from(Array(count).keys());
+  return {
+    paths: paths.map((id) => ({ params: { tokenId: id.toString() } })),
+    fallback: true,
+  };
 }
+
+export async function getStaticProps({ params }: { params: any }) {
+  const res = await getMintCollectionData(params.tokenId as string);
+  return {
+    props: {
+      tokenId: params.tokenId,
+      data: res.event,
+      uriData: formatIpfsData(res.uriData),
+    },
+  };
+}
+
+export default QRPage;

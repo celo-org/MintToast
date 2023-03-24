@@ -17,7 +17,6 @@ export const getTokenCollectionCount = async () => {
       "Content-Type": "application/json",
     },
   });
-  console.log("res", res.data.data.events);
   if (res.data && res.data.data && res.data.data.events) {
     return { ...res.data.data };
   } else {
