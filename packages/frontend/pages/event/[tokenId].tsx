@@ -1,45 +1,58 @@
 import PrimaryButton from "@/components/common/PrimaryButton";
 import TwitterIcon from "@/components/icons/TwitterIcon";
 import QRCodeModal from "@/components/modals/QRCodeModal";
+import { getMintCollectionData } from "@/graphql/queries/getMintCollectionData";
 import { formatIpfsData } from "@/utils/data";
 import { fetchImageUrl } from "@/utils/ipfs";
 import { IPFSDataProps } from "@/utils/props";
-import axios from "axios";
+import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { Puff } from "react-loader-spinner";
+import { toast } from "react-toastify";
 
 export default function EventPage() {
   const router = useRouter();
   const { tokenId } = router.query;
 
-  const [data, setData] = useState<IPFSDataProps | null>(null);
+  const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [isQRCodeOpen, setIsQRCodeOpen] = useState(false);
+  const [uriData, setUriData] = useState<IPFSDataProps | null>(null);
 
   useEffect(() => {
-    const getEventData = async () => {
+    const getEvent = async () => {
       setLoading(true);
-      const res = await axios.post("/api/get-event", {
-        tokenId,
-      });
-      const formattedData = formatIpfsData(res.data.data);
-      setData(formattedData);
-      setLoading(false);
+      const res = await getMintCollectionData(tokenId as string);
+      if (!res) {
+        toast.error("Invalid Token ID");
+        router.push("/");
+      } else {
+        const ipfsData = formatIpfsData(res.uriData);
+        console.log("res?.event", res?.event);
+        setData(res?.event);
+        setUriData(ipfsData);
+        setLoading(false);
+      }
     };
-    getEventData();
-  }, []);
+    if (tokenId) {
+      getEvent();
+    }
+  }, [router, tokenId]);
 
   return (
     <>
+      <Head>
+        <title>🍞 Mint Toast | Event</title>
+      </Head>
       <QRCodeModal
         isOpen={isQRCodeOpen}
         closeModal={() => {
           setIsQRCodeOpen(false);
         }}
-        value={"/mint/" + data?.tokenId ?? ""}
+        value={"/mint/" + uriData?.tokenId ?? ""}
       />
       <div className="flex flex-col justify-start items-start md:pt-2 pt-0 max-w-xl mx-auto">
         <Link href="/collection" className="font-bold mx-3">
@@ -60,20 +73,20 @@ export default function EventPage() {
           </div>
         ) : (
           <div className="flex flex-col justify-center w-full mt-16 items-center">
-            <span className="text-3xl font-bold">{data?.name ?? ""}</span>
+            <span className="text-3xl font-bold">{uriData?.name ?? ""}</span>
             <Image
               height={285}
               width={285}
-              src={fetchImageUrl(data?.imageHash ?? "")}
-              alt={data?.name + " Event Toast"}
+              src={fetchImageUrl(uriData?.imageHash ?? "")}
+              alt={uriData?.name + " Event Toast"}
               className="border-2 border-black mt-6"
             />
             <span className="font-semibold mt-8">
-              10/{data?.totalToastSupply ?? "100"}
+              {data?.currentSupply}/{uriData?.totalToastSupply ?? "100"}
             </span>
 
             <div className="md:w-[400px] w-full px-2 md:mx-0 mt-8 flex flex-col">
-              <div className="text-gray-500">{data?.description ?? ""}</div>
+              <div className="text-gray-500">{uriData?.description ?? ""}</div>
               <div className="mt-12 w-full flex justify-center">
                 <PrimaryButton
                   onClick={() => {
@@ -84,10 +97,10 @@ export default function EventPage() {
               </div>
               <Link
                 className="justify-self-start mt-10 text-green"
-                href={data?.websiteLink ?? ""}
+                href={uriData?.websiteLink ?? ""}
                 target={"_blank"}
               >
-                🌐 {data?.websiteLink ?? ""}
+                🌐 {uriData?.websiteLink ?? ""}
               </Link>
               <div className="text-black font-bold text-lg mt-8 ">
                 How to mint Toast?
@@ -96,18 +109,18 @@ export default function EventPage() {
                 Instructions coming soon. For now ask our Toast Masters.
               </div>
               <Link
-                href={"https://celoscan.io/address/" + data?.createdBy ?? ""}
+                href={"https://celoscan.io/address/" + uriData?.createdBy ?? ""}
                 target={"_blank"}
                 className="w-full py-3 px-2 bg-yellow border-2 border-black mt-7"
               >
                 <div className="flex flex-row justify-between">
                   <span>🍻 View Toaster</span>
                   <span>
-                    {data?.createdBy?.substring(0, 5) +
+                    {uriData?.createdBy?.substring(0, 5) +
                       "..." +
-                      data?.createdBy?.substring(
-                        (data?.createdBy.length ?? 18) - 5,
-                        data?.createdBy.length ?? 18
+                      uriData?.createdBy?.substring(
+                        (uriData?.createdBy.length ?? 18) - 5,
+                        uriData?.createdBy.length ?? 18
                       )}
                   </span>
                 </div>

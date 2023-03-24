@@ -2,6 +2,7 @@ import InputField from "@/components/common/InputField";
 import PrimaryButton from "@/components/common/PrimaryButton";
 import TextArea from "@/components/common/TextField";
 import axios from "axios";
+import Head from "next/head";
 import Link from "next/link";
 import { useState } from "react";
 import { toast } from "react-toastify";
@@ -44,7 +45,7 @@ export default function New() {
   const handleSubmit = async () => {
     try {
       setLoading(true);
-      toast.loading("Minting your toast, please wait...");
+      toast.loading("Creating your event, please wait...");
       var bodyFormData = new FormData();
       bodyFormData.append("title", title);
       bodyFormData.append("description", description);
@@ -63,7 +64,7 @@ export default function New() {
       });
       console.log("res", res);
       toast.dismiss();
-      toast.success("💪🏼 Toast minted successfully!");
+      toast.success("💪🏼 Event created successfully!");
     } catch (e) {
       toast.dismiss();
       toast.error("🚨 Oops, toast burned, please try again...");
@@ -87,6 +88,9 @@ export default function New() {
 
   return (
     <>
+      <Head>
+        <title>🍞 Mint Toast | Create New Event</title>
+      </Head>
       <div className="flex flex-col justify-start items-start md:pt-2 pt-0 max-w-xl mx-auto px-4 md:px-0">
         {view == View.IMAGE ? (
           <>

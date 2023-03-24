@@ -1,49 +1,33 @@
-import { formatIpfsData } from "@/utils/data";
-import { fetchImageUrl } from "@/utils/ipfs";
-import { IPFSDataProps } from "@/utils/props";
-import axios from "axios";
-import Image from "next/image";
-import Link from "next/link";
+import CollectionItem from "@/components/collection/CollectionItem";
+import { getUserCollection } from "@/graphql/queries/getUserCollection";
+import Head from "next/head";
 import { useEffect, useState } from "react";
 import { Puff } from "react-loader-spinner";
 import { useAccount } from "wagmi";
 
 export default function Collections() {
-  const { address, isConnected, isDisconnected, isReconnecting } = useAccount();
-  const [data, setData] = useState<IPFSDataProps | null>();
+  const { address, status } = useAccount();
+  const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(false);
-  const [disconnected, setDisconnected] = useState(false);
+  const [isConnected, setIsConnected] = useState(false);
 
   useEffect(() => {
     const fetchCollections = async () => {
       setLoading(true);
-      const res = await axios.post("/api/get-user-events", {
-        address,
-      });
-      console.log("res.data", res.data.data);
-      if (res.data.data === null) {
-        setData(null);
-        setLoading(false);
-        return;
-      } else {
-        const formattedData = formatIpfsData(res.data.data);
-        setData(formattedData);
-        setLoading(false);
-      }
+      var collection = await getUserCollection(address!);
+      setData(collection);
+      setLoading(false);
     };
-    if (isConnected) {
+    if (address) {
+      setIsConnected(true);
       fetchCollections();
-      setDisconnected(false);
     }
-  }, [address, isConnected]);
-
-  useEffect(() => {
-    if (!isReconnecting && isDisconnected) {
-      setDisconnected(true);
+    if (status == "disconnected") {
+      setIsConnected(false);
     }
-  }, [isDisconnected, isReconnecting]);
+  }, [address]);
 
-  if (disconnected) {
+  if (!isConnected) {
     return (
       <>
         <div className="w-full text-center px-5 mt-10 text-lg font-bold">
@@ -72,7 +56,7 @@ export default function Collections() {
     );
   }
 
-  if (data === null) {
+  if (!data) {
     return (
       <>
         <div className="w-full text-center px-5 mt-10 text-lg font-bold">
@@ -84,26 +68,24 @@ export default function Collections() {
 
   return (
     <>
+      <Head>
+        <title>🍞 Mint Toast | Collection</title>
+      </Head>
       <div className="flex flex-col justify-center items-center md:pt-20 pt-4 max-w-xl mx-auto">
         <div className="flex flex-col justify-start w-full">
-          <span className="px-5 text-lg font-bold">2023</span>
-          <div className="flex flex-row flex-wrap justify-evenly">
-            {/* Card 1 */}
-            <Link
-              href={"/collection/" + data?.tokenId ?? 0}
-              className="w-[170px] h-[170px] pushable-card select-none rounded-sm bg-black border-none p-0 cursor-pointer outline-offset-4 mt-5"
-            >
-              <span className="w-[170px] h-[170px] front-card rounded-sm border-2 border-black text-black font-bold text-base block">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <Image
-                  src={fetchImageUrl(data?.imageHash!)}
-                  alt={data?.name + " Event Toast"}
-                  className="w-full h-full cursor-pointer"
-                  width={170}
-                  height={170}
-                />
+          {data.length > 0 ? (
+            <span className="px-5 text-lg font-bold">2023</span>
+          ) : (
+            <div className="w-full flex-initial justify-center items-center text-center">
+              <span className="px-5 text-lg font-bold">
+                You don&apos;t have any toast
               </span>
-            </Link>
+            </div>
+          )}
+          <div className="flex flex-row flex-wrap justify-evenly">
+            {data.map((item: any) => (
+              <CollectionItem event={item.event} key={item.event.id} />
+            ))}
           </div>
         </div>
       </div>

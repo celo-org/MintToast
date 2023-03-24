@@ -1,6 +1,7 @@
 {
   "name": "minttoast",
   "license": "UNLICENSED",
+  "version": "0.0.1",
   "scripts": {
     "codegen": "graph codegen",
     "build": "graph build",
