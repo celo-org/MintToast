@@ -27,6 +27,8 @@ dataSources:
               - name: Badge
                 file: ./abis/Badge.json
           eventHandlers:
+              - event: TransferSingle(indexed address,indexed address,indexed address,uint256,uint256)
+                handler: handleTransferSingle
               - event: CollectionCreated(indexed address,indexed uint256,indexed uint256)
                 handler: handleCollectionCreated
               - event: URI(string,indexed uint256)
