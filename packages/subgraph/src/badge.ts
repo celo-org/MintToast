@@ -10,7 +10,7 @@ import {
     TransferSingle,
     URI,
 } from "../generated/Badge/Badge";
-import { Serie, User, Item, SeriesBalance } from "../generated/schema";
+import { Serie, User, Item } from "../generated/schema";
 
 export function handleCollectionCreated(event: CollectionCreated): void {
     /**
@@ -32,12 +32,6 @@ export function handleCollectionCreated(event: CollectionCreated): void {
 
     series.save();
 }
-
-export function handleRoleAdminChanged(event: RoleAdminChanged): void {}
-
-export function handleRoleGranted(event: RoleGranted): void {}
-
-export function handleRoleRevoked(event: RoleRevoked): void {}
 
 export function handleTransferSingle(event: TransferSingle): void {
     /**
