@@ -2,7 +2,7 @@ import { GRAPHQL_API } from "@/data/constant";
 import axios from "axios";
 
 export const getUserCollection = async (address: string) => {
-  console.log("address", address);
+  console.log("GRAPHQL_API", GRAPHQL_API);
   var res = await axios({
     url: GRAPHQL_API,
     method: "post",
@@ -29,8 +29,7 @@ export const getUserCollection = async (address: string) => {
       "Content-Type": "application/json",
     },
   });
-  console.log("res.data", res.data);
-  if (res.data.data.user !== null) {
+  if (res.data && res.data.data && res.data.data.user !== null) {
     // remove duplicate events where event id is the same
     const collection = res.data.data.user!.collection.filter(
       (item: { event: { id: any } }, index: any, self: any[]) =>

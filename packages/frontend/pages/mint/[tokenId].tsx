@@ -133,7 +133,9 @@ export default function QRPage() {
           </>
         ) : (
           <>
-            <span className="text-3xl font-bold mt-8">{data.name ?? ""}</span>
+            <span className="text-3xl font-bold mt-8 text-center">
+              {uriData?.name ?? ""}
+            </span>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               className="border-2 border-black w-[285px] h-[285px] mt-5"
@@ -142,7 +144,7 @@ export default function QRPage() {
             />
 
             <span className="font-semibold mt-8">
-              10/{uriData?.totalToastSupply ?? "0"}
+              {data?.currentSupply}/{uriData?.totalToastSupply ?? "0"}
             </span>
 
             <div className="md:w-[400px] w-full px-2 md:mx-0 mt-8 flex flex-col">
