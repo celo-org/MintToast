@@ -135,4 +135,39 @@ contract Badge is
     function unpause() external onlyRole(DEFAULT_ADMIN_ROLE) {
         _unpause();
     }
+
+    function _beforeTokenTransfer(
+        address operator,
+        address from,
+        address to,
+        uint256[] memory ids,
+        uint256[] memory amounts,
+        bytes memory data
+    ) internal virtual override {
+        super._beforeTokenTransfer(operator, from, to, ids, amounts, data);
+
+        if (from == address(0)) {
+            for (uint256 i = 0; i < ids.length; ++i) {
+                currentSupply[ids[i]] += amounts[i];
+            }
+        }
+
+        if (to == address(0)) {
+            for (uint256 i = 0; i < ids.length; ++i) {
+                uint256 id = ids[i];
+                uint256 amount = amounts[i];
+                uint256 totalSupply_ = totalSupply[id];
+                uint256 currentSupply_ = currentSupply[id];
+
+                require(
+                    currentSupply_ >= amount && totalSupply_ >= amount,
+                    "ERC1155: burn amount exceeds totalSupply"
+                );
+                unchecked {
+                    totalSupply[id] = totalSupply_ - amount;
+                    currentSupply[id] = currentSupply_ - amount;
+                }
+            }
+        }
+    }
 }
