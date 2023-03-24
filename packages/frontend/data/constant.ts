@@ -17,12 +17,12 @@ export const TESTNET_GRAPHQL_API =
   "https://api.studio.thegraph.com/query/44292/mint-toast/v0.0.2";
 
 export const MAINNET_GRAPHQL_API =
-  "https://api.studio.thegraph.com/query/44345/minttoast/v0.0.4";
+  "https://api.studio.thegraph.com/query/44345/minttoast/v0.0.6";
 
 export const TESTNET_CONTRACT_ADDRESS =
   "0xE5316457883f99539118dC77fEC28DCd99f9Ae08";
 export const MAINNET_CONTRACT_ADDRESS =
-  "0x2fe99fa6d6D94eBcA1A9E61Cd812A189D4Bb6ADA";
+  "0x1Ae49b184BFBA721Cc49f7Ee4AF0960fD368d917";
 
 export const API_ENDPOINT = getEnvConfig().apiEndpoint;
 export const RPC_ENDPOINT = getEnvConfig().rpcEndpoint;
