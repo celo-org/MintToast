@@ -1,6 +1,7 @@
 import PrimaryButton from "@/components/common/PrimaryButton";
 import TwitterIcon from "@/components/icons/TwitterIcon";
 import { getMintCollectionData } from "@/graphql/queries/getMintCollectionData";
+import { getTokenCollectionCount } from "@/graphql/queries/getTokenCollectionCount";
 import { formatIpfsData } from "@/utils/data";
 import { fetchImageUrl } from "@/utils/ipfs";
 import { formatDateFromString } from "@/utils/utils";
@@ -133,4 +134,12 @@ export default function CollectionItem() {
       </div>
     </>
   );
+}
+
+export async function getServerSideProps() {
+  // Fetch data from external API
+  const res = await getTokenCollectionCount();
+  console.log("res", res);
+  // Pass data to the page via props
+  return { props: {} };
 }
