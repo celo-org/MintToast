@@ -77,7 +77,7 @@ export default function QRPage() {
         );
         setTimeout(() => {
           router.push("/collection");
-        }, 3000);
+        }, 5000);
       }
     } catch (e) {
       toast.dismiss();

@@ -104,6 +104,14 @@ export default function EventPage() {
                     text="Show QR Code"
                   />
                 </div>
+                <div className="mt-5 w-full flex justify-center">
+                  <PrimaryButton
+                    onClick={() => {
+                      router.push("/mint/" + data?.id);
+                    }}
+                    text="Mint the Toast"
+                  />
+                </div>
                 <Link
                   className="justify-self-start mt-10 text-green"
                   href={uriData?.websiteLink ?? ""}

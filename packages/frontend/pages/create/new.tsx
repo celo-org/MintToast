@@ -1,11 +1,13 @@
 import InputField from "@/components/common/InputField";
 import PrimaryButton from "@/components/common/PrimaryButton";
 import TextArea from "@/components/common/TextField";
+import { WHITELISTED_ADDRESS } from "@/data/constant";
 import axios from "axios";
 import Head from "next/head";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
+import { useAccount } from "wagmi";
 
 // create enum
 enum View {
@@ -15,20 +17,28 @@ enum View {
 
 export default function New() {
   const [view, setView] = useState<View>(View.IMAGE);
-  const [title, setTitle] = useState("GreenPill Festival");
-  const [description, setDescription] = useState(
-    "The GreenPill Festival is a transformative, eco-conscious event that celebrates sustainable living, cutting-edge technologies, and creative art, fostering a global community for a better future."
-  );
-  const [startDate, setStartDate] = useState("22/03/2023");
-  const [endDate, setEndDate] = useState("26/03/2023");
-  const [url, setUrl] = useState(
-    "https://www.atlantians.world/green-pill-fest"
-  );
-  const [toastCount, setToastCount] = useState(250);
-  const [email, setEmail] = useState("viral.sangani@celo.org");
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [url, setUrl] = useState("");
+  const [toastCount, setToastCount] = useState(10);
+  const [email, setEmail] = useState("");
   const [imageSrc, setImageSrc] = useState<any>(null);
   const [image, setImage] = useState<any>(null);
   const [loading, setLoading] = useState(false);
+  const { address } = useAccount();
+  const [isConnected, setIsConnected] = useState(false);
+  const [canCreate, setCanCreate] = useState(false);
+
+  useEffect(() => {
+    if (address) {
+      setIsConnected(true);
+      if (WHITELISTED_ADDRESS.includes(address)) {
+        setCanCreate(true);
+      }
+    }
+  }, [address]);
 
   const handleImageUpload = (e: any) => {
     const file = e.target.files[0];
@@ -85,6 +95,26 @@ export default function New() {
     setImageSrc("");
     setImage("");
   };
+
+  if (!isConnected) {
+    return (
+      <div className="flex flex-col justify-center items-center">
+        <h1 className="text-lg mt-10 font-bold">
+          Please connect your wallet to continue
+        </h1>
+      </div>
+    );
+  }
+
+  if (!canCreate) {
+    return (
+      <div className="flex flex-col justify-center items-center">
+        <h1 className="text-lg mt-10 font-bold">
+          You are not allowed to create event yet, please stay tuned!
+        </h1>
+      </div>
+    );
+  }
 
   return (
     <>
