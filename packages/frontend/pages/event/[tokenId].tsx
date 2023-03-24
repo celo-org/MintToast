@@ -191,6 +191,14 @@ export async function getStaticPaths() {
 
 export async function getStaticProps({ params }: { params: any }) {
   const res = await getMintCollectionData(params.tokenId as string);
+  if (!res || !res.event) {
+    return {
+      redirect: {
+        destination: "/404",
+        permanent: false,
+      },
+    };
+  }
   return {
     props: {
       tokenId: params.tokenId,

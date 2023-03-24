@@ -83,6 +83,14 @@ export async function getStaticPaths() {
 
 export async function getStaticProps({ params }: { params: any }) {
   const res = await getUserCollection(params.address as string);
+  if (!res) {
+    return {
+      redirect: {
+        destination: "/404",
+        permanent: false,
+      },
+    };
+  }
   return {
     props: {
       address: params.address,
