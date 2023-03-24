@@ -4,11 +4,11 @@ schema:
 dataSources:
     - kind: ethereum
       name: Badge
-      network: celo-alfajores
+      network: celo
       source:
-          address: "0xE5316457883f99539118dC77fEC28DCd99f9Ae08"
+          address: "0x2fe99fa6d6D94eBcA1A9E61Cd812A189D4Bb6ADA"
           abi: Badge
-          startBlock: 16822885
+          startBlock: 18393368
       mapping:
           kind: ethereum/events
           apiVersion: 0.0.6
@@ -27,22 +27,10 @@ dataSources:
               - name: Badge
                 file: ./abis/Badge.json
           eventHandlers:
-              - event: ApprovalForAll(indexed address,indexed address,bool)
-                handler: handleApprovalForAll
-              - event: CollectionCreated(indexed address,indexed uint256,indexed uint256)
-                handler: handleCollectionCreated
-              - event: Initialized(uint8)
-                handler: handleInitialized
-              - event: RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
-                handler: handleRoleAdminChanged
-              - event: RoleGranted(indexed bytes32,indexed address,indexed address)
-                handler: handleRoleGranted
-              - event: RoleRevoked(indexed bytes32,indexed address,indexed address)
-                handler: handleRoleRevoked
-              - event: TransferBatch(indexed address,indexed address,indexed address,uint256[],uint256[])
-                handler: handleTransferBatch
               - event: TransferSingle(indexed address,indexed address,indexed address,uint256,uint256)
                 handler: handleTransferSingle
+              - event: CollectionCreated(indexed address,indexed uint256,indexed uint256)
+                handler: handleCollectionCreated
               - event: URI(string,indexed uint256)
                 handler: handleURI
           file: ./src/badge.ts

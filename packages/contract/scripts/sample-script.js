@@ -5,9 +5,7 @@
 // Runtime Environment's members available in the global scope.
 const hre = require("hardhat");
 
-// TransparentUpgradeableProxy: 0xF2758A600864737360409045A68f8Dd0926Fa276
-// ProxyAdmin: 0x9b66d55D0a737E0f9d08F2d56436D9A6D512e4bf
-// Badge: 0xE74a27F2DA19F6C727063607339E425fB6Fb7AAe
+// TransparentUpgradeableProxy: 0x2fe99fa6d6D94eBcA1A9E61Cd812A189D4Bb6ADA
 
 async function main() {
     let [deployer] = await ethers.getSigners();

@@ -5,11 +5,13 @@ import "@openzeppelin/contracts/proxy/utils/Initializable.sol";
 import {ERC1155Upgradeable, IERC1155Upgradeable, IERC1155MetadataURIUpgradeable} from "@openzeppelin/contracts-upgradeable/token/ERC1155/ERC1155Upgradeable.sol";
 import {ERC1155URIStorageUpgradeable} from "@openzeppelin/contracts-upgradeable/token/ERC1155/extensions/ERC1155URIStorageUpgradeable.sol";
 import {AccessControlUpgradeable, IAccessControlUpgradeable} from "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
+import {PausableUpgradeable} from "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol";
 
 contract Badge is
     ERC1155Upgradeable,
     ERC1155URIStorageUpgradeable,
-    AccessControlUpgradeable
+    AccessControlUpgradeable,
+    PausableUpgradeable
 {
     bytes32 public constant TOASTMASTER_ROLE = keccak256("TOASTMASTER_ROLE");
     mapping(uint256 => uint256) public totalSupply;
@@ -30,6 +32,7 @@ contract Badge is
         _setBaseURI(baseUri_);
         __AccessControl_init();
         _grantRole(DEFAULT_ADMIN_ROLE, initialDefaultAdmin);
+        __Pausable_init();
     }
 
     function mint(address to, uint256 id) public onlyRole(TOASTMASTER_ROLE) {
@@ -39,18 +42,6 @@ contract Badge is
             "All tokens from this series are already minted"
         );
         _mint(to, id, 1, "");
-    }
-
-    function uri(
-        uint256 tokenId
-    )
-        public
-        view
-        virtual
-        override(ERC1155Upgradeable, ERC1155URIStorageUpgradeable)
-        returns (string memory)
-    {
-        return ERC1155URIStorageUpgradeable.uri(tokenId);
     }
 
     function mintBatch(
@@ -71,6 +62,18 @@ contract Badge is
             );
         }
         _mintBatch(to, ids, amounts, "");
+    }
+
+    function uri(
+        uint256 tokenId
+    )
+        public
+        view
+        virtual
+        override(ERC1155Upgradeable, ERC1155URIStorageUpgradeable)
+        returns (string memory)
+    {
+        return ERC1155URIStorageUpgradeable.uri(tokenId);
     }
 
     function exists(uint256 id) public view virtual returns (bool) {
@@ -105,38 +108,31 @@ contract Badge is
             super.supportsInterface(interfaceId);
     }
 
-    function _beforeTokenTransfer(
-        address operator,
+    function safeTransferFrom(
+        address from,
+        address to,
+        uint256 id,
+        uint256 amount,
+        bytes memory data
+    ) public virtual override whenNotPaused {
+        super.safeTransferFrom(from, to, id, amount, data);
+    }
+
+    function safeBatchTransferFrom(
         address from,
         address to,
         uint256[] memory ids,
         uint256[] memory amounts,
         bytes memory data
-    ) internal virtual override {
-        super._beforeTokenTransfer(operator, from, to, ids, amounts, data);
+    ) public virtual override whenNotPaused {
+        super.safeBatchTransferFrom(from, to, ids, amounts, data);
+    }
 
-        if (from == address(0)) {
-            for (uint256 i = 0; i < ids.length; ++i) {
-                currentSupply[ids[i]] += amounts[i];
-            }
-        }
+    function pause() external onlyRole(DEFAULT_ADMIN_ROLE) {
+        _pause();
+    }
 
-        if (to == address(0)) {
-            for (uint256 i = 0; i < ids.length; ++i) {
-                uint256 id = ids[i];
-                uint256 amount = amounts[i];
-                uint256 totalSupply_ = totalSupply[id];
-                uint256 currentSupply_ = currentSupply[id];
-
-                require(
-                    currentSupply_ >= amount && totalSupply_ >= amount,
-                    "ERC1155: burn amount exceeds totalSupply"
-                );
-                unchecked {
-                    totalSupply[id] = totalSupply_ - amount;
-                    currentSupply[id] = currentSupply_ - amount;
-                }
-            }
-        }
+    function unpause() external onlyRole(DEFAULT_ADMIN_ROLE) {
+        _unpause();
     }
 }
