@@ -42,6 +42,16 @@ const QRCodeModal = (props: Props) => {
                   style={{ height: "auto", maxWidth: "100%", width: "100%" }}
                   value={WEBSITE_URL + props.value}
                 />
+                <div className="mt-3 w-full flex items-center justify-center">
+                  <a
+                    href={WEBSITE_URL + props.value}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-center text-blue-500 underline"
+                  >
+                    {WEBSITE_URL + props.value}
+                  </a>
+                </div>
               </Dialog.Panel>
             </Transition.Child>
           </div>

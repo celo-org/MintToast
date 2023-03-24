@@ -3,7 +3,6 @@ import TwitterIcon from "@/components/icons/TwitterIcon";
 import { getMintCollectionData } from "@/graphql/queries/getMintCollectionData";
 import { formatIpfsData } from "@/utils/data";
 import { fetchImageUrl } from "@/utils/ipfs";
-import { IPFSDataProps } from "@/utils/props";
 import { formatDateFromString } from "@/utils/utils";
 import Head from "next/head";
 import Image from "next/image";
@@ -17,8 +16,8 @@ import { DataProps } from "../mint/[tokenId]";
 export default function CollectionItem() {
   const router = useRouter();
   const { tokenId } = router.query;
-
-  const [data, setData] = useState<IPFSDataProps | null>(null);
+  console.log("router.query", router.query);
+  const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [uriData, setUriData] = useState<DataProps>();
 
@@ -37,13 +36,23 @@ export default function CollectionItem() {
         setLoading(false);
       }
     };
-    getEventData();
-  }, []);
+    if (tokenId != undefined) {
+      getEventData();
+    }
+  }, [tokenId]);
 
   return (
     <>
       <Head>
         <title>🍞 Mint Toast | Collection</title>
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:site" content="@CeloOrg" />
+        <meta name="twitter:title" content={uriData?.name ?? ""} />
+        <meta name="twitter:description" content={uriData?.description} />
+        <meta
+          name="twitter:image"
+          content={fetchImageUrl(uriData?.imageHash ?? "") ?? "#"}
+        />
       </Head>
       <div className="flex flex-col justify-start items-start md:pt-2 pt-0 max-w-xl mx-auto">
         <Link href="/collection" className="font-bold mx-3">
@@ -66,7 +75,9 @@ export default function CollectionItem() {
           </>
         ) : (
           <div className="flex flex-col justify-center w-full mt-16 items-center">
-            <span className="text-3xl font-bold">{uriData?.name ?? ""}</span>
+            <span className="text-3xl font-bold text-center">
+              {uriData?.name ?? ""}
+            </span>
             <Image
               src={fetchImageUrl(uriData?.imageHash ?? "") ?? "#"}
               height="285"
@@ -76,7 +87,7 @@ export default function CollectionItem() {
             />
             <div className="flex flex-row justify-between w-[285px] mt-3">
               <span className="font-semibold">
-                10/{uriData?.totalToastSupply ?? 0}
+                {data?.currentSupply}/{uriData?.totalToastSupply ?? 0}
               </span>
               <span className="font-semibold">#</span>
             </div>
