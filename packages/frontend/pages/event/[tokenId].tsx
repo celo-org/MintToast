@@ -199,12 +199,14 @@ export async function getStaticProps({ params }: { params: any }) {
       },
     };
   }
+  // revalodate in 10 seconds
   return {
     props: {
       tokenId: params.tokenId,
       data: res.event,
       uriData: formatIpfsData(res.uriData),
     },
+    revalidate: 10,
   };
 }
 
