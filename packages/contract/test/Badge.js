@@ -3,9 +3,11 @@ const { ethers } = require("hardhat");
 const { utils, constants } = ethers;
 
 const BASE_URI = "ipfs://";
+const TOASTMASTER_ROLE = utils.keccak256(utils.toUtf8Bytes("TOASTMASTER_ROLE"));
+const DEFAULT_ADMIN_ROLE = constants.HashZero;
 
 async function deployBadge(defaultAdmin) {
-    const Badge = await ethers.getContractFactory("Badge");
+    const Badge = await ethers.getContractFactory("BadgeV2");
     let badge = await upgrades.deployProxy(Badge, [
         BASE_URI,
         defaultAdmin.address,
@@ -22,9 +24,6 @@ async function deployBadge(defaultAdmin) {
 
 describe("Badge Test", () => {
     let defaultAdmin, toastmaster, user1, user2;
-    let TOASTMASTER_ROLE = utils.keccak256(
-        utils.toUtf8Bytes("TOASTMASTER_ROLE")
-    );
 
     beforeEach(async () => {
         [defaultAdmin, toastmaster, user1, user2] = await ethers.getSigners();
@@ -37,13 +36,33 @@ describe("Badge Test", () => {
             ({ badge } = await deployBadge(defaultAdmin));
         });
 
+        it("initialize should not be callable", async () => {
+            await expect(
+                badge.initialize(BASE_URI, defaultAdmin.address)
+            ).to.be.revertedWith(
+                "Initializable: contract is already initialized"
+            );
+            await expect(
+                badge
+                    .connect(toastmaster)
+                    .initialize(BASE_URI, defaultAdmin.address)
+            ).to.be.revertedWith(
+                "Initializable: contract is already initialized"
+            );
+            await expect(
+                badge.connect(user1).initialize(BASE_URI, defaultAdmin.address)
+            ).to.be.revertedWith(
+                "Initializable: contract is already initialized"
+            );
+        });
+
         it('Base URI should be equal to ""', async () => {
             expect(await badge.uri(0)).to.be.eq("");
         });
 
         it("Deployer should have DEFAULT_ADMIN_ROLE", async () => {
             expect(
-                await badge.hasRole(constants.HashZero, defaultAdmin.address)
+                await badge.hasRole(DEFAULT_ADMIN_ROLE, defaultAdmin.address)
             ).to.be.true;
         });
 
@@ -60,40 +79,412 @@ describe("Badge Test", () => {
         it("DEFAULT_ADMIN_ROLE should be bytes 0", async () => {
             expect(
                 await badge.connect(defaultAdmin).DEFAULT_ADMIN_ROLE()
-            ).to.be.eq(constants.HashZero);
+            ).to.be.eq(DEFAULT_ADMIN_ROLE);
+        });
+
+        it("DEFAULT_ADMIN_ROLE should be role admin of TOASTMASTER_ROLE", async () => {
+            expect(await badge.getRoleAdmin(TOASTMASTER_ROLE)).to.be.eq(
+                DEFAULT_ADMIN_ROLE
+            );
         });
     });
 
     describe("Admin Interaction", () => {
-        let badge, badgeImplementation, proxyAdmin;
+        let badge;
 
         before(async () => {
-            ({ badge, badgeImplementation, proxyAdmin } = await deployBadge(
-                defaultAdmin
-            ));
+            ({ badge } = await deployBadge(defaultAdmin));
         });
 
         it("DEFAULT_ADMIN should be able to assign TOASTMASTER_ROLE", async () => {
-            await badge
-                .connect(defaultAdmin)
-                .grantRole(TOASTMASTER_ROLE, toastmaster.address);
+            await expect(
+                badge
+                    .connect(defaultAdmin)
+                    .grantRole(TOASTMASTER_ROLE, toastmaster.address)
+            )
+                .to.emit(badge, "RoleGranted")
+                .withArgs(
+                    TOASTMASTER_ROLE,
+                    toastmaster.address,
+                    defaultAdmin.address
+                );
             expect(await badge.hasRole(TOASTMASTER_ROLE, toastmaster.address))
                 .to.be.true;
         });
 
+        it("DEFAULT_ADMIN should be able to revoke TOASTMASTER_ROLE", async () => {
+            await expect(
+                badge
+                    .connect(defaultAdmin)
+                    .revokeRole(TOASTMASTER_ROLE, toastmaster.address)
+            )
+                .to.emit(badge, "RoleRevoked")
+                .withArgs(
+                    TOASTMASTER_ROLE,
+                    toastmaster.address,
+                    defaultAdmin.address
+                );
+            expect(await badge.hasRole(TOASTMASTER_ROLE, toastmaster.address))
+                .to.be.false;
+        });
+
         it("DEFAULT_ADMIN_ROLE should be able to pause protocol", async () => {
-            await badge.pause();
+            await expect(badge.pause())
+                .to.emit(badge, "Paused")
+                .withArgs(defaultAdmin.address);
             expect(await badge.paused()).to.be.true;
         });
+
         it("DEFAULT_ADMIN_ROLE should be able to unpause protocol", async () => {
-            await badge.unpause();
+            await expect(badge.unpause())
+                .to.emit(badge, "Unpaused")
+                .withArgs(defaultAdmin.address);
             expect(await badge.paused()).to.be.false;
+        });
+
+        it("DEFAULT_ADMIN_ROLE should not be able to create collection", async () => {
+            await expect(
+                badge.createCollection(10, "something")
+            ).to.be.revertedWith(
+                `AccessControl: account ${defaultAdmin.address.toLowerCase()} is missing role ${TOASTMASTER_ROLE}`
+            );
+        });
+
+        it("DEFAULT_ADMIN_ROLE should be able to assign DEFAULT_ADMIN_ROLE", async () => {
+            await expect(badge.grantRole(DEFAULT_ADMIN_ROLE, user1.address))
+                .to.emit(badge, "RoleGranted")
+                .withArgs(
+                    DEFAULT_ADMIN_ROLE,
+                    user1.address,
+                    defaultAdmin.address
+                );
+            expect(await badge.hasRole(DEFAULT_ADMIN_ROLE, user1.address)).to.be
+                .true;
+        });
+
+        it("DEFAULT_ADMIN_ROLE should be able to revoke DEFAULT_ADMIN_ROLE", async () => {
+            await expect(badge.revokeRole(DEFAULT_ADMIN_ROLE, user1.address))
+                .to.emit(badge, "RoleRevoked")
+                .withArgs(
+                    DEFAULT_ADMIN_ROLE,
+                    user1.address,
+                    defaultAdmin.address
+                );
+            expect(await badge.hasRole(DEFAULT_ADMIN_ROLE, user1.address)).to.be
+                .false;
         });
     });
 
-    describe("Toast Masters Interaction", () => {});
+    describe("Toast Masters Interaction", () => {
+        let badge;
 
-    describe("User Interactions", () => {});
+        before(async () => {
+            ({ badge } = await deployBadge(defaultAdmin));
+            await expect(badge.grantRole(TOASTMASTER_ROLE, toastmaster.address))
+                .to.emit(badge, "RoleGranted")
+                .withArgs(
+                    TOASTMASTER_ROLE,
+                    toastmaster.address,
+                    defaultAdmin.address
+                );
+            expect(await badge.hasRole(TOASTMASTER_ROLE, toastmaster.address))
+                .to.be.true;
+        });
 
-    describe("Performing Upgrades", () => {});
+        it("TOASTMASTER_ROLE should be able to Create Collection", async () => {
+            await expect(
+                badge
+                    .connect(toastmaster)
+                    .createCollection(
+                        10,
+                        "QmRu2kD6ucZeKQBcgJXFbJpUmwV16AXfMKdHqEgFttD4LR"
+                    )
+            )
+                .to.emit(badge, "CollectionCreated")
+                .withArgs(toastmaster.address, 0, 10);
+            expect(await badge.collections()).to.be.eq(1);
+            expect(await badge.totalSupply(0)).to.be.eq(10);
+            expect(await badge.currentSupply(0)).to.be.eq(0);
+        });
+
+        it("TOASTMASTER_ROLE should be able to mint", async () => {
+            await expect(
+                badge.connect(toastmaster).mint(toastmaster.address, 0)
+            )
+                .to.emit(badge, "TransferSingle")
+                .withArgs(
+                    toastmaster.address,
+                    constants.AddressZero,
+                    toastmaster.address,
+                    0,
+                    1
+                );
+            expect(await badge.currentSupply(0)).to.be.eq(1);
+        });
+
+        it("TOASTMASTER_ROLE should not be able to mint more than once", async () => {
+            await expect(
+                badge.connect(toastmaster).mint(toastmaster.address, 0)
+            ).to.be.revertedWith("Only One NFT per Wallet");
+            expect(await badge.currentSupply(0)).to.be.eq(1);
+        });
+
+        it("TOASTMASTER_ROLE should be able to batch mint", async () => {
+            await expect(
+                badge.connect(toastmaster).mintBatch(user1.address, [0], [1])
+            )
+                .to.emit(badge, "TransferBatch")
+                .withArgs(
+                    toastmaster.address,
+                    constants.AddressZero,
+                    user1.address,
+                    [0],
+                    [1]
+                );
+            expect(await badge.balanceOf(user1.address, 0)).to.be.eq(1);
+            expect(await badge.currentSupply(0)).to.be.eq(2);
+        });
+
+        it("TOASTMASTER_ROLE should not able to assign TOASTMASTER_ROLE to others", async () => {
+            await expect(
+                badge
+                    .connect(toastmaster)
+                    .grantRole(TOASTMASTER_ROLE, user1.address)
+            ).to.be.revertedWith(
+                `AccessControl: account ${toastmaster.address.toLowerCase()} is missing role ${DEFAULT_ADMIN_ROLE}`
+            );
+        });
+
+        it("TOASTMASTER_ROLE should not be able to revoke other toastmasters", async () => {
+            await expect(
+                badge
+                    .connect(toastmaster)
+                    .revokeRole(TOASTMASTER_ROLE, user1.address)
+            ).to.be.revertedWith(
+                `AccessControl: account ${toastmaster.address.toLowerCase()} is missing role ${DEFAULT_ADMIN_ROLE}`
+            );
+        });
+
+        it("TOASTMASTER_ROLE should not be able to transfer badge to another user", async () => {
+            await expect(
+                badge
+                    .connect(toastmaster)
+                    .safeTransferFrom(
+                        toastmaster.address,
+                        user1.address,
+                        0,
+                        1,
+                        "0x"
+                    )
+            ).to.be.revertedWithCustomError(badge, "NonTransferrableToken");
+        });
+
+        describe("Protocol Paused", () => {
+            before(async () => {
+                await expect(badge.pause())
+                    .to.emit(badge, "Paused")
+                    .withArgs(defaultAdmin.address);
+                expect(await badge.paused()).to.be.true;
+            });
+
+            it("TOASTMASTER_ROLE should not be able to create collections when protocol is paused", async () => {
+                await expect(
+                    badge
+                        .connect(toastmaster)
+                        .createCollection(
+                            10,
+                            "QmRu2kD6ucZeKQBcgJXFbJpUmwV16AXfMKdHqEgFttD4LR"
+                        )
+                ).to.be.revertedWith("Pausable: paused");
+            });
+
+            it("TOASTMASTER_ROLE should not be able to mint when protocol is paused", async () => {
+                await expect(
+                    badge.connect(toastmaster).mint(toastmaster.address, 0)
+                ).to.be.revertedWith("Pausable: paused");
+            });
+
+            it("TOASTMASTER_ROLE should not be able to batch mint protocol is paused", async () => {
+                await expect(
+                    badge
+                        .connect(toastmaster)
+                        .mintBatch(toastmaster.address, [0], [1])
+                ).to.be.revertedWith("Pausable: paused");
+            });
+
+            it("TOASTMASTER_ROLE should not be able to unpause protocol", async () => {
+                await expect(
+                    badge.connect(toastmaster).unpause()
+                ).to.be.revertedWith(
+                    `AccessControl: account ${toastmaster.address.toLowerCase()} is missing role ${DEFAULT_ADMIN_ROLE}`
+                );
+            });
+
+            it("TOASTMASTER_ROLE should not be able to transfer badge to another user when protocol is paused", async () => {
+                await expect(
+                    badge
+                        .connect(toastmaster)
+                        .safeTransferFrom(
+                            toastmaster.address,
+                            user1.address,
+                            0,
+                            1,
+                            "0x"
+                        )
+                ).to.be.revertedWithCustomError(badge, "NonTransferrableToken");
+            });
+        });
+    });
+
+    describe("User Interactions", () => {
+        before(async () => {
+            ({ badge } = await deployBadge(defaultAdmin));
+            await expect(badge.grantRole(TOASTMASTER_ROLE, toastmaster.address))
+                .to.emit(badge, "RoleGranted")
+                .withArgs(
+                    TOASTMASTER_ROLE,
+                    toastmaster.address,
+                    defaultAdmin.address
+                );
+            expect(await badge.hasRole(TOASTMASTER_ROLE, toastmaster.address))
+                .to.be.true;
+
+            await expect(
+                badge
+                    .connect(toastmaster)
+                    .createCollection(
+                        10,
+                        "QmRu2kD6ucZeKQBcgJXFbJpUmwV16AXfMKdHqEgFttD4LR"
+                    )
+            )
+                .to.emit(badge, "CollectionCreated")
+                .withArgs(toastmaster.address, 0, 10);
+            expect(await badge.collections()).to.be.eq(1);
+            expect(await badge.currentSupply(0)).to.be.eq(0);
+            expect(await badge.totalSupply(0)).to.be.eq(10);
+        });
+
+        it("User should not be able to Create Collection", async () => {
+            await expect(
+                badge
+                    .connect(user1)
+                    .createCollection(
+                        10,
+                        "QmRu2kD6ucZeKQBcgJXFbJpUmwV16AXfMKdHqEgFttD4LR"
+                    )
+            ).to.be.revertedWith(
+                `AccessControl: account ${user1.address.toLowerCase()} is missing role ${TOASTMASTER_ROLE}`
+            );
+            expect(await badge.collections()).to.be.eq(1);
+            expect(await badge.totalSupply(0)).to.be.eq(10);
+            expect(await badge.currentSupply(0)).to.be.eq(0);
+        });
+
+        it("User should not be able to mint", async () => {
+            await expect(
+                badge.connect(user1).mint(user1.address, 0)
+            ).to.be.revertedWith(
+                `AccessControl: account ${user1.address.toLowerCase()} is missing role ${TOASTMASTER_ROLE}`
+            );
+            expect(await badge.currentSupply(0)).to.be.eq(0);
+            expect(await badge.balanceOf(user1.address, 0)).to.be.eq(0);
+        });
+
+        it("User should not be able to batch mint", async () => {
+            await expect(
+                badge.connect(user1).mintBatch(user1.address, [0], [1])
+            ).to.be.revertedWith(
+                `AccessControl: account ${user1.address.toLowerCase()} is missing role ${TOASTMASTER_ROLE}`
+            );
+            expect(await badge.balanceOf(user1.address, 0)).to.be.eq(0);
+            expect(await badge.currentSupply(0)).to.be.eq(0);
+        });
+
+        it("User should not able to assign TOASTMASTER_ROLE to others", async () => {
+            await expect(
+                badge.connect(user1).grantRole(TOASTMASTER_ROLE, user1.address)
+            ).to.be.revertedWith(
+                `AccessControl: account ${user1.address.toLowerCase()} is missing role ${DEFAULT_ADMIN_ROLE}`
+            );
+        });
+
+        it("User should not be able to revoke other toastmasters", async () => {
+            await expect(
+                badge.connect(user1).revokeRole(TOASTMASTER_ROLE, user1.address)
+            ).to.be.revertedWith(
+                `AccessControl: account ${user1.address.toLowerCase()} is missing role ${DEFAULT_ADMIN_ROLE}`
+            );
+        });
+
+        it("User should not be able to transfer badge to another user", async () => {
+            await expect(badge.connect(toastmaster).mint(user1.address, 0))
+                .to.emit(badge, "TransferSingle")
+                .withArgs(
+                    toastmaster.address,
+                    constants.AddressZero,
+                    user1.address,
+                    0,
+                    1
+                );
+            expect(await badge.balanceOf(user1.address, 0)).to.be.eq(1);
+            expect(await badge.currentSupply(0)).to.be.eq(1);
+            await expect(
+                badge
+                    .connect(user1)
+                    .safeTransferFrom(user1.address, user2.address, 0, 1, "0x")
+            ).to.be.revertedWithCustomError(badge, "NonTransferrableToken");
+        });
+
+        describe("Protocol Paused", () => {
+            before(async () => {
+                await expect(badge.pause())
+                    .to.emit(badge, "Paused")
+                    .withArgs(defaultAdmin.address);
+                expect(await badge.paused()).to.be.true;
+            });
+
+            it("User should not be able to create collections when protocol is paused", async () => {
+                await expect(
+                    badge
+                        .connect(user1)
+                        .createCollection(
+                            10,
+                            "QmRu2kD6ucZeKQBcgJXFbJpUmwV16AXfMKdHqEgFttD4LR"
+                        )
+                ).to.be.revertedWith("Pausable: paused");
+            });
+
+            it("User should not be able to mint when protocol is paused", async () => {
+                await expect(
+                    badge.connect(user1).mint(user1.address, 0)
+                ).to.be.revertedWith("Pausable: paused");
+            });
+
+            it("User should not be able to batch mint protocol is paused", async () => {
+                await expect(
+                    badge.connect(user1).mintBatch(user1.address, [0], [1])
+                ).to.be.revertedWith("Pausable: paused");
+            });
+
+            it("User should not be able to unpause protocol", async () => {
+                await expect(badge.connect(user1).unpause()).to.be.revertedWith(
+                    `AccessControl: account ${user1.address.toLowerCase()} is missing role ${DEFAULT_ADMIN_ROLE}`
+                );
+            });
+
+            it("User should not be able to transfer badge to another user when protocol is paused", async () => {
+                await expect(
+                    badge
+                        .connect(user1)
+                        .safeTransferFrom(
+                            user1.address,
+                            user2.address,
+                            0,
+                            1,
+                            "0x"
+                        )
+                ).to.be.revertedWithCustomError(badge, "NonTransferrableToken");
+            });
+        });
+    });
 });
