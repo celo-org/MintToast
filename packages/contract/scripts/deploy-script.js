@@ -6,6 +6,7 @@
 const hre = require("hardhat");
 
 // TransparentUpgradeableProxy: 0x1Ae49b184BFBA721Cc49f7Ee4AF0960fD368d917
+// TransparentUpgradeableProxy (testnet): 0x7b3F9c26117e38881Ccf647c644891F16b311Dd3
 
 async function main() {
     let [deployer] = await ethers.getSigners();
