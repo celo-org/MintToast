@@ -1,15 +1,21 @@
 const { expect } = require("chai");
 const { ethers } = require("hardhat");
+const {
+    time,
+    takeSnapshot,
+} = require("@nomicfoundation/hardhat-network-helpers");
 const { utils, constants } = ethers;
 
 const BASE_URI = "ipfs://";
 const TOASTMASTER_ROLE = utils.keccak256(utils.toUtf8Bytes("TOASTMASTER_ROLE"));
 const DEFAULT_ADMIN_ROLE = constants.HashZero;
+const NOW = Math.round(Date.now() / 1000);
+const NEXT_CENTURY = Math.round(NOW + 24 * 60 * 60 * 365 * 100);
 
 async function deployBadge(defaultAdmin) {
-    const Badge = await ethers.getContractFactory("BadgeV2");
+    const Badge = await ethers.getContractFactory("BadgeV3");
     let badge = await upgrades.deployProxy(Badge, [
-        BASE_URI,
+        // BASE_URI,
         defaultAdmin.address,
     ]);
     await badge.deployed();
@@ -38,19 +44,17 @@ describe("Badge Test", () => {
 
         it("initialize should not be callable", async () => {
             await expect(
-                badge.initialize(BASE_URI, defaultAdmin.address)
+                badge.initialize(defaultAdmin.address)
             ).to.be.revertedWith(
                 "Initializable: contract is already initialized"
             );
             await expect(
-                badge
-                    .connect(toastmaster)
-                    .initialize(BASE_URI, defaultAdmin.address)
+                badge.connect(toastmaster).initialize(defaultAdmin.address)
             ).to.be.revertedWith(
                 "Initializable: contract is already initialized"
             );
             await expect(
-                badge.connect(user1).initialize(BASE_URI, defaultAdmin.address)
+                badge.connect(user1).initialize(defaultAdmin.address)
             ).to.be.revertedWith(
                 "Initializable: contract is already initialized"
             );
@@ -144,7 +148,7 @@ describe("Badge Test", () => {
 
         it("DEFAULT_ADMIN_ROLE should not be able to create collection", async () => {
             await expect(
-                badge.createCollection(10, "something")
+                badge.createSeries(10, "something", 0, NEXT_CENTURY)
             ).to.be.revertedWith(
                 `AccessControl: account ${defaultAdmin.address.toLowerCase()} is missing role ${TOASTMASTER_ROLE}`
             );
@@ -178,7 +182,7 @@ describe("Badge Test", () => {
     describe("Toast Masters Interaction", () => {
         let badge;
 
-        before(async () => {
+        beforeEach(async () => {
             ({ badge } = await deployBadge(defaultAdmin));
             await expect(badge.grantRole(TOASTMASTER_ROLE, toastmaster.address))
                 .to.emit(badge, "RoleGranted")
@@ -191,23 +195,76 @@ describe("Badge Test", () => {
                 .to.be.true;
         });
 
-        it("TOASTMASTER_ROLE should be able to Create Collection", async () => {
+        it("TOASTMASTER_ROLE should be able to Create Collection (Time Unbounded)", async () => {
             await expect(
                 badge
                     .connect(toastmaster)
-                    .createCollection(
+                    .createSeries(
                         10,
-                        "QmRu2kD6ucZeKQBcgJXFbJpUmwV16AXfMKdHqEgFttD4LR"
+                        "QmRu2kD6ucZeKQBcgJXFbJpUmwV16AXfMKdHqEgFttD4LR",
+                        0,
+                        NEXT_CENTURY
                     )
             )
-                .to.emit(badge, "CollectionCreated")
+                .to.emit(badge, "SeriesCreated")
                 .withArgs(toastmaster.address, 0, 10);
-            expect(await badge.collections()).to.be.eq(1);
+            expect(await badge.countOfSeries()).to.be.eq(1);
             expect(await badge.totalSupply(0)).to.be.eq(10);
             expect(await badge.currentSupply(0)).to.be.eq(0);
         });
 
-        it("TOASTMASTER_ROLE should be able to mint", async () => {
+        it("TOASTMASTER_ROLE should be able to Create Collection (Time Bounded)", async () => {
+            await expect(
+                badge
+                    .connect(toastmaster)
+                    .createSeries(
+                        10,
+                        "QmRu2kD6ucZeKQBcgJXFbJpUmwV16AXfMKdHqEgFttD4LR",
+                        NOW,
+                        NOW + 24 * 60 * 60
+                    )
+            )
+                .to.emit(badge, "SeriesCreated")
+                .withArgs(toastmaster.address, 0, 10);
+            expect(await badge.countOfSeries()).to.be.eq(1);
+            expect(await badge.totalSupply(0)).to.be.eq(10);
+            expect(await badge.currentSupply(0)).to.be.eq(0);
+        });
+
+        it("TOASTMASTER_ROLE should be able to mint (Time Unbounded)", async () => {
+            await badge
+                .connect(toastmaster)
+                .createSeries(
+                    10,
+                    "QmRu2kD6ucZeKQBcgJXFbJpUmwV16AXfMKdHqEgFttD4LR",
+                    0,
+                    NEXT_CENTURY
+                );
+
+            await expect(
+                badge.connect(toastmaster).mint(toastmaster.address, 0)
+            )
+                .to.emit(badge, "TransferSingle")
+                .withArgs(
+                    toastmaster.address,
+                    constants.AddressZero,
+                    toastmaster.address,
+                    0,
+                    1
+                );
+            expect(await badge.currentSupply(0)).to.be.eq(1);
+        });
+
+        it("TOASTMASTER_ROLE should be able to mint (Time Bounded) before mintEnd and after mintStart", async () => {
+            await badge
+                .connect(toastmaster)
+                .createSeries(
+                    10,
+                    "QmRu2kD6ucZeKQBcgJXFbJpUmwV16AXfMKdHqEgFttD4LR",
+                    NOW,
+                    NOW + 24 * 60 * 60
+                );
+            time.increaseTo(NOW + 12 * 60 * 60);
             await expect(
                 badge.connect(toastmaster).mint(toastmaster.address, 0)
             )
@@ -223,6 +280,15 @@ describe("Badge Test", () => {
         });
 
         it("TOASTMASTER_ROLE should not be able to mint more than once", async () => {
+            await badge
+                .connect(toastmaster)
+                .createSeries(
+                    10,
+                    "QmRu2kD6ucZeKQBcgJXFbJpUmwV16AXfMKdHqEgFttD4LR",
+                    NOW,
+                    NOW + 24 * 60 * 60
+                );
+            await badge.connect(toastmaster).mint(toastmaster.address, 0);
             await expect(
                 badge.connect(toastmaster).mint(toastmaster.address, 0)
             ).to.be.revertedWith("Only One NFT per Wallet");
@@ -230,6 +296,14 @@ describe("Badge Test", () => {
         });
 
         it("TOASTMASTER_ROLE should be able to batch mint", async () => {
+            await badge
+                .connect(toastmaster)
+                .createSeries(
+                    10,
+                    "QmRu2kD6ucZeKQBcgJXFbJpUmwV16AXfMKdHqEgFttD4LR",
+                    NOW,
+                    NOW + 24 * 60 * 60
+                );
             await expect(
                 badge.connect(toastmaster).mintBatch(user1.address, [0], [1])
             )
@@ -242,7 +316,24 @@ describe("Badge Test", () => {
                     [1]
                 );
             expect(await badge.balanceOf(user1.address, 0)).to.be.eq(1);
-            expect(await badge.currentSupply(0)).to.be.eq(2);
+            expect(await badge.currentSupply(0)).to.be.eq(1);
+        });
+
+        it("TOASTMASTER_ROLE should not be able to mint (Time Bounded) after mintEnd", async () => {
+            await badge
+                .connect(toastmaster)
+                .createSeries(
+                    10,
+                    "QmRu2kD6ucZeKQBcgJXFbJpUmwV16AXfMKdHqEgFttD4LR",
+                    NOW,
+                    NOW + 24 * 60 * 60
+                );
+
+            await time.increaseTo(NOW + 25 * 60 * 60);
+            await expect(
+                badge.connect(toastmaster).mint(toastmaster.address, 0)
+            ).to.be.revertedWith("Minting has ended");
+            expect(await badge.currentSupply(0)).to.be.eq(0);
         });
 
         it("TOASTMASTER_ROLE should not able to assign TOASTMASTER_ROLE to others", async () => {
@@ -280,7 +371,7 @@ describe("Badge Test", () => {
         });
 
         describe("Protocol Paused", () => {
-            before(async () => {
+            beforeEach(async () => {
                 await expect(badge.pause())
                     .to.emit(badge, "Paused")
                     .withArgs(defaultAdmin.address);
@@ -291,9 +382,11 @@ describe("Badge Test", () => {
                 await expect(
                     badge
                         .connect(toastmaster)
-                        .createCollection(
+                        .createSeries(
                             10,
-                            "QmRu2kD6ucZeKQBcgJXFbJpUmwV16AXfMKdHqEgFttD4LR"
+                            "QmRu2kD6ucZeKQBcgJXFbJpUmwV16AXfMKdHqEgFttD4LR",
+                            0,
+                            NEXT_CENTURY
                         )
                 ).to.be.revertedWith("Pausable: paused");
             });
@@ -352,14 +445,16 @@ describe("Badge Test", () => {
             await expect(
                 badge
                     .connect(toastmaster)
-                    .createCollection(
+                    .createSeries(
                         10,
-                        "QmRu2kD6ucZeKQBcgJXFbJpUmwV16AXfMKdHqEgFttD4LR"
+                        "QmRu2kD6ucZeKQBcgJXFbJpUmwV16AXfMKdHqEgFttD4LR",
+                        0,
+                        NEXT_CENTURY
                     )
             )
-                .to.emit(badge, "CollectionCreated")
+                .to.emit(badge, "SeriesCreated")
                 .withArgs(toastmaster.address, 0, 10);
-            expect(await badge.collections()).to.be.eq(1);
+            expect(await badge.countOfSeries()).to.be.eq(1);
             expect(await badge.currentSupply(0)).to.be.eq(0);
             expect(await badge.totalSupply(0)).to.be.eq(10);
         });
@@ -368,14 +463,16 @@ describe("Badge Test", () => {
             await expect(
                 badge
                     .connect(user1)
-                    .createCollection(
+                    .createSeries(
                         10,
-                        "QmRu2kD6ucZeKQBcgJXFbJpUmwV16AXfMKdHqEgFttD4LR"
+                        "QmRu2kD6ucZeKQBcgJXFbJpUmwV16AXfMKdHqEgFttD4LR",
+                        0,
+                        NEXT_CENTURY
                     )
             ).to.be.revertedWith(
                 `AccessControl: account ${user1.address.toLowerCase()} is missing role ${TOASTMASTER_ROLE}`
             );
-            expect(await badge.collections()).to.be.eq(1);
+            expect(await badge.countOfSeries()).to.be.eq(1);
             expect(await badge.totalSupply(0)).to.be.eq(10);
             expect(await badge.currentSupply(0)).to.be.eq(0);
         });
@@ -447,9 +544,11 @@ describe("Badge Test", () => {
                 await expect(
                     badge
                         .connect(user1)
-                        .createCollection(
+                        .createSeries(
                             10,
-                            "QmRu2kD6ucZeKQBcgJXFbJpUmwV16AXfMKdHqEgFttD4LR"
+                            "QmRu2kD6ucZeKQBcgJXFbJpUmwV16AXfMKdHqEgFttD4LR",
+                            0,
+                            NEXT_CENTURY
                         )
                 ).to.be.revertedWith("Pausable: paused");
             });
