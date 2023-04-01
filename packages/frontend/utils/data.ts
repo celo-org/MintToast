@@ -6,20 +6,17 @@ export const formatIpfsData = (data: any): IPFSDataProps => {
     data["attributes"] as Array<any>
   );
   var websiteLink = getAttr("website_link", data["attributes"] as Array<any>);
-  var communityName = getAttr(
-    "community_name",
-    data["attributes"] as Array<any>
-  );
-  var createdBy = getAttr("created_by", data["attributes"] as Array<any>);
-  var imageHash = getAttr("image_hash", data["attributes"] as Array<any>);
-  var startDate = getAttr("start_date", data["attributes"] as Array<any>);
-  var endDate = getAttr("end_date", data["attributes"] as Array<any>);
-  var email = getAttr("email", data["attributes"] as Array<any>);
+  var communityName =
+    getAttr("community_name", data["attributes"] as Array<any>) ?? "";
+  var createdBy = getAttr("created_by", data["attributes"] as Array<any>) ?? "";
+  var imageHash = getAttr("image_hash", data["attributes"] as Array<any>) ?? "";
+  var startDate = getAttr("start_date", data["attributes"] as Array<any>) ?? "";
+  var endDate = getAttr("end_date", data["attributes"] as Array<any>) ?? "";
+  var email = getAttr("email", data["attributes"] as Array<any>) ?? "";
 
   var ipfsData: IPFSDataProps = {
     name: data["name"],
     description: data["description"],
-    tokenId: data["tokenId"],
     totalToastSupply: totalToastSupply,
     websiteLink: websiteLink,
     communityName: communityName,

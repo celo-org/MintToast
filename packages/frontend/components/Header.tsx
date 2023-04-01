@@ -23,7 +23,7 @@ export default function Header() {
             </Link>
             <div className="sm:ml-6">
               <Link
-                href="/collection"
+                href="/collections"
                 className={`font-bold text-base text-gray-900 px-4 py-2 rounded-xl ${
                   getActiveTab() === "collection"
                     ? "bg-white border border-black"
@@ -74,7 +74,7 @@ export default function Header() {
         <div className="h-full max-w-lg flex flex-row flex-nowrap justify-evenly items-center mx-auto">
           <div className="sm:ml-6 sm:flex sm:space-x-8">
             <Link
-              href="/collection"
+              href="/collections"
               className={`font-bold text-base text-gray-900 px-2 py-1 rounded-xl ${
                 getActiveTab() === "collection"
                   ? "bg-white border border-black"

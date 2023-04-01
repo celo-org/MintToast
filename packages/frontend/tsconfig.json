@@ -19,6 +19,12 @@
     },
     "incremental": true
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "pages/collection.tsz"],
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    "pages/collection.tsz",
+    "pages/collection/index.tsz"
+  ],
   "exclude": ["node_modules"]
 }

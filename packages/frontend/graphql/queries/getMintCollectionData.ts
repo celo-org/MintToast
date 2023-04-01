@@ -3,7 +3,6 @@ import { fetchDataFromIPFS } from "@/utils/ipfs";
 import axios from "axios";
 
 export const getMintCollectionData = async (tokenId: string) => {
-  console.log("GRAPHQL_API", GRAPHQL_API);
   var res = await axios({
     url: GRAPHQL_API,
     method: "post",
@@ -38,6 +37,10 @@ export const getMintCollectionData = async (tokenId: string) => {
   if (res.data && res.data.data && res.data.data.event) {
     var uriData = {};
     uriData = await fetchDataFromIPFS(res.data.data.event.uri.substring(7));
+    // sort res.data.data.item by id
+    res.data.data.event.items.sort((a: { id: number }, b: { id: number }) => {
+      return a.id - b.id;
+    });
     return { ...res.data.data, uriData };
   } else {
     return null;

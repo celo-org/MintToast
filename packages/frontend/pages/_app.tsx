@@ -9,6 +9,7 @@ import {
   walletConnectWallet,
 } from "@rainbow-me/rainbowkit/wallets";
 import type { AppProps } from "next/app";
+import NextNProgress from "nextjs-progressbar";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { configureChains, createClient, WagmiConfig } from "wagmi";
@@ -55,25 +56,34 @@ const wagmiClient = createClient({
 
 function App({ Component, pageProps }: AppProps) {
   return (
-    <WagmiConfig client={wagmiClient}>
-      <RainbowKitProvider chains={chains} coolMode={true}>
-        <Layout>
-          <Component {...pageProps} />
-          <ToastContainer
-            position="top-right"
-            autoClose={5000}
-            hideProgressBar={false}
-            newestOnTop
-            closeOnClick
-            rtl={false}
-            pauseOnFocusLoss
-            draggable
-            pauseOnHover
-            theme="dark"
-          />
-        </Layout>
-      </RainbowKitProvider>
-    </WagmiConfig>
+    <>
+      <NextNProgress
+        color="#FF84E2"
+        startPosition={0.3}
+        stopDelayMs={200}
+        height={3}
+        showOnShallow={true}
+      />
+      <WagmiConfig client={wagmiClient}>
+        <RainbowKitProvider chains={chains} coolMode={true}>
+          <Layout>
+            <Component {...pageProps} />
+            <ToastContainer
+              position="top-right"
+              autoClose={5000}
+              hideProgressBar={false}
+              newestOnTop
+              closeOnClick
+              rtl={false}
+              pauseOnFocusLoss
+              draggable
+              pauseOnHover
+              theme="dark"
+            />
+          </Layout>
+        </RainbowKitProvider>
+      </WagmiConfig>
+    </>
   );
 }
 

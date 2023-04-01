@@ -1,7 +1,21 @@
 import PrimaryButton from "@/components/common/PrimaryButton";
+import { useConnectModal } from "@rainbow-me/rainbowkit";
 import Head from "next/head";
+import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
+import { useAccount } from "wagmi";
 
 export default function Home() {
+  const { openConnectModal } = useConnectModal();
+  const { address } = useAccount();
+  const [walletConnected, setWalletConnected] = useState(false);
+
+  useEffect(() => {
+    if (address) {
+      setWalletConnected(true);
+    }
+  }, [address]);
+
   return (
     <>
       <Head>
@@ -31,8 +45,20 @@ export default function Home() {
         </div>
         <div className="mt-7">
           <PrimaryButton
-            text="Connect Wallet to get started"
-            onClick={() => {}}
+            text={
+              walletConnected
+                ? "You are connected"
+                : "Connect Wallet to get started"
+            }
+            onClick={() => {
+              if (!walletConnected) {
+                openConnectModal!();
+              } else {
+                toast.info(
+                  "There is nothing to do here, you are already connected 😄"
+                );
+              }
+            }}
           />
         </div>
         <div className="mt-24 mx-4">
