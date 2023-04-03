@@ -15,7 +15,7 @@ contract BadgeV3 is
 {
     bytes32 public constant TOASTMASTER_ROLE = keccak256("TOASTMASTER_ROLE");
 
-    mapping(uint256 => Series) series;
+    mapping(uint256 => Series) public series;
     uint256 public countOfSeries;
 
     struct Series {
@@ -135,11 +135,11 @@ contract BadgeV3 is
         Series memory serie = series[id];
         require(serie.mintStart <= block.timestamp, "Minting hasn't started");
         require(serie.mintEnd > block.timestamp, "Minting has ended");
+        require(balanceOf(to, id) == 0, "Only One NFT per Wallet");
         require(
             serie.currentSupply + 1 <= serie.totalSupply,
             "All tokens from this series are already minted"
         );
-        require(balanceOf(to, id) == 0, "Only One NFT per Wallet");
         _mint(to, id, 1, "");
     }
 
