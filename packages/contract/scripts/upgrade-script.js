@@ -12,11 +12,12 @@ async function main() {
 
     console.log(`Deployer: ${deployer.address}`);
 
-    let BadgeV2 = await ethers.getContractFactory("BadgeV2");
+    let BadgeV3 = await ethers.getContractFactory("BadgeV3");
     console.log("Upgrading Badge...");
-    let badge = await upgrades.upgradeProxy(
-        "0x1Ae49b184BFBA721Cc49f7Ee4AF0960fD368d917",
-        BadgeV2
+
+    await upgrades.upgradeProxy(
+        "0xB8d498E06C6f9Cdd9f792990ce87Fa3B3623E3Ae",
+        BadgeV3
     );
 
     console.log(`Badge Upgraded!`);
