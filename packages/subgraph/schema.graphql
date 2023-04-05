@@ -11,6 +11,8 @@ type Event @entity {
     toaster: Bytes!
     uri: String!
     items: [Item!]! @derivedFrom(field: "event")
+    mintStart: BigInt!
+    mintEnd: BigInt!
 }
 
 type Item @entity {
