@@ -22,7 +22,10 @@ const CollectionItem: React.FC<Props> = ({ event }) => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const res = await fetchDataFromIPFS(event.uri.substring(7));
+      // remove ipfs:// or ipfs://ipfs:// from event.uri
+      const res = await fetchDataFromIPFS(
+        event.uri.replace("ipfs://", "").replace("ipfs://", "")
+      );
       const formattedData = formatIpfsData(res);
       setData(formattedData);
     };

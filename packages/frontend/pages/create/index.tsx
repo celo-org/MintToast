@@ -1,12 +1,11 @@
 import Head from "next/head";
 import Link from "next/link";
-import { toast } from "react-toastify";
 
 export default function Home() {
   return (
     <>
       <Head>
-        <title>🍞 Mint Toast | Create Event</title>
+        <title>Mint Toast | Create Event</title>
       </Head>
       <div className="flex flex-col justify-center items-center md:pt-20 pt-4 max-w-xl mx-auto">
         <span className="px-5 text-3xl font-bold">Create a new Toast</span>
@@ -26,7 +25,7 @@ export default function Home() {
               </span>
             </Link>
             {/* Card 2 */}
-            <div
+            {/* <div
               onClick={() => {
                 toast.error("Coming Soon!");
               }}
@@ -39,7 +38,7 @@ export default function Home() {
                   </span>
                 </div>
               </span>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>

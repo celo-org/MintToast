@@ -2,8 +2,9 @@ import { getEnvConfig } from "./utils/getEnvConfig";
 
 export const NETWORK_MODE = process.env.NEXT_PUBLIC_NETWORK_MODE || "testnet";
 
-export const TESTNET_API_ENDPOINT = "https://localhost:3001/";
-export const MAINNET_API_ENDPOINT = "https://localhost:3001/";
+export const TESTNET_API_ENDPOINT = "https://localhost:3000/";
+export const MAINNET_API_ENDPOINT = "https://localhost:3000/";
+export const LOCAL_API_ENDPOINT = "http://localhost:3000/";
 
 export const TESTNET_RPC_ENDPOINT = "https://alfajores-forno.celo-testnet.org";
 export const MAINNET_RPC_ENDPOINT = "https://forno.celo.org";
@@ -14,15 +15,15 @@ export const MAINNET_TOASTMASTER_PK = process.env.MAINNET_TOASTMASTER_PK ?? "";
 export const WEBSITE_URL = "https://mint-toast.netlify.app";
 
 export const TESTNET_GRAPHQL_API =
-  "https://api.studio.thegraph.com/query/44292/mint-toast/v0.0.2";
+  "https://api.studio.thegraph.com/query/44345/minttoast-testnet/v0.0.1";
 
 export const MAINNET_GRAPHQL_API =
-  "https://api.studio.thegraph.com/query/44345/minttoast/v0.0.6";
+  "https://api.studio.thegraph.com/query/44345/minttoast/v0.0.7";
 
 export const TESTNET_CONTRACT_ADDRESS =
-  "0xE5316457883f99539118dC77fEC28DCd99f9Ae08";
+  "0x36Eef317F736FC5d7D0CAAe80a1bD7aD1D93B874";
 export const MAINNET_CONTRACT_ADDRESS =
-  "0x1Ae49b184BFBA721Cc49f7Ee4AF0960fD368d917";
+  "0x6145602B5AA5646f54cd551097C74A189839D326";
 
 export const API_ENDPOINT = getEnvConfig().apiEndpoint;
 export const RPC_ENDPOINT = getEnvConfig().rpcEndpoint;

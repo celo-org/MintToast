@@ -19,7 +19,7 @@ export default function Home() {
   return (
     <>
       <Head>
-        <title>🍞 Mint Toast</title>
+        <title>Mint Toast</title>
       </Head>
       <div className="flex flex-col justify-center items-center md:pt-20 pt-4">
         <div className="font-semibold md:text-4xl text-lg">
@@ -45,11 +45,7 @@ export default function Home() {
         </div>
         <div className="mt-7">
           <PrimaryButton
-            text={
-              walletConnected
-                ? "You are connected"
-                : "Connect Wallet to get started"
-            }
+            text={"👾 Connect Wallet to get started"}
             onClick={() => {
               if (!walletConnected) {
                 openConnectModal!();

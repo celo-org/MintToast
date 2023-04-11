@@ -37,7 +37,7 @@ const CollectionItem: React.FC<Props> = ({ tokenId, uriData, data }) => {
   return (
     <>
       <Head>
-        <title>🍞 Mint Toast | Collection</title>
+        <title>Mint Toast | Collection</title>
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:site" content="@CeloOrg" />
         <meta name="twitter:title" content={uriData?.name ?? ""} />

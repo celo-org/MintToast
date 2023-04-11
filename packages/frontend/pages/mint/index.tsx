@@ -5,7 +5,7 @@ export default function Mint() {
   return (
     <>
       <Head>
-        <title>🍞 Mint Toast | Mint</title>
+        <title>Mint Toast | Mint</title>
       </Head>
       <div className="flex flex-col justify-center items-center md:pt-20 pt-4 max-w-xl mx-auto">
         <span className="px-5 text-3xl font-bold">Mint a new Toast!</span>

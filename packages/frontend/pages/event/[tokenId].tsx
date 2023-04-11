@@ -1,11 +1,13 @@
 import PrimaryButton from "@/components/common/PrimaryButton";
 import TwitterIcon from "@/components/icons/TwitterIcon";
 import QRCodeModal from "@/components/modals/QRCodeModal";
+import { API_ENDPOINT } from "@/data/constant";
 import { getMintCollectionData } from "@/graphql/queries/getMintCollectionData";
 import { getTokenCollectionCount } from "@/graphql/queries/getTokenCollectionCount";
 import { formatIpfsData } from "@/utils/data";
 import { fetchImageUrl } from "@/utils/ipfs";
 import { formatTimestampToTimeElapsedForm } from "@/utils/utils";
+import axios from "axios";
 import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
@@ -18,9 +20,17 @@ interface Props {
   tokenId: string;
   uriData: DataProps;
   data: any;
+  ownerAddress: string;
+  eventUUID: string;
 }
 
-const EventPage: React.FC<Props> = ({ tokenId, uriData, data }) => {
+const EventPage: React.FC<Props> = ({
+  tokenId,
+  uriData,
+  data,
+  ownerAddress,
+  eventUUID,
+}) => {
   const router = useRouter();
   const [isQRCodeOpen, setIsQRCodeOpen] = useState(false);
   const { address } = useAccount();
@@ -39,7 +49,7 @@ const EventPage: React.FC<Props> = ({ tokenId, uriData, data }) => {
   return (
     <>
       <Head>
-        <title>🍞 Mint Toast | Event</title>
+        <title>Mint Toast | Event</title>
       </Head>
 
       <div className="flex flex-col justify-start items-start md:pt-2 pt-0 max-w-xl mx-auto">
@@ -53,7 +63,7 @@ const EventPage: React.FC<Props> = ({ tokenId, uriData, data }) => {
             closeModal={() => {
               setIsQRCodeOpen(false);
             }}
-            value={"/mint/" + data?.id ?? ""}
+            value={"/mint/" + eventUUID}
           />
 
           <div className="flex flex-col justify-center w-full mt-16 items-center">
@@ -73,22 +83,27 @@ const EventPage: React.FC<Props> = ({ tokenId, uriData, data }) => {
 
             <div className="md:w-[400px] w-full px-2 md:mx-0 mt-8 flex flex-col">
               <div className="text-gray-500">{uriData?.description ?? ""}</div>
-              <div className="mt-12 w-full flex justify-center">
-                <PrimaryButton
-                  onClick={() => {
-                    setIsQRCodeOpen(true);
-                  }}
-                  text="Show QR Code"
-                />
-              </div>
-              <div className="mt-5 w-full flex justify-center">
-                <PrimaryButton
-                  onClick={() => {
-                    router.push("/mint/" + data?.id);
-                  }}
-                  text="Mint the Toast"
-                />
-              </div>
+              {ownerAddress == userAddress && (
+                <>
+                  <div className="mt-12 w-full flex justify-center">
+                    <PrimaryButton
+                      onClick={() => {
+                        setIsQRCodeOpen(true);
+                      }}
+                      text="Show QR Code"
+                    />
+                  </div>
+                  <div className="mt-5 w-full flex justify-center">
+                    <PrimaryButton
+                      onClick={() => {
+                        router.push("/mint/" + eventUUID);
+                      }}
+                      text="Mint the Toast"
+                    />
+                  </div>
+                </>
+              )}
+
               <Link
                 className="justify-self-start mt-10 text-green"
                 href={uriData?.websiteLink ?? ""}
@@ -180,6 +195,12 @@ const EventPage: React.FC<Props> = ({ tokenId, uriData, data }) => {
 
 export async function getStaticPaths() {
   const res = await getTokenCollectionCount();
+  if (!res) {
+    return {
+      paths: [],
+      fallback: true,
+    };
+  }
   const count = res.events[0].id;
   // create an array number from 0 till count
   const paths = Array.from(Array(count).keys());
@@ -199,12 +220,29 @@ export async function getStaticProps({ params }: { params: any }) {
       },
     };
   }
+  const firebaseData = await axios({
+    method: "post",
+    url: API_ENDPOINT + `/api/get-owner`,
+    data: {
+      tokenId: params.tokenId,
+    },
+  });
+  var ownerAddress = "";
+  var eventUUID = "";
+  console.log(firebaseData.data);
+  if (firebaseData.data) {
+    ownerAddress = firebaseData.data.resultData[0].ownerAddress;
+    eventUUID = firebaseData.data.resultData[0].uuid;
+  }
+
   // revalodate in 10 seconds
   return {
     props: {
       tokenId: params.tokenId,
       data: res.event,
       uriData: formatIpfsData(res.uriData),
+      ownerAddress,
+      eventUUID,
     },
     revalidate: 10,
   };

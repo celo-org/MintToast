@@ -23,6 +23,7 @@ import { CeloDance, CeloWallet, Valora } from "@celo/rainbowkit-celo/wallets";
 // Import CELO chain information
 import { Alfajores, Celo } from "@celo/rainbowkit-celo/chains";
 
+import Head from "next/head";
 import Layout from "../components/Layout";
 
 const { chains, provider } = configureChains(
@@ -64,6 +65,12 @@ function App({ Component, pageProps }: AppProps) {
         height={3}
         showOnShallow={true}
       />
+      <Head>
+        <link
+          rel="icon"
+          href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍞</text></svg>"
+        />
+      </Head>
       <WagmiConfig client={wagmiClient}>
         <RainbowKitProvider chains={chains} coolMode={true}>
           <Layout>

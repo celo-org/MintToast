@@ -36,7 +36,9 @@ export const getMintCollectionData = async (tokenId: string) => {
   });
   if (res.data && res.data.data && res.data.data.event) {
     var uriData = {};
-    uriData = await fetchDataFromIPFS(res.data.data.event.uri.substring(7));
+    uriData = await fetchDataFromIPFS(
+      res.data.data.event.uri.replace("ipfs://", "").replace("ipfs://", "")
+    );
     // sort res.data.data.item by id
     res.data.data.event.items.sort((a: { id: number }, b: { id: number }) => {
       return a.id - b.id;

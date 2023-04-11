@@ -1,18 +1,16 @@
 import CollectionItem from "@/components/collection/CollectionItem";
-import { getUserCollection } from "@/graphql/queries/getUserCollection";
-import { getUsers } from "@/graphql/queries/getUsers";
+import { getMintCollectionData } from "@/graphql/queries/getMintCollectionData";
+import axios from "axios";
 import Head from "next/head";
 import { useEffect, useState } from "react";
 import { useAccount } from "wagmi";
 
-interface Props {
-  address: string;
-  collection: any;
-}
+interface Props {}
 
-const Collections: React.FC<Props> = ({ address: userAddress, collection }) => {
+const Profile: React.FC<Props> = () => {
   const { address, status } = useAccount();
   const [isConnected, setIsConnected] = useState(false);
+  const [collection, setCollection] = useState<any>(null);
 
   useEffect(() => {
     if (address) {
@@ -22,6 +20,40 @@ const Collections: React.FC<Props> = ({ address: userAddress, collection }) => {
       setIsConnected(false);
     }
   }, [address, status]);
+
+  useEffect(() => {
+    const fetchUserCollections = async () => {
+      console.log("address", address);
+      // axios call with content type application/json
+      const res = await axios({
+        method: "post",
+        url: "/api/get-user-collection",
+        data: {
+          address,
+        },
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log("res.data", res.data);
+      if (res.data.resultData) {
+        var tempCollection: any = [];
+        tempCollection = await Promise.all(
+          res.data.resultData.map(async (item: any) => {
+            console.log("item", item);
+            const res = await getMintCollectionData(item.eventId);
+            console.log("res", res);
+            return res;
+          })
+        );
+        console.log("tempCollection", tempCollection);
+        setCollection(tempCollection);
+      }
+    };
+    if (isConnected && address) {
+      fetchUserCollections();
+    }
+  }, [address, isConnected]);
 
   if (!isConnected) {
     return (
@@ -60,9 +92,13 @@ const Collections: React.FC<Props> = ({ address: userAddress, collection }) => {
             </div>
           )}
           <div className="flex flex-row flex-wrap justify-evenly">
-            {collection.map((item: any) => (
-              <CollectionItem event={item.event} key={item.event.id} />
-            ))}
+            {collection.map((item: any) => {
+              if (item != null) {
+                return (
+                  <CollectionItem key={item.event.id} event={item.event} />
+                );
+              }
+            })}
           </div>
         </div>
       </div>
@@ -70,33 +106,4 @@ const Collections: React.FC<Props> = ({ address: userAddress, collection }) => {
   );
 };
 
-export async function getStaticPaths() {
-  const res = await getUsers();
-  // create an array number from 0 till count
-  return {
-    paths: res.users.map((item: { id: { toString: () => string } }) => ({
-      params: { address: item.id.toString().toLowerCase() },
-    })),
-    fallback: true,
-  };
-}
-
-export async function getStaticProps({ params }: { params: any }) {
-  const res = await getUserCollection(params.address as string);
-  if (!res) {
-    return {
-      redirect: {
-        destination: "/404",
-        permanent: false,
-      },
-    };
-  }
-  return {
-    props: {
-      address: params.address,
-      collection: res,
-    },
-  };
-}
-
-export default Collections;
+export default Profile;

@@ -1,7 +1,7 @@
 import InputField from "@/components/common/InputField";
 import PrimaryButton from "@/components/common/PrimaryButton";
+import { API_ENDPOINT } from "@/data/constant";
 import { getMintCollectionData } from "@/graphql/queries/getMintCollectionData";
-import { getTokenCollectionCount } from "@/graphql/queries/getTokenCollectionCount";
 import { formatIpfsData } from "@/utils/data";
 import { fetchImageUrl } from "@/utils/ipfs";
 import axios from "axios";
@@ -73,7 +73,7 @@ const QRPage: React.FC<Props> = ({ tokenId, uriData, data }) => {
   return (
     <>
       <Head>
-        <title>🍞 Mint Toast | Mint</title>
+        <title>Mint Toast | Mint</title>
       </Head>
       <div className="flex flex-col justify-center w-full mt-10 items-center">
         <div className="md:w-[400px] w-full px-2 md:mx-0 mt-0 flex flex-col">
@@ -129,21 +129,34 @@ const QRPage: React.FC<Props> = ({ tokenId, uriData, data }) => {
 };
 
 export async function getStaticPaths() {
-  const res = await getTokenCollectionCount();
-  const count = res.events[0].id;
-  // create an array number from 0 till count
-  const paths = Array.from(Array(count).keys());
+  const res = await axios({
+    url: API_ENDPOINT + "/api/get-all-event-uuid",
+    method: "GET",
+  });
+  const paths = res.data.docIds;
   return {
-    paths: paths.map((id) => ({ params: { tokenId: id.toString() } })),
+    paths: paths.map((id: string) => ({
+      params: { tokenId: id },
+    })),
     fallback: true,
   };
 }
 
 export async function getStaticProps({ params }: { params: any }) {
-  const res = await getMintCollectionData(params.tokenId as string);
+  console.log("params.tokenId", params.tokenId);
+  const eventData = await axios({
+    url: API_ENDPOINT + "/api/get-event-id",
+    method: "POST",
+    data: {
+      docId: params.tokenId,
+    },
+  });
+  const eventId = eventData.data.resultData.eventId;
+  const res = await getMintCollectionData(eventId as string);
   return {
     props: {
-      tokenId: params.tokenId,
+      tokenId: eventId,
+      docId: params.tokenId,
       data: res.event,
       uriData: formatIpfsData(res.uriData),
     },

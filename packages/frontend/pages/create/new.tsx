@@ -65,6 +65,7 @@ export default function New() {
       bodyFormData.append("totalToastSupply", toastCount.toString());
       bodyFormData.append("email", email);
       bodyFormData.append("image", image);
+      bodyFormData.append("ownerAddress", address ?? "");
 
       var res = await axios({
         method: "post",
@@ -118,7 +119,7 @@ export default function New() {
   return (
     <>
       <Head>
-        <title>🍞 Mint Toast | Create New Event</title>
+        <title>Mint Toast | Create New Event</title>
       </Head>
       <div className="flex flex-col justify-start items-start md:pt-2 pt-0 max-w-xl mx-auto px-4 md:px-0">
         {view == View.IMAGE ? (
@@ -251,7 +252,7 @@ export default function New() {
                       onChange={(e) => {
                         setStartDate(e.target.value);
                       }}
-                      placeholder="00/00/00"
+                      placeholder="MM/DD/YYYY"
                     />
                   </div>
                   <div className="w-1/2">
@@ -261,7 +262,7 @@ export default function New() {
                       onChange={(e) => {
                         setEndDate(e.target.value);
                       }}
-                      placeholder="00/00/00"
+                      placeholder="MM/DD/YYYY"
                     />
                   </div>
                 </div>
