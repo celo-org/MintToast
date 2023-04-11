@@ -36,32 +36,6 @@ export class ApprovalForAll__Params {
   }
 }
 
-export class CollectionCreated extends ethereum.Event {
-  get params(): CollectionCreated__Params {
-    return new CollectionCreated__Params(this);
-  }
-}
-
-export class CollectionCreated__Params {
-  _event: CollectionCreated;
-
-  constructor(event: CollectionCreated) {
-    this._event = event;
-  }
-
-  get creator(): Address {
-    return this._event.parameters[0].value.toAddress();
-  }
-
-  get collectionId(): BigInt {
-    return this._event.parameters[1].value.toBigInt();
-  }
-
-  get supplyCollection(): BigInt {
-    return this._event.parameters[2].value.toBigInt();
-  }
-}
-
 export class Initialized extends ethereum.Event {
   get params(): Initialized__Params {
     return new Initialized__Params(this);
@@ -77,6 +51,24 @@ export class Initialized__Params {
 
   get version(): i32 {
     return this._event.parameters[0].value.toI32();
+  }
+}
+
+export class Paused extends ethereum.Event {
+  get params(): Paused__Params {
+    return new Paused__Params(this);
+  }
+}
+
+export class Paused__Params {
+  _event: Paused;
+
+  constructor(event: Paused) {
+    this._event = event;
+  }
+
+  get account(): Address {
+    return this._event.parameters[0].value.toAddress();
   }
 }
 
@@ -155,6 +147,32 @@ export class RoleRevoked__Params {
 
   get sender(): Address {
     return this._event.parameters[2].value.toAddress();
+  }
+}
+
+export class SeriesCreated extends ethereum.Event {
+  get params(): SeriesCreated__Params {
+    return new SeriesCreated__Params(this);
+  }
+}
+
+export class SeriesCreated__Params {
+  _event: SeriesCreated;
+
+  constructor(event: SeriesCreated) {
+    this._event = event;
+  }
+
+  get creator(): Address {
+    return this._event.parameters[0].value.toAddress();
+  }
+
+  get collectionId(): BigInt {
+    return this._event.parameters[1].value.toBigInt();
+  }
+
+  get supplyCollection(): BigInt {
+    return this._event.parameters[2].value.toBigInt();
   }
 }
 
@@ -245,6 +263,84 @@ export class URI__Params {
 
   get id(): BigInt {
     return this._event.parameters[1].value.toBigInt();
+  }
+}
+
+export class Unpaused extends ethereum.Event {
+  get params(): Unpaused__Params {
+    return new Unpaused__Params(this);
+  }
+}
+
+export class Unpaused__Params {
+  _event: Unpaused;
+
+  constructor(event: Unpaused) {
+    this._event = event;
+  }
+
+  get account(): Address {
+    return this._event.parameters[0].value.toAddress();
+  }
+}
+
+export class Badge__seriesResult {
+  value0: Address;
+  value1: string;
+  value2: BigInt;
+  value3: BigInt;
+  value4: BigInt;
+  value5: BigInt;
+
+  constructor(
+    value0: Address,
+    value1: string,
+    value2: BigInt,
+    value3: BigInt,
+    value4: BigInt,
+    value5: BigInt
+  ) {
+    this.value0 = value0;
+    this.value1 = value1;
+    this.value2 = value2;
+    this.value3 = value3;
+    this.value4 = value4;
+    this.value5 = value5;
+  }
+
+  toMap(): TypedMap<string, ethereum.Value> {
+    let map = new TypedMap<string, ethereum.Value>();
+    map.set("value0", ethereum.Value.fromAddress(this.value0));
+    map.set("value1", ethereum.Value.fromString(this.value1));
+    map.set("value2", ethereum.Value.fromUnsignedBigInt(this.value2));
+    map.set("value3", ethereum.Value.fromUnsignedBigInt(this.value3));
+    map.set("value4", ethereum.Value.fromUnsignedBigInt(this.value4));
+    map.set("value5", ethereum.Value.fromUnsignedBigInt(this.value5));
+    return map;
+  }
+
+  getCreator(): Address {
+    return this.value0;
+  }
+
+  getTokenURI(): string {
+    return this.value1;
+  }
+
+  getCurrentSupply(): BigInt {
+    return this.value2;
+  }
+
+  getTotalSupply(): BigInt {
+    return this.value3;
+  }
+
+  getMintStart(): BigInt {
+    return this.value4;
+  }
+
+  getMintEnd(): BigInt {
+    return this.value5;
   }
 }
 
@@ -360,14 +456,18 @@ export class Badge extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toBigIntArray());
   }
 
-  collections(): BigInt {
-    let result = super.call("collections", "collections():(uint256)", []);
+  countOfSeries(): BigInt {
+    let result = super.call("countOfSeries", "countOfSeries():(uint256)", []);
 
     return result[0].toBigInt();
   }
 
-  try_collections(): ethereum.CallResult<BigInt> {
-    let result = super.tryCall("collections", "collections():(uint256)", []);
+  try_countOfSeries(): ethereum.CallResult<BigInt> {
+    let result = super.tryCall(
+      "countOfSeries",
+      "countOfSeries():(uint256)",
+      []
+    );
     if (result.reverted) {
       return new ethereum.CallResult();
     }
@@ -375,21 +475,83 @@ export class Badge extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toBigInt());
   }
 
-  currentSupply(param0: BigInt): BigInt {
+  createSeries(
+    _totalSupply: BigInt,
+    tokenURI_: string,
+    mintStart: BigInt,
+    mintEnd: BigInt
+  ): BigInt {
     let result = super.call(
-      "currentSupply",
-      "currentSupply(uint256):(uint256)",
-      [ethereum.Value.fromUnsignedBigInt(param0)]
+      "createSeries",
+      "createSeries(uint256,string,uint256,uint256):(uint256)",
+      [
+        ethereum.Value.fromUnsignedBigInt(_totalSupply),
+        ethereum.Value.fromString(tokenURI_),
+        ethereum.Value.fromUnsignedBigInt(mintStart),
+        ethereum.Value.fromUnsignedBigInt(mintEnd)
+      ]
     );
 
     return result[0].toBigInt();
   }
 
-  try_currentSupply(param0: BigInt): ethereum.CallResult<BigInt> {
+  try_createSeries(
+    _totalSupply: BigInt,
+    tokenURI_: string,
+    mintStart: BigInt,
+    mintEnd: BigInt
+  ): ethereum.CallResult<BigInt> {
+    let result = super.tryCall(
+      "createSeries",
+      "createSeries(uint256,string,uint256,uint256):(uint256)",
+      [
+        ethereum.Value.fromUnsignedBigInt(_totalSupply),
+        ethereum.Value.fromString(tokenURI_),
+        ethereum.Value.fromUnsignedBigInt(mintStart),
+        ethereum.Value.fromUnsignedBigInt(mintEnd)
+      ]
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toBigInt());
+  }
+
+  creator(tokenId: BigInt): Address {
+    let result = super.call("creator", "creator(uint256):(address)", [
+      ethereum.Value.fromUnsignedBigInt(tokenId)
+    ]);
+
+    return result[0].toAddress();
+  }
+
+  try_creator(tokenId: BigInt): ethereum.CallResult<Address> {
+    let result = super.tryCall("creator", "creator(uint256):(address)", [
+      ethereum.Value.fromUnsignedBigInt(tokenId)
+    ]);
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toAddress());
+  }
+
+  currentSupply(tokenId: BigInt): BigInt {
+    let result = super.call(
+      "currentSupply",
+      "currentSupply(uint256):(uint256)",
+      [ethereum.Value.fromUnsignedBigInt(tokenId)]
+    );
+
+    return result[0].toBigInt();
+  }
+
+  try_currentSupply(tokenId: BigInt): ethereum.CallResult<BigInt> {
     let result = super.tryCall(
       "currentSupply",
       "currentSupply(uint256):(uint256)",
-      [ethereum.Value.fromUnsignedBigInt(param0)]
+      [ethereum.Value.fromUnsignedBigInt(tokenId)]
     );
     if (result.reverted) {
       return new ethereum.CallResult();
@@ -491,6 +653,60 @@ export class Badge extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toBoolean());
   }
 
+  paused(): boolean {
+    let result = super.call("paused", "paused():(bool)", []);
+
+    return result[0].toBoolean();
+  }
+
+  try_paused(): ethereum.CallResult<boolean> {
+    let result = super.tryCall("paused", "paused():(bool)", []);
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toBoolean());
+  }
+
+  series(param0: BigInt): Badge__seriesResult {
+    let result = super.call(
+      "series",
+      "series(uint256):(address,string,uint256,uint256,uint256,uint256)",
+      [ethereum.Value.fromUnsignedBigInt(param0)]
+    );
+
+    return new Badge__seriesResult(
+      result[0].toAddress(),
+      result[1].toString(),
+      result[2].toBigInt(),
+      result[3].toBigInt(),
+      result[4].toBigInt(),
+      result[5].toBigInt()
+    );
+  }
+
+  try_series(param0: BigInt): ethereum.CallResult<Badge__seriesResult> {
+    let result = super.tryCall(
+      "series",
+      "series(uint256):(address,string,uint256,uint256,uint256,uint256)",
+      [ethereum.Value.fromUnsignedBigInt(param0)]
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(
+      new Badge__seriesResult(
+        value[0].toAddress(),
+        value[1].toString(),
+        value[2].toBigInt(),
+        value[3].toBigInt(),
+        value[4].toBigInt(),
+        value[5].toBigInt()
+      )
+    );
+  }
+
   supportsInterface(interfaceId: Bytes): boolean {
     let result = super.call(
       "supportsInterface",
@@ -514,19 +730,19 @@ export class Badge extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toBoolean());
   }
 
-  totalSupply(param0: BigInt): BigInt {
+  totalSupply(tokenId: BigInt): BigInt {
     let result = super.call("totalSupply", "totalSupply(uint256):(uint256)", [
-      ethereum.Value.fromUnsignedBigInt(param0)
+      ethereum.Value.fromUnsignedBigInt(tokenId)
     ]);
 
     return result[0].toBigInt();
   }
 
-  try_totalSupply(param0: BigInt): ethereum.CallResult<BigInt> {
+  try_totalSupply(tokenId: BigInt): ethereum.CallResult<BigInt> {
     let result = super.tryCall(
       "totalSupply",
       "totalSupply(uint256):(uint256)",
-      [ethereum.Value.fromUnsignedBigInt(param0)]
+      [ethereum.Value.fromUnsignedBigInt(tokenId)]
     );
     if (result.reverted) {
       return new ethereum.CallResult();
@@ -555,20 +771,20 @@ export class Badge extends ethereum.SmartContract {
   }
 }
 
-export class CreateCollectionCall extends ethereum.Call {
-  get inputs(): CreateCollectionCall__Inputs {
-    return new CreateCollectionCall__Inputs(this);
+export class CreateSeriesCall extends ethereum.Call {
+  get inputs(): CreateSeriesCall__Inputs {
+    return new CreateSeriesCall__Inputs(this);
   }
 
-  get outputs(): CreateCollectionCall__Outputs {
-    return new CreateCollectionCall__Outputs(this);
+  get outputs(): CreateSeriesCall__Outputs {
+    return new CreateSeriesCall__Outputs(this);
   }
 }
 
-export class CreateCollectionCall__Inputs {
-  _call: CreateCollectionCall;
+export class CreateSeriesCall__Inputs {
+  _call: CreateSeriesCall;
 
-  constructor(call: CreateCollectionCall) {
+  constructor(call: CreateSeriesCall) {
     this._call = call;
   }
 
@@ -579,13 +795,25 @@ export class CreateCollectionCall__Inputs {
   get tokenURI_(): string {
     return this._call.inputValues[1].value.toString();
   }
+
+  get mintStart(): BigInt {
+    return this._call.inputValues[2].value.toBigInt();
+  }
+
+  get mintEnd(): BigInt {
+    return this._call.inputValues[3].value.toBigInt();
+  }
 }
 
-export class CreateCollectionCall__Outputs {
-  _call: CreateCollectionCall;
+export class CreateSeriesCall__Outputs {
+  _call: CreateSeriesCall;
 
-  constructor(call: CreateCollectionCall) {
+  constructor(call: CreateSeriesCall) {
     this._call = call;
+  }
+
+  get value0(): BigInt {
+    return this._call.outputValues[0].value.toBigInt();
   }
 }
 
@@ -640,12 +868,8 @@ export class InitializeCall__Inputs {
     this._call = call;
   }
 
-  get baseUri_(): string {
-    return this._call.inputValues[0].value.toString();
-  }
-
   get initialDefaultAdmin(): Address {
-    return this._call.inputValues[1].value.toAddress();
+    return this._call.inputValues[0].value.toAddress();
   }
 }
 
@@ -725,6 +949,32 @@ export class MintBatchCall__Outputs {
   _call: MintBatchCall;
 
   constructor(call: MintBatchCall) {
+    this._call = call;
+  }
+}
+
+export class PauseCall extends ethereum.Call {
+  get inputs(): PauseCall__Inputs {
+    return new PauseCall__Inputs(this);
+  }
+
+  get outputs(): PauseCall__Outputs {
+    return new PauseCall__Outputs(this);
+  }
+}
+
+export class PauseCall__Inputs {
+  _call: PauseCall;
+
+  constructor(call: PauseCall) {
+    this._call = call;
+  }
+}
+
+export class PauseCall__Outputs {
+  _call: PauseCall;
+
+  constructor(call: PauseCall) {
     this._call = call;
   }
 }
@@ -919,6 +1169,32 @@ export class SetApprovalForAllCall__Outputs {
   _call: SetApprovalForAllCall;
 
   constructor(call: SetApprovalForAllCall) {
+    this._call = call;
+  }
+}
+
+export class UnpauseCall extends ethereum.Call {
+  get inputs(): UnpauseCall__Inputs {
+    return new UnpauseCall__Inputs(this);
+  }
+
+  get outputs(): UnpauseCall__Outputs {
+    return new UnpauseCall__Outputs(this);
+  }
+}
+
+export class UnpauseCall__Inputs {
+  _call: UnpauseCall;
+
+  constructor(call: UnpauseCall) {
+    this._call = call;
+  }
+}
+
+export class UnpauseCall__Outputs {
+  _call: UnpauseCall;
+
+  constructor(call: UnpauseCall) {
     this._call = call;
   }
 }

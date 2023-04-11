@@ -136,6 +136,24 @@ export class Event extends Entity {
   set items(value: Array<string>) {
     this.set("items", Value.fromStringArray(value));
   }
+
+  get mintStart(): BigInt {
+    let value = this.get("mintStart");
+    return value!.toBigInt();
+  }
+
+  set mintStart(value: BigInt) {
+    this.set("mintStart", Value.fromBigInt(value));
+  }
+
+  get mintEnd(): BigInt {
+    let value = this.get("mintEnd");
+    return value!.toBigInt();
+  }
+
+  set mintEnd(value: BigInt) {
+    this.set("mintEnd", Value.fromBigInt(value));
+  }
 }
 
 export class Item extends Entity {

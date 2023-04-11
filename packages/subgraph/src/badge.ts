@@ -1,13 +1,13 @@
 import { BigInt } from "@graphprotocol/graph-ts";
 import {
     Badge,
-    CollectionCreated,
+    SeriesCreated,
     TransferSingle,
     URI,
 } from "../generated/Badge/Badge";
 import { Event, User, Item } from "../generated/schema";
 
-export function handleCollectionCreated(event: CollectionCreated): void {
+export function handleSeriesCreated(event: SeriesCreated): void {
     let collectionId = event.params.collectionId;
     let events = new Event(collectionId.toString());
     events.currentSupply = new BigInt(0);
@@ -17,6 +17,10 @@ export function handleCollectionCreated(event: CollectionCreated): void {
 
     let contract = Badge.bind(event.address);
     events.uri = contract.uri(collectionId);
+
+    let series = contract.series(collectionId);
+    events.mintStart = series.getMintStart();
+    events.mintEnd = series.getMintEnd();
 
     events.save();
 }
