@@ -1,13 +1,13 @@
 import PrimaryButton from "@/components/common/PrimaryButton";
 import TwitterIcon from "@/components/icons/TwitterIcon";
 import QRCodeModal from "@/components/modals/QRCodeModal";
-import { API_ENDPOINT } from "@/data/constant";
 import { getMintCollectionData } from "@/graphql/queries/getMintCollectionData";
 import { getTokenCollectionCount } from "@/graphql/queries/getTokenCollectionCount";
 import { formatIpfsData } from "@/utils/data";
+import { database } from "@/utils/firebase";
 import { fetchImageUrl } from "@/utils/ipfs";
 import { formatTimestampToTimeElapsedForm } from "@/utils/utils";
-import axios from "axios";
+import { collection, getDocs, query, where } from "firebase/firestore";
 import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
@@ -220,19 +220,22 @@ export async function getStaticProps({ params }: { params: any }) {
       },
     };
   }
-  const firebaseData = await axios({
-    method: "post",
-    url: API_ENDPOINT + `/api/get-owner`,
-    data: {
-      tokenId: params.tokenId,
-    },
-  });
+
+  var result = await getDocs(
+    query(
+      collection(database, "events"),
+      where("eventId", "==", parseInt(params.tokenId))
+    )
+  );
+
+  var resultData = result.docs.map((doc) => doc.data());
+  console.log("resultData", resultData);
+
   var ownerAddress = "";
   var eventUUID = "";
-  console.log(firebaseData.data);
-  if (firebaseData.data) {
-    ownerAddress = firebaseData.data.resultData[0].ownerAddress;
-    eventUUID = firebaseData.data.resultData[0].uuid;
+  if (resultData.length != 0) {
+    ownerAddress = resultData[0].ownerAddress;
+    eventUUID = resultData[0].uuid;
   }
 
   // revalodate in 10 seconds

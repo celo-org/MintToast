@@ -30,7 +30,7 @@ const CollectionItem: React.FC<Props> = ({ event }) => {
       setData(formattedData);
     };
     fetchData();
-  }, []);
+  }, [event.uri]);
 
   return (
     <Link

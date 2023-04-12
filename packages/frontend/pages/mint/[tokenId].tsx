@@ -1,10 +1,11 @@
 import InputField from "@/components/common/InputField";
 import PrimaryButton from "@/components/common/PrimaryButton";
-import { API_ENDPOINT } from "@/data/constant";
 import { getMintCollectionData } from "@/graphql/queries/getMintCollectionData";
 import { formatIpfsData } from "@/utils/data";
+import { database } from "@/utils/firebase";
 import { fetchImageUrl } from "@/utils/ipfs";
 import axios from "axios";
+import { collection, doc, getDoc, getDocs } from "firebase/firestore";
 import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -129,11 +130,13 @@ const QRPage: React.FC<Props> = ({ tokenId, uriData, data }) => {
 };
 
 export async function getStaticPaths() {
-  const res = await axios({
-    url: API_ENDPOINT + "/api/get-all-event-uuid",
-    method: "GET",
+  var docIds: string[] = [];
+  const querySnapshot = await getDocs(collection(database, "events"));
+  querySnapshot.forEach((doc) => {
+    docIds.push(doc.id);
   });
-  const paths = res.data.docIds;
+
+  const paths = docIds;
   return {
     paths: paths.map((id: string) => ({
       params: { tokenId: id },
@@ -143,15 +146,10 @@ export async function getStaticPaths() {
 }
 
 export async function getStaticProps({ params }: { params: any }) {
-  console.log("params.tokenId", params.tokenId);
-  const eventData = await axios({
-    url: API_ENDPOINT + "/api/get-event-id",
-    method: "POST",
-    data: {
-      docId: params.tokenId,
-    },
-  });
-  const eventId = eventData.data.resultData.eventId;
+  var docSnapshot = await getDoc(doc(database, "events", params.tokenId));
+  var resultData = docSnapshot.data();
+
+  const eventId = resultData!.eventId;
   const res = await getMintCollectionData(eventId as string);
   return {
     props: {
