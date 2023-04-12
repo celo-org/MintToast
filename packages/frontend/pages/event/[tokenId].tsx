@@ -201,7 +201,13 @@ export async function getStaticPaths() {
       fallback: true,
     };
   }
-  const count = res.events[0].id;
+
+  var count;
+  if (res && res.events && res.events.length > 0 && res.events[0].id) {
+    count = res.events[0].id;
+  } else {
+    count = 0;
+  }
   // create an array number from 0 till count
   const paths = Array.from(Array(count).keys());
   return {
