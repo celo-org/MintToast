@@ -229,7 +229,6 @@ export async function getStaticProps({ params }: { params: any }) {
   );
 
   var resultData = result.docs.map((doc) => doc.data());
-  console.log("resultData", resultData);
 
   var ownerAddress = "";
   var eventUUID = "";

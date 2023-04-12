@@ -23,7 +23,6 @@ const Profile: React.FC<Props> = () => {
 
   useEffect(() => {
     const fetchUserCollections = async () => {
-      console.log("address", address);
       // axios call with content type application/json
       const res = await axios({
         method: "post",
@@ -35,18 +34,14 @@ const Profile: React.FC<Props> = () => {
           "Content-Type": "application/json",
         },
       });
-      console.log("res.data", res.data);
       if (res.data.resultData) {
         var tempCollection: any = [];
         tempCollection = await Promise.all(
           res.data.resultData.map(async (item: any) => {
-            console.log("item", item);
             const res = await getMintCollectionData(item.eventId);
-            console.log("res", res);
             return res;
           })
         );
-        console.log("tempCollection", tempCollection);
         setCollection(tempCollection);
       }
     };

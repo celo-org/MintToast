@@ -114,7 +114,12 @@ const CollectionItem: React.FC<Props> = ({ tokenId, uriData, data }) => {
 
 export async function getStaticPaths() {
   const res = await getTokenCollectionCount();
-  const count = res.events[0].id;
+  var count;
+  if (res && res.events && res.events[0] && res.events[0].id) {
+    count = res.events[0].id;
+  } else {
+    count = 0;
+  }
   // create an array number from 0 till count
   const paths = Array.from(Array(count).keys());
   return {
