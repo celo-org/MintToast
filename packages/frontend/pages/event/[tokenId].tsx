@@ -2,7 +2,6 @@ import PrimaryButton from "@/components/common/PrimaryButton";
 import TwitterIcon from "@/components/icons/TwitterIcon";
 import QRCodeModal from "@/components/modals/QRCodeModal";
 import { getMintCollectionData } from "@/graphql/queries/getMintCollectionData";
-import { getTokenCollectionCount } from "@/graphql/queries/getTokenCollectionCount";
 import { formatIpfsData } from "@/utils/data";
 import { database } from "@/utils/firebase";
 import { fetchImageUrl } from "@/utils/ipfs";
@@ -111,12 +110,12 @@ const EventPage: React.FC<Props> = ({
               >
                 🌐 {uriData?.websiteLink ?? ""}
               </Link>
-              <div className="text-black font-bold text-lg mt-8 ">
+              {/* <div className="text-black font-bold text-lg mt-8 ">
                 How to mint Toast?
               </div>
               <div className="text-gray-500">
                 Instructions coming soon. For now ask our Toast Masters.
-              </div>
+              </div> */}
               <Link
                 href={"https://celoscan.io/address/" + uriData?.createdBy ?? ""}
                 target={"_blank"}
@@ -193,30 +192,30 @@ const EventPage: React.FC<Props> = ({
   );
 };
 
-export async function getStaticPaths() {
-  const res = await getTokenCollectionCount();
-  if (!res) {
-    return {
-      paths: [],
-      fallback: true,
-    };
-  }
+// export async function getStaticPaths() {
+//   const res = await getTokenCollectionCount();
+//   if (!res) {
+//     return {
+//       paths: [],
+//       fallback: true,
+//     };
+//   }
 
-  var count;
-  if (res && res.events && res.events.length > 0 && res.events[0].id) {
-    count = res.events[0].id;
-  } else {
-    count = 0;
-  }
-  // create an array number from 0 till count
-  const paths = Array.from(Array(count).keys());
-  return {
-    paths: paths.map((id) => ({ params: { tokenId: id.toString() } })),
-    fallback: true,
-  };
-}
+//   var count;
+//   if (res && res.events && res.events.length > 0 && res.events[0].id) {
+//     count = res.events[0].id;
+//   } else {
+//     count = 0;
+//   }
+//   // create an array number from 0 till count
+//   const paths = Array.from(Array(count).keys());
+//   return {
+//     paths: paths.map((id) => ({ params: { tokenId: id.toString() } })),
+//     fallback: true,
+//   };
+// }
 
-export async function getStaticProps({ params }: { params: any }) {
+export async function getServerSideProps({ params }: { params: any }) {
   const res = await getMintCollectionData(params.tokenId as string);
   if (!res || !res.event) {
     return {
@@ -252,7 +251,6 @@ export async function getStaticProps({ params }: { params: any }) {
       ownerAddress,
       eventUUID,
     },
-    revalidate: 10,
   };
 }
 
