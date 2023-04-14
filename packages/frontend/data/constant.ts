@@ -12,7 +12,7 @@ export const MAINNET_RPC_ENDPOINT = "https://forno.celo.org";
 export const TESTNET_TOASTMASTER_PK = process.env.TESTNET_TOASTMASTER_PK ?? "";
 export const MAINNET_TOASTMASTER_PK = process.env.MAINNET_TOASTMASTER_PK ?? "";
 
-export const WEBSITE_URL = "https://mint-toast.netlify.app";
+export const WEBSITE_URL = "https://minttoast.xyz";
 
 export const TESTNET_GRAPHQL_API =
   "https://api.studio.thegraph.com/query/44345/minttoast-testnet/v0.0.1";
