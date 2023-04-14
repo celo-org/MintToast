@@ -125,7 +125,9 @@ export const CustomConnectButton = () => {
                               </span>
                               <span className="md:text-2xl text-lg font-semibold mt-1 text-center">
                                 {account.displayBalance
-                                  ? `${account.balanceFormatted} CELO`
+                                  ? `${parseFloat(
+                                      account.balanceFormatted ?? "0"
+                                    ).toFixed(2)} CELO`
                                   : ""}
                               </span>
                             </div>
