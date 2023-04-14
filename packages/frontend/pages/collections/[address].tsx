@@ -1,6 +1,5 @@
 import CollectionItem from "@/components/collection/CollectionItem";
 import { getUserCollection } from "@/graphql/queries/getUserCollection";
-import { getUsers } from "@/graphql/queries/getUsers";
 import Head from "next/head";
 import { useEffect, useState } from "react";
 import { useAccount } from "wagmi";
@@ -70,18 +69,18 @@ const Collections: React.FC<Props> = ({ address: userAddress, collection }) => {
   );
 };
 
-export async function getStaticPaths() {
-  const res = await getUsers();
-  // create an array number from 0 till count
-  return {
-    paths: res.users.map((item: { id: { toString: () => string } }) => ({
-      params: { address: item.id.toString().toLowerCase() },
-    })),
-    fallback: true,
-  };
-}
+// export async function getStaticPaths() {
+//   const res = await getUsers();
+//   // create an array number from 0 till count
+//   return {
+//     paths: res.users.map((item: { id: { toString: () => string } }) => ({
+//       params: { address: item.id.toString().toLowerCase() },
+//     })),
+//     fallback: true,
+//   };
+// }
 
-export async function getStaticProps({ params }: { params: any }) {
+export async function getServerSideProps({ params }: { params: any }) {
   const res = await getUserCollection(params.address as string);
   if (!res) {
     return {

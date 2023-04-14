@@ -1,3 +1,4 @@
+import Loading from "@/components/common/Loading";
 import PrimaryButton from "@/components/common/PrimaryButton";
 import TwitterIcon from "@/components/icons/TwitterIcon";
 import { getMintCollectionData } from "@/graphql/queries/getMintCollectionData";
@@ -32,7 +33,7 @@ const CollectionItem: React.FC<Props> = ({ tokenId, uriData, data }) => {
   }, [address]);
 
   if (router.isFallback) {
-    return <div>Loading...</div>;
+    return <Loading />;
   }
   return (
     <>

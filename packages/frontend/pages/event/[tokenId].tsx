@@ -1,3 +1,4 @@
+import Loading from "@/components/common/Loading";
 import PrimaryButton from "@/components/common/PrimaryButton";
 import TwitterIcon from "@/components/icons/TwitterIcon";
 import QRCodeModal from "@/components/modals/QRCodeModal";
@@ -42,7 +43,7 @@ const EventPage: React.FC<Props> = ({
   }, [address]);
 
   if (router.isFallback) {
-    return <div>Loading...</div>;
+    return <Loading />;
   }
 
   return (
