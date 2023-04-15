@@ -2,7 +2,6 @@ import Loading from "@/components/common/Loading";
 import PrimaryButton from "@/components/common/PrimaryButton";
 import TwitterIcon from "@/components/icons/TwitterIcon";
 import { getMintCollectionData } from "@/graphql/queries/getMintCollectionData";
-import { getTokenCollectionCount } from "@/graphql/queries/getTokenCollectionCount";
 import { formatIpfsData } from "@/utils/data";
 import { fetchImageUrl } from "@/utils/ipfs";
 import { formatDateFromString } from "@/utils/utils";
@@ -113,23 +112,7 @@ const CollectionItem: React.FC<Props> = ({ tokenId, uriData, data }) => {
   );
 };
 
-export async function getStaticPaths() {
-  const res = await getTokenCollectionCount();
-  var count;
-  if (res && res.events && res.events[0] && res.events[0].id) {
-    count = res.events[0].id;
-  } else {
-    count = 0;
-  }
-  // create an array number from 0 till count
-  const paths = Array.from(Array(count).keys());
-  return {
-    paths: paths.map((id) => ({ params: { tokenId: id.toString() } })),
-    fallback: true,
-  };
-}
-
-export async function getStaticProps({ params }: { params: any }) {
+export async function getServerSideProps({ params }: { params: any }) {
   const res = await getMintCollectionData(params.tokenId as string);
   if (!res || !res.event) {
     return {

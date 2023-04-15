@@ -69,17 +69,6 @@ const Collections: React.FC<Props> = ({ address: userAddress, collection }) => {
   );
 };
 
-// export async function getStaticPaths() {
-//   const res = await getUsers();
-//   // create an array number from 0 till count
-//   return {
-//     paths: res.users.map((item: { id: { toString: () => string } }) => ({
-//       params: { address: item.id.toString().toLowerCase() },
-//     })),
-//     fallback: true,
-//   };
-// }
-
 export async function getServerSideProps({ params }: { params: any }) {
   const res = await getUserCollection(params.address as string);
   if (!res) {
