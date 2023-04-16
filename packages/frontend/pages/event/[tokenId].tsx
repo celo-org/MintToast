@@ -82,7 +82,9 @@ const EventPage: React.FC<Props> = ({
             </span>
 
             <div className="md:w-[400px] w-full px-2 md:mx-0 mt-8 flex flex-col">
-              <div className="text-gray-500">{uriData?.description ?? ""}</div>
+              <div className="text-gray-500 whitespace-pre-wrap">
+                {uriData?.description ?? ""}
+              </div>
               {ownerAddress == userAddress && (
                 <>
                   <div className="mt-12 w-full flex justify-center">

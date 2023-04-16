@@ -115,7 +115,9 @@ const QRPage: React.FC<Props> = ({ tokenId, uriData, data }) => {
         </span>
 
         <div className="md:w-[400px] w-full px-2 md:mx-0 mt-8 flex flex-col">
-          <div className="text-gray-500">{uriData?.description ?? ""}</div>
+          <div className="text-gray-500 whitespace-pre-wrap">
+            {uriData?.description ?? ""}
+          </div>
           <Link
             className="justify-self-start mt-10 text-green"
             href={uriData?.websiteLink ?? "#"}
