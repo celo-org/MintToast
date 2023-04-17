@@ -59,9 +59,9 @@ const Collections: React.FC<Props> = ({ address: userAddress, collection }) => {
             </div>
           )}
           <div className="flex flex-row flex-wrap justify-evenly">
-            {collection.map((item: any) => (
-              <CollectionItem event={item.event} key={item.event.id} />
-            ))}
+            {collection.map((item: any) => {
+              return <CollectionItem event={item.event} key={item.event.id} />;
+            })}
           </div>
         </div>
       </div>

@@ -32,6 +32,10 @@ const CollectionItem: React.FC<Props> = ({ event }) => {
     fetchData();
   }, [event.uri]);
 
+  if (!data) {
+    return <></>;
+  }
+
   return (
     <Link
       key={event.id}

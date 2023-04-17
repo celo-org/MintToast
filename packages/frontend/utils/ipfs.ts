@@ -46,5 +46,8 @@ export const fetchDataFromIPFS = async (cid: string) => {
 };
 
 export const fetchImageUrl = (cid: string) => {
+  if (cid === "QmeWrZgkRBub7fkdeEJZpFHBip6VhpGi4HDozxBttWngdy") {
+    return "/images/Celo-UGW-POAP.gif";
+  }
   return "https://gateway.pinata.cloud/ipfs/" + cid;
 };
