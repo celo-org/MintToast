@@ -9,7 +9,7 @@ const nextConfig = {
     return config;
   },
   images: {
-    domains: ["mint-toast.infura-ipfs.io"],
+    domains: ["mint-toast.infura-ipfs.io", "gateway.pinata.cloud"],
   },
   async redirects() {
     return [

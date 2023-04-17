@@ -46,5 +46,5 @@ export const fetchDataFromIPFS = async (cid: string) => {
 };
 
 export const fetchImageUrl = (cid: string) => {
-  return "https://mint-toast.infura-ipfs.io/ipfs/" + cid;
+  return "https://gateway.pinata.cloud/ipfs/" + cid;
 };
