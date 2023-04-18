@@ -260,8 +260,6 @@ export async function getServerSideProps({ params }: { params: any }) {
     ownerAddress = resultData[0].ownerAddress;
     eventUUID = resultData[0].uuid;
   }
-
-  // revalodate in 10 seconds
   return {
     props: {
       tokenId: params.tokenId,

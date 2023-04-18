@@ -31,15 +31,27 @@ export default async function handler(
         const tokenId = fields.tokenId;
 
         const contract = getContract();
-
-        const tx = await contract.mint(address, tokenId);
-        await tx.wait();
-        res.status(200).json({ success: true });
-        return;
+        try {
+          const tx = await contract.mint(address, tokenId);
+          await tx.wait();
+          res.status(200).json({ success: true });
+          return;
+        } catch (e) {
+          if ((e as object).toString().includes("Only One NFT per Wallet")) {
+            res.status(200).json({
+              error:
+                "You have already minted the Toast, please check you collection",
+            });
+            return;
+          } else {
+            res.status(500).json({ error: e as string });
+            return;
+          }
+        }
       });
     });
   } catch (error) {
-    console.error("Error", error);
+    console.error(":::Error:::", error);
     res.status(500).json({ error: error as string });
   }
 }

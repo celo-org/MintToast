@@ -5,7 +5,7 @@ import { formatIpfsData } from "@/utils/data";
 import { database } from "@/utils/firebase";
 import { fetchImageUrl } from "@/utils/ipfs";
 import axios from "axios";
-import { collection, doc, getDoc, getDocs } from "firebase/firestore";
+import { doc, getDoc } from "firebase/firestore";
 import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -62,6 +62,9 @@ const QRPage: React.FC<Props> = ({ tokenId, uriData, data }) => {
         setTimeout(() => {
           router.push("/collections");
         }, 5000);
+      } else if (res.data["error"]) {
+        toast.dismiss();
+        toast.error(res.data["error"]);
       }
     } catch (e) {
       toast.dismiss();
@@ -131,23 +134,7 @@ const QRPage: React.FC<Props> = ({ tokenId, uriData, data }) => {
   );
 };
 
-export async function getStaticPaths() {
-  var docIds: string[] = [];
-  const querySnapshot = await getDocs(collection(database, "events"));
-  querySnapshot.forEach((doc) => {
-    docIds.push(doc.id);
-  });
-
-  const paths = docIds;
-  return {
-    paths: paths.map((id: string) => ({
-      params: { tokenId: id },
-    })),
-    fallback: true,
-  };
-}
-
-export async function getStaticProps({ params }: { params: any }) {
+export async function getServerSideProps({ params }: { params: any }) {
   var docSnapshot = await getDoc(doc(database, "events", params.tokenId));
   var resultData = docSnapshot.data();
 
