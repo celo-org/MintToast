@@ -1,6 +1,9 @@
+import { applyMiddleware } from "@/data/utils/rate-limit";
 import formidable from "formidable";
 import { getContract } from "./../../utils/web3";
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
+
+import { getRateLimitMiddlewares } from "@/data/utils/rate-limit";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 export const config = {
@@ -14,10 +17,18 @@ type Data = {
   error?: string;
 };
 
+const middlewares = getRateLimitMiddlewares().map(applyMiddleware);
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<Data>
 ) {
+  try {
+    await Promise.all(middlewares.map((middleware) => middleware(req, res)));
+  } catch {
+    return res.status(429).send({ error: "Too Many Requests" });
+  }
+
   if (req.method !== "POST") {
     res.status(405).json({ error: "Method Not Allowed" });
     return;
