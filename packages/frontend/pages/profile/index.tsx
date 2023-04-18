@@ -1,4 +1,6 @@
 import CollectionItem from "@/components/collection/CollectionItem";
+import ConnectWalletMessage from "@/components/common/ConnectWalletMessage";
+import NoToast from "@/components/common/NoToast";
 import { getMintCollectionData } from "@/graphql/queries/getMintCollectionData";
 import axios from "axios";
 import Head from "next/head";
@@ -53,9 +55,7 @@ const Profile: React.FC<Props> = () => {
   if (!isConnected) {
     return (
       <>
-        <div className="w-full text-center px-5 mt-10 text-lg font-bold">
-          Please connect the wallet to see your collection
-        </div>
+        <ConnectWalletMessage />
       </>
     );
   }
@@ -82,7 +82,7 @@ const Profile: React.FC<Props> = () => {
           ) : (
             <div className="w-full flex-initial justify-center items-center text-center">
               <span className="px-5 text-lg font-bold">
-                You don&apos;t have any toast
+                <NoToast />
               </span>
             </div>
           )}

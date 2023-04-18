@@ -1,4 +1,6 @@
 import CollectionItem from "@/components/collection/CollectionItem";
+import ConnectWalletMessage from "@/components/common/ConnectWalletMessage";
+import NoToast from "@/components/common/NoToast";
 import { getUserCollection } from "@/graphql/queries/getUserCollection";
 import Head from "next/head";
 import { useEffect, useState } from "react";
@@ -25,9 +27,7 @@ const Collections: React.FC<Props> = ({ address: userAddress, collection }) => {
   if (!isConnected) {
     return (
       <>
-        <div className="w-full text-center px-5 mt-10 text-lg font-bold">
-          Please connect the wallet to see your collection
-        </div>
+        <ConnectWalletMessage />
       </>
     );
   }
@@ -52,11 +52,7 @@ const Collections: React.FC<Props> = ({ address: userAddress, collection }) => {
           {collection.length > 0 ? (
             <span className="px-5 text-lg font-bold">2023</span>
           ) : (
-            <div className="w-full flex-initial justify-center items-center text-center">
-              <span className="px-5 text-lg font-bold">
-                You don&apos;t have any toast
-              </span>
-            </div>
+            <NoToast />
           )}
           <div className="flex flex-row flex-wrap justify-evenly">
             {collection.map((item: any) => {

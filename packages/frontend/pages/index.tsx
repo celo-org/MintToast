@@ -1,6 +1,7 @@
 import PrimaryButton from "@/components/common/PrimaryButton";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import Head from "next/head";
+import Image from "next/image";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { useAccount } from "wagmi";
@@ -29,15 +30,21 @@ export default function Home() {
           community of toastmasters
         </div>
         <div className="flex md:flex-row flex-col md:flex-nowrap flex-wrap mt-10">
-          <div className="w-[285px] h-[285px] bg-green border-2 border-black flex flex-col justify-end items-center pb-3">
-            <span className="font-semibold text-xl text-center">
-              Earn badges when you attend events
-            </span>
+          <div className="w-[285px] h-[285px] border-2 border-black flex flex-col justify-end items-center">
+            <Image
+              alt="Mint Toast"
+              src="/images/Home_2.png"
+              width={285}
+              height={285}
+            />
           </div>
-          <div className="w-[285px] h-[285px] bg-yellow border-t-0 border-r-2 md:border-t-2 border-b-2 border-l-2 md:border-l-0 border-black flex flex-col justify-end items-center pb-3">
-            <span className="font-semibold text-xl text-center">
-              Celebrate your community
-            </span>
+          <div className="w-[285px] h-[285px] border-2 border-black flex flex-col justify-end items-center">
+            <Image
+              alt="Mint Toast"
+              src="/images/Home_1.png"
+              width={285}
+              height={285}
+            />
           </div>
         </div>
         <div className="font-semibold md:text-xl text-lg mt-8 text-center">

@@ -1,4 +1,5 @@
 import Head from "next/head";
+import Image from "next/image";
 import Link from "next/link";
 
 export default function Home() {
@@ -16,12 +17,13 @@ export default function Home() {
               href="/create/new"
               className="w-[170px] h-[170px] pushable-card select-none rounded-sm bg-black border-none p-0 cursor-pointer outline-offset-4 mt-5"
             >
-              <span className="w-[170px] h-[170px] front-card rounded-sm border-2 border-black text-black font-bold text-base block py-2 px-6 bg-green">
-                <div className="h-full w-full flex items-center justify-center">
-                  <span className="text-lg text-center font-bold">
-                    Your own artwork
-                  </span>
-                </div>
+              <span className="w-[170px] h-[170px] front-card rounded-sm border-2 border-black text-black font-bold text-base block">
+                <Image
+                  src="/images/CreateAToast.png"
+                  alt="Plus"
+                  width={170}
+                  height={170}
+                />
               </span>
             </Link>
             {/* Card 2 */}

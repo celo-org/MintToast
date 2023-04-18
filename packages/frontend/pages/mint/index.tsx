@@ -1,4 +1,5 @@
 import Head from "next/head";
+import Image from "next/image";
 import { toast } from "react-toastify";
 
 export default function Mint() {
@@ -18,12 +19,13 @@ export default function Mint() {
               }}
               className="w-[170px] h-[170px] pushable-card select-none rounded-sm bg-black border-none p-0 cursor-pointer outline-offset-4 mt-5"
             >
-              <span className="w-[170px] h-[170px] front-card rounded-sm border-2 border-black text-black font-bold text-base block py-2 px-6 bg-green">
-                <div className="h-full w-full flex items-center justify-center">
-                  <span className="text-lg text-center font-bold">
-                    Secret Word
-                  </span>
-                </div>
+              <span className="w-[170px] h-[170px] front-card rounded-sm border-2 border-black text-black font-bold text-base block">
+                <Image
+                  src="/images/MintWith6DigitCode.jpg"
+                  alt="Mint with 6 Digit code"
+                  width={170}
+                  height={170}
+                />
               </span>
             </div>
             {/* Card 2 */}
@@ -33,12 +35,13 @@ export default function Mint() {
               }}
               className="w-[170px] h-[170px] pushable-card select-none rounded-sm bg-black border-none p-0 cursor-pointer outline-offset-4 mt-5"
             >
-              <span className="w-[170px] h-[170px] front-card rounded-sm border-2 border-black text-black font-bold text-base block py-2 px-6 bg-yellow">
-                <div className="h-full w-full flex items-center justify-center">
-                  <span className="text-lg text-center font-bold">
-                    6 digit code
-                  </span>
-                </div>
+              <span className="w-[170px] h-[170px] front-card rounded-sm border-2 border-black text-black font-bold text-base block">
+                <Image
+                  src="/images/MintWithPassword.jpg"
+                  alt="Mint with Password"
+                  width={170}
+                  height={170}
+                />
               </span>
             </div>
             {/* Card 3 */}
@@ -48,10 +51,13 @@ export default function Mint() {
               }}
               className="w-[170px] h-[170px] pushable-card select-none rounded-sm bg-black border-none p-0 cursor-pointer outline-offset-4 mt-5"
             >
-              <span className="w-[170px] h-[170px] front-card rounded-sm border-2 border-black text-black font-bold text-base block py-2 px-6 bg-white">
-                <div className="h-full w-full flex items-center justify-center">
-                  <span className="text-lg text-center font-bold">QR Code</span>
-                </div>
+              <span className="w-[170px] h-[170px] front-card rounded-sm border-2 border-black text-black font-bold text-base block">
+                <Image
+                  src="/images/MintWithQR.jpg"
+                  alt="Mint with QR Code"
+                  width={170}
+                  height={170}
+                />
               </span>
             </div>
           </div>
