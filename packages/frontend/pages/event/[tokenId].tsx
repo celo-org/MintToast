@@ -138,47 +138,53 @@ const EventPage: React.FC<Props> = ({
                 </div>
               </Link>
               {data != null && data?.items.length > 0 && (
-                <div className="w-full text-xs mt-8">
-                  <table className="w-full table-fixed border border-black">
-                    <thead className="">
-                      <tr className="h-8 text-center bg-black text-white">
-                        <th>Toast ID</th>
-                        <th>Collector</th>
-                        <th>Date</th>
-                      </tr>
-                    </thead>
-                    <tbody className="">
-                      {data.items.map((item: any, index: any) => {
-                        const address =
-                          item.owner.id.substring(0, 4) +
-                          "..." +
-                          item.owner.id.substring(38, 42);
-                        return (
-                          <tr
-                            key={index}
-                            className="h-8 text-center border-b border-black"
-                          >
-                            <td>#{item.id}</td>
-                            <td>
-                              <a
-                                href={
-                                  "https://celoscan.io/address/" + item.owner.id
-                                }
-                                target="_blank"
-                                rel="noreferrer"
-                              >
-                                {address}
-                              </a>
-                            </td>
-                            <td>
-                              {formatTimestampToTimeElapsedForm(item.timestamp)}
-                            </td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
-                </div>
+                <>
+                  <p className="mt-8 mb-2">Recent Mints...</p>
+                  <div className="w-full text-xs ">
+                    <table className="w-full table-fixed border border-black">
+                      <thead className="">
+                        <tr className="h-8 text-center bg-black text-white">
+                          <th>Toast ID</th>
+                          <th>Collector</th>
+                          <th>Date</th>
+                        </tr>
+                      </thead>
+                      <tbody className="">
+                        {data.items.map((item: any, index: any) => {
+                          const address =
+                            item.owner.id.substring(0, 4) +
+                            "..." +
+                            item.owner.id.substring(38, 42);
+                          return (
+                            <tr
+                              key={index}
+                              className="h-8 text-center border-b border-black"
+                            >
+                              <td>#{item.id}</td>
+                              <td>
+                                <a
+                                  href={
+                                    "https://celoscan.io/address/" +
+                                    item.owner.id
+                                  }
+                                  target="_blank"
+                                  rel="noreferrer"
+                                >
+                                  {address}
+                                </a>
+                              </td>
+                              <td>
+                                {formatTimestampToTimeElapsedForm(
+                                  item.timestamp
+                                )}
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                </>
               )}
               <div className="mt-12 w-full flex justify-center">
                 <PrimaryButton

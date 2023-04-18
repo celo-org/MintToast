@@ -16,7 +16,7 @@ export const getMintCollectionData = async (tokenId: string) => {
           currentSupply
           toaster
           __typename
-          items {
+          items(orderDirection:desc, first: 50, orderBy: timestamp) {
             id
             timestamp
             owner {
@@ -40,9 +40,9 @@ export const getMintCollectionData = async (tokenId: string) => {
       res.data.data.event.uri.replace("ipfs://", "").replace("ipfs://", "")
     );
     // sort res.data.data.item by id
-    res.data.data.event.items.sort((a: { id: number }, b: { id: number }) => {
-      return a.id - b.id;
-    });
+    // res.data.data.event.items.sort((a: { id: number }, b: { id: number }) => {
+    //   return a.id - b.id;
+    // });
     return { ...res.data.data, uriData };
   } else {
     return null;
