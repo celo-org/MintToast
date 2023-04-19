@@ -8,9 +8,10 @@ dataSources:
     source:
       abi: Badge
       address: "0x36Eef317F736FC5d7D0CAAe80a1bD7aD1D93B874"
+      startBlock: 17053113
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.7
+      apiVersion: 0.0.6
       language: wasm/assemblyscript
       entities:
         - ApprovalForAll
@@ -26,11 +27,24 @@ dataSources:
         - name: Badge
           file: ./abis/Badge.json
       eventHandlers:
+        - event: ApprovalForAll(indexed address,indexed address,bool)
+          handler: handleApprovalForAll
+        - event: SeriesCreated(indexed address,indexed uint256,indexed uint256)
+          handler: handleSeriesCreated
+        - event: Initialized(uint8)
+          handler: handleInitialized
+        - event: RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
+          handler: handleRoleAdminChanged
+        - event: RoleGranted(indexed bytes32,indexed address,indexed address)
+          handler: handleRoleGranted
+        - event: RoleRevoked(indexed bytes32,indexed address,indexed address)
+          handler: handleRoleRevoked
+        - event: TransferBatch(indexed address,indexed address,indexed
+            address,uint256[],uint256[])
+          handler: handleTransferBatch
         - event: TransferSingle(indexed address,indexed address,indexed
             address,uint256,uint256)
           handler: handleTransferSingle
-        - event: SeriesCreated(indexed address,indexed uint256,indexed uint256)
-          handler: handleSeriesCreated
         - event: URI(string,indexed uint256)
           handler: handleURI
       file: ./src/badge.ts

@@ -52,7 +52,7 @@ export class User extends Entity {
   }
 }
 
-export class Event extends Entity {
+export class Serie extends Entity {
   constructor(id: string) {
     super();
     this.set("id", Value.fromString(id));
@@ -60,18 +60,18 @@ export class Event extends Entity {
 
   save(): void {
     let id = this.get("id");
-    assert(id != null, "Cannot save Event entity without an ID");
+    assert(id != null, "Cannot save Serie entity without an ID");
     if (id) {
       assert(
         id.kind == ValueKind.STRING,
-        `Entities of type Event must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`
+        `Entities of type Serie must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`
       );
-      store.set("Event", id.toString(), this);
+      store.set("Serie", id.toString(), this);
     }
   }
 
-  static load(id: string): Event | null {
-    return changetype<Event | null>(store.get("Event", id));
+  static load(id: string): Serie | null {
+    return changetype<Serie | null>(store.get("Serie", id));
   }
 
   get id(): string {
@@ -187,13 +187,13 @@ export class Item extends Entity {
     this.set("id", Value.fromString(value));
   }
 
-  get event(): string {
-    let value = this.get("event");
+  get serie(): string {
+    let value = this.get("serie");
     return value!.toString();
   }
 
-  set event(value: string) {
-    this.set("event", Value.fromString(value));
+  set serie(value: string) {
+    this.set("serie", Value.fromString(value));
   }
 
   get timestamp(): BigInt {
@@ -215,7 +215,7 @@ export class Item extends Entity {
   }
 }
 
-export class EventBalance extends Entity {
+export class SeriesBalance extends Entity {
   constructor(id: string) {
     super();
     this.set("id", Value.fromString(id));
@@ -223,18 +223,18 @@ export class EventBalance extends Entity {
 
   save(): void {
     let id = this.get("id");
-    assert(id != null, "Cannot save EventBalance entity without an ID");
+    assert(id != null, "Cannot save SeriesBalance entity without an ID");
     if (id) {
       assert(
         id.kind == ValueKind.STRING,
-        `Entities of type EventBalance must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`
+        `Entities of type SeriesBalance must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`
       );
-      store.set("EventBalance", id.toString(), this);
+      store.set("SeriesBalance", id.toString(), this);
     }
   }
 
-  static load(id: string): EventBalance | null {
-    return changetype<EventBalance | null>(store.get("EventBalance", id));
+  static load(id: string): SeriesBalance | null {
+    return changetype<SeriesBalance | null>(store.get("SeriesBalance", id));
   }
 
   get id(): string {
