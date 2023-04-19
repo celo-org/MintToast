@@ -1,12 +1,14 @@
 {
     "celo-alfajores": {
         "Badge": {
-            "address": "0x36Eef317F736FC5d7D0CAAe80a1bD7aD1D93B874"
+            "address": "0x36Eef317F736FC5d7D0CAAe80a1bD7aD1D93B874",
+            "startBlock": 17053113
         }
     },
     "celo": {
         "Badge": {
-            "address": "0x6145602B5AA5646f54cd551097C74A189839D326"
+            "address": "0x6145602B5AA5646f54cd551097C74A189839D326",
+            "startBlock": 18593181
         }
     }
 }
