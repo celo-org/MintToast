@@ -1,16 +1,20 @@
 import { Menu, Transition } from "@headlessui/react";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
+import { useRouter } from "next/router";
 import { Fragment } from "react";
+import { toast } from "react-toastify";
 import IconButton from "./common/IconButton";
 import PrimaryButton from "./common/PrimaryButton";
 import CopyIcon from "./icons/CopyIcon";
 import OpenUrlIcon from "./icons/OpenUrlIcon";
 import PowerOffIcon from "./icons/PowerOffIcon";
 import TwitterIcon from "./icons/TwitterIcon";
+import UserIcon from "./icons/UserIcon";
 
 type Props = {};
 
 export const CustomConnectButton = () => {
+  const router = useRouter();
   return (
     <ConnectButton.Custom>
       {({
@@ -83,12 +87,28 @@ export const CustomConnectButton = () => {
                           <div>👾 {account.displayName}</div>
                           <div className="flex flex-row space-x-2">
                             <IconButton
+                              icon={<UserIcon />}
+                              onClick={() => {
+                                router.push("/profile");
+                              }}
+                            />
+                            <IconButton
                               icon={<CopyIcon />}
-                              onClick={() => {}}
+                              onClick={async () => {
+                                await navigator.clipboard.writeText(
+                                  account.address
+                                );
+                                toast.success("Copied to clipboard");
+                              }}
                             />
                             <IconButton
                               icon={<OpenUrlIcon />}
-                              onClick={() => {}}
+                              onClick={() => {
+                                window.open(
+                                  `https://explorer.celo.org/address/${account.address}/transactions`,
+                                  "_blank"
+                                );
+                              }}
                             />
                             <IconButton
                               icon={<PowerOffIcon />}
@@ -105,7 +125,9 @@ export const CustomConnectButton = () => {
                               </span>
                               <span className="md:text-2xl text-lg font-semibold mt-1 text-center">
                                 {account.displayBalance
-                                  ? `${account.balanceFormatted} CELO`
+                                  ? `${parseFloat(
+                                      account.balanceFormatted ?? "0"
+                                    ).toFixed(2)} CELO`
                                   : ""}
                               </span>
                             </div>
@@ -138,42 +160,6 @@ export const CustomConnectButton = () => {
                     </Transition>
                   </Menu>
                 </div>
-                // <div style={{ display: "flex", gap: 12 }}>
-                //   <button
-                //     onClick={openChainModal}
-                //     style={{ display: "flex", alignItems: "center" }}
-                //     type="button"
-                //   >
-                //     {chain.hasIcon && (
-                //       <div
-                //         style={{
-                //           background: chain.iconBackground,
-                //           width: 12,
-                //           height: 12,
-                //           borderRadius: 999,
-                //           overflow: "hidden",
-                //           marginRight: 4,
-                //         }}
-                //       >
-                //         {chain.iconUrl && (
-                //           <img
-                //             alt={chain.name ?? "Chain icon"}
-                //             src={chain.iconUrl}
-                //             style={{ width: 12, height: 12 }}
-                //           />
-                //         )}
-                //       </div>
-                //     )}
-                //     {chain.name}
-                //   </button>
-
-                //   <button onClick={openAccountModal} type="button">
-                //     {account.displayName}
-                // {account.displayBalance
-                //   ? ` (${account.displayBalance})`
-                //   : ""}
-                //   </button>
-                // </div>
               );
             })()}
           </div>

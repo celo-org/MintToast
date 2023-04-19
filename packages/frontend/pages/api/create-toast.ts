@@ -1,8 +1,12 @@
+import { database } from "@/utils/firebase";
 import { uploadImage, uploadJSON } from "./../../utils/ipfs";
-import { getContract } from "./../../utils/web3";
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
+import { getContract } from "@/utils/web3";
+import { BigNumber } from "ethers";
+import { doc, serverTimestamp, setDoc } from "firebase/firestore";
 import formidable from "formidable";
 import type { NextApiRequest, NextApiResponse } from "next";
+import { v4 as uuidv4 } from "uuid";
 
 export const config = {
   api: {
@@ -41,8 +45,14 @@ export default async function handler(
         const totalToastSupply = fields.totalToastSupply as string;
         const email = fields.email;
         const communityName = fields.communityName;
+        const ownerAddress = fields.ownerAddress;
         // upload the image to IPFS
         const imageID = await uploadImage(files.image as formidable.File);
+
+        if (!ownerAddress) {
+          res.status(500).json({ error: "Owner address is required" });
+          return;
+        }
 
         // create a json object with the above variables
         const toastObj = {
@@ -69,16 +79,31 @@ export default async function handler(
           ],
         };
         var dataID = await uploadJSON(toastObj);
-
+        // convert start date from mm/dd/yyyy to unix timestamp
+        const startDateUnix = new Date(startDate as string).getTime() / 1000;
+        // convert end date from mm/dd/yyyy to unix timestamp
+        const endDateUnix = new Date(endDate as string).getTime() / 1000;
         // Make contract call to upload the data
         const contract = getContract();
 
-        const tx = await contract.createCollection(
+        const tx = await contract.createSeries(
           parseInt(totalToastSupply),
-          dataID
+          dataID,
+          startDateUnix,
+          endDateUnix
         );
         await tx.wait();
-        res.status(200).json({ dataID: dataID });
+        // // get countOfSeries from contract
+        const countOfSeries: BigNumber = await contract.countOfSeries();
+        // generate a UUID using uuid package and store it in firebase database
+        const uuid = uuidv4();
+        await setDoc(doc(database, "events", uuid), {
+          uuid: uuid,
+          eventId: countOfSeries.toNumber() - 1,
+          ownerAddress: ownerAddress,
+          createdAt: serverTimestamp(),
+        });
+        res.status(200).json({ dataID });
         resolve();
       });
     });

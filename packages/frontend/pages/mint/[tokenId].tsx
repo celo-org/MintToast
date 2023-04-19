@@ -1,10 +1,11 @@
 import InputField from "@/components/common/InputField";
 import PrimaryButton from "@/components/common/PrimaryButton";
 import { getMintCollectionData } from "@/graphql/queries/getMintCollectionData";
-import { getTokenCollectionCount } from "@/graphql/queries/getTokenCollectionCount";
 import { formatIpfsData } from "@/utils/data";
+import { database } from "@/utils/firebase";
 import { fetchImageUrl } from "@/utils/ipfs";
 import axios from "axios";
+import { doc, getDoc } from "firebase/firestore";
 import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -61,6 +62,9 @@ const QRPage: React.FC<Props> = ({ tokenId, uriData, data }) => {
         setTimeout(() => {
           router.push("/collections");
         }, 5000);
+      } else if (res.data["error"]) {
+        toast.dismiss();
+        toast.error(res.data["error"]);
       }
     } catch (e) {
       toast.dismiss();
@@ -73,7 +77,7 @@ const QRPage: React.FC<Props> = ({ tokenId, uriData, data }) => {
   return (
     <>
       <Head>
-        <title>🍞 Mint Toast | Mint</title>
+        <title>Mint Toast | Mint</title>
       </Head>
       <div className="flex flex-col justify-center w-full mt-10 items-center">
         <div className="md:w-[400px] w-full px-2 md:mx-0 mt-0 flex flex-col">
@@ -114,7 +118,9 @@ const QRPage: React.FC<Props> = ({ tokenId, uriData, data }) => {
         </span>
 
         <div className="md:w-[400px] w-full px-2 md:mx-0 mt-8 flex flex-col">
-          <div className="text-gray-500">{uriData?.description ?? ""}</div>
+          <div className="text-gray-500 whitespace-pre-wrap">
+            {uriData?.description ?? ""}
+          </div>
           <Link
             className="justify-self-start mt-10 text-green"
             href={uriData?.websiteLink ?? "#"}
@@ -128,22 +134,16 @@ const QRPage: React.FC<Props> = ({ tokenId, uriData, data }) => {
   );
 };
 
-export async function getStaticPaths() {
-  const res = await getTokenCollectionCount();
-  const count = res.events[0].id;
-  // create an array number from 0 till count
-  const paths = Array.from(Array(count).keys());
-  return {
-    paths: paths.map((id) => ({ params: { tokenId: id.toString() } })),
-    fallback: true,
-  };
-}
+export async function getServerSideProps({ params }: { params: any }) {
+  var docSnapshot = await getDoc(doc(database, "events", params.tokenId));
+  var resultData = docSnapshot.data();
 
-export async function getStaticProps({ params }: { params: any }) {
-  const res = await getMintCollectionData(params.tokenId as string);
+  const eventId = resultData!.eventId;
+  const res = await getMintCollectionData(eventId as string);
   return {
     props: {
-      tokenId: params.tokenId,
+      tokenId: eventId,
+      docId: params.tokenId,
       data: res.event,
       uriData: formatIpfsData(res.uriData),
     },

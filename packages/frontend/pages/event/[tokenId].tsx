@@ -1,11 +1,14 @@
+import Loading from "@/components/common/Loading";
 import PrimaryButton from "@/components/common/PrimaryButton";
 import TwitterIcon from "@/components/icons/TwitterIcon";
 import QRCodeModal from "@/components/modals/QRCodeModal";
+import { WEBSITE_URL } from "@/data/constant";
 import { getMintCollectionData } from "@/graphql/queries/getMintCollectionData";
-import { getTokenCollectionCount } from "@/graphql/queries/getTokenCollectionCount";
 import { formatIpfsData } from "@/utils/data";
+import { database } from "@/utils/firebase";
 import { fetchImageUrl } from "@/utils/ipfs";
 import { formatTimestampToTimeElapsedForm } from "@/utils/utils";
+import { collection, getDocs, query, where } from "firebase/firestore";
 import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
@@ -18,9 +21,17 @@ interface Props {
   tokenId: string;
   uriData: DataProps;
   data: any;
+  ownerAddress: string;
+  eventUUID: string;
 }
 
-const EventPage: React.FC<Props> = ({ tokenId, uriData, data }) => {
+const EventPage: React.FC<Props> = ({
+  tokenId,
+  uriData,
+  data,
+  ownerAddress,
+  eventUUID,
+}) => {
   const router = useRouter();
   const [isQRCodeOpen, setIsQRCodeOpen] = useState(false);
   const { address } = useAccount();
@@ -33,13 +44,13 @@ const EventPage: React.FC<Props> = ({ tokenId, uriData, data }) => {
   }, [address]);
 
   if (router.isFallback) {
-    return <div>Loading...</div>;
+    return <Loading />;
   }
 
   return (
     <>
       <Head>
-        <title>🍞 Mint Toast | Event</title>
+        <title>Mint Toast | Event</title>
       </Head>
 
       <div className="flex flex-col justify-start items-start md:pt-2 pt-0 max-w-xl mx-auto">
@@ -53,7 +64,7 @@ const EventPage: React.FC<Props> = ({ tokenId, uriData, data }) => {
             closeModal={() => {
               setIsQRCodeOpen(false);
             }}
-            value={"/mint/" + data?.id ?? ""}
+            value={"/mint/" + eventUUID}
           />
 
           <div className="flex flex-col justify-center w-full mt-16 items-center">
@@ -72,23 +83,30 @@ const EventPage: React.FC<Props> = ({ tokenId, uriData, data }) => {
             </span>
 
             <div className="md:w-[400px] w-full px-2 md:mx-0 mt-8 flex flex-col">
-              <div className="text-gray-500">{uriData?.description ?? ""}</div>
-              <div className="mt-12 w-full flex justify-center">
-                <PrimaryButton
-                  onClick={() => {
-                    setIsQRCodeOpen(true);
-                  }}
-                  text="Show QR Code"
-                />
+              <div className="text-gray-500 whitespace-pre-wrap">
+                {uriData?.description ?? ""}
               </div>
-              <div className="mt-5 w-full flex justify-center">
-                <PrimaryButton
-                  onClick={() => {
-                    router.push("/mint/" + data?.id);
-                  }}
-                  text="Mint the Toast"
-                />
-              </div>
+              {ownerAddress == userAddress && (
+                <>
+                  <div className="mt-12 w-full flex justify-center">
+                    <PrimaryButton
+                      onClick={() => {
+                        setIsQRCodeOpen(true);
+                      }}
+                      text="Show QR Code"
+                    />
+                  </div>
+                  <div className="mt-5 w-full flex justify-center">
+                    <PrimaryButton
+                      onClick={() => {
+                        router.push("/mint/" + eventUUID);
+                      }}
+                      text="Mint the Toast"
+                    />
+                  </div>
+                </>
+              )}
+
               <Link
                 className="justify-self-start mt-10 text-green"
                 href={uriData?.websiteLink ?? ""}
@@ -96,12 +114,12 @@ const EventPage: React.FC<Props> = ({ tokenId, uriData, data }) => {
               >
                 🌐 {uriData?.websiteLink ?? ""}
               </Link>
-              <div className="text-black font-bold text-lg mt-8 ">
+              {/* <div className="text-black font-bold text-lg mt-8 ">
                 How to mint Toast?
               </div>
               <div className="text-gray-500">
                 Instructions coming soon. For now ask our Toast Masters.
-              </div>
+              </div> */}
               <Link
                 href={"https://celoscan.io/address/" + uriData?.createdBy ?? ""}
                 target={"_blank"}
@@ -120,51 +138,66 @@ const EventPage: React.FC<Props> = ({ tokenId, uriData, data }) => {
                 </div>
               </Link>
               {data != null && data?.items.length > 0 && (
-                <div className="w-full text-xs mt-8">
-                  <table className="w-full table-fixed border border-black">
-                    <thead className="">
-                      <tr className="h-8 text-center bg-black text-white">
-                        <th>Toast ID</th>
-                        <th>Collector</th>
-                        <th>Date</th>
-                      </tr>
-                    </thead>
-                    <tbody className="">
-                      {data.items.map((item: any, index: any) => {
-                        const address =
-                          item.owner.id.substring(0, 4) +
-                          "..." +
-                          item.owner.id.substring(38, 42);
-                        return (
-                          <tr
-                            key={index}
-                            className="h-8 text-center border-b border-black"
-                          >
-                            <td>#{item.id}</td>
-                            <td>
-                              <a
-                                href={
-                                  "https://celoscan.io/address/" + item.owner.id
-                                }
-                                target="_blank"
-                                rel="noreferrer"
-                              >
-                                {address}
-                              </a>
-                            </td>
-                            <td>
-                              {formatTimestampToTimeElapsedForm(item.timestamp)}
-                            </td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
-                </div>
+                <>
+                  <p className="mt-8 mb-2">Recent Mints...</p>
+                  <div className="w-full text-xs ">
+                    <table className="w-full table-fixed border border-black">
+                      <thead className="">
+                        <tr className="h-8 text-center bg-black text-white">
+                          <th>Toast ID</th>
+                          <th>Collector</th>
+                          <th>Date</th>
+                        </tr>
+                      </thead>
+                      <tbody className="">
+                        {data.items.map((item: any, index: any) => {
+                          const address =
+                            item.owner.id.substring(0, 4) +
+                            "..." +
+                            item.owner.id.substring(38, 42);
+                          return (
+                            <tr
+                              key={index}
+                              className="h-8 text-center border-b border-black"
+                            >
+                              <td>#{item.id}</td>
+                              <td>
+                                <a
+                                  href={
+                                    "https://celoscan.io/address/" +
+                                    item.owner.id
+                                  }
+                                  target="_blank"
+                                  rel="noreferrer"
+                                >
+                                  {address}
+                                </a>
+                              </td>
+                              <td>
+                                {formatTimestampToTimeElapsedForm(
+                                  item.timestamp
+                                )}
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                </>
               )}
               <div className="mt-12 w-full flex justify-center">
                 <PrimaryButton
-                  onClick={() => {}}
+                  onClick={() => {
+                    // route to <a href="http://www.twitter.com/share?url=http://www.google.com/>Tweet</a>
+                    window.open(
+                      "https://twitter.com/intent/tweet?text=I%20just%20minted%20a%20Toast%20on%20MintToast!%20Check%20it%20out%20at%20" +
+                        WEBSITE_URL +
+                        "%2Fevent%2F" +
+                        tokenId,
+                      "_blank"
+                    );
+                  }}
                   text="Share on Twitter"
                   icon={<TwitterIcon />}
                 />
@@ -178,18 +211,30 @@ const EventPage: React.FC<Props> = ({ tokenId, uriData, data }) => {
   );
 };
 
-export async function getStaticPaths() {
-  const res = await getTokenCollectionCount();
-  const count = res.events[0].id;
-  // create an array number from 0 till count
-  const paths = Array.from(Array(count).keys());
-  return {
-    paths: paths.map((id) => ({ params: { tokenId: id.toString() } })),
-    fallback: true,
-  };
-}
+// export async function getStaticPaths() {
+//   const res = await getTokenCollectionCount();
+//   if (!res) {
+//     return {
+//       paths: [],
+//       fallback: true,
+//     };
+//   }
 
-export async function getStaticProps({ params }: { params: any }) {
+//   var count;
+//   if (res && res.events && res.events.length > 0 && res.events[0].id) {
+//     count = res.events[0].id;
+//   } else {
+//     count = 0;
+//   }
+//   // create an array number from 0 till count
+//   const paths = Array.from(Array(count).keys());
+//   return {
+//     paths: paths.map((id) => ({ params: { tokenId: id.toString() } })),
+//     fallback: true,
+//   };
+// }
+
+export async function getServerSideProps({ params }: { params: any }) {
   const res = await getMintCollectionData(params.tokenId as string);
   if (!res || !res.event) {
     return {
@@ -199,14 +244,30 @@ export async function getStaticProps({ params }: { params: any }) {
       },
     };
   }
-  // revalodate in 10 seconds
+
+  var result = await getDocs(
+    query(
+      collection(database, "events"),
+      where("eventId", "==", parseInt(params.tokenId))
+    )
+  );
+
+  var resultData = result.docs.map((doc) => doc.data());
+
+  var ownerAddress = "";
+  var eventUUID = "";
+  if (resultData.length != 0) {
+    ownerAddress = resultData[0].ownerAddress;
+    eventUUID = resultData[0].uuid;
+  }
   return {
     props: {
       tokenId: params.tokenId,
       data: res.event,
       uriData: formatIpfsData(res.uriData),
+      ownerAddress,
+      eventUUID,
     },
-    revalidate: 10,
   };
 }
 

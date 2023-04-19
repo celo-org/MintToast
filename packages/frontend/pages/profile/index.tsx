@@ -1,19 +1,18 @@
 import CollectionItem from "@/components/collection/CollectionItem";
 import ConnectWalletMessage from "@/components/common/ConnectWalletMessage";
 import NoToast from "@/components/common/NoToast";
-import { getUserCollection } from "@/graphql/queries/getUserCollection";
+import { getMintCollectionData } from "@/graphql/queries/getMintCollectionData";
+import axios from "axios";
 import Head from "next/head";
 import { useEffect, useState } from "react";
 import { useAccount } from "wagmi";
 
-interface Props {
-  address: string;
-  collection: any;
-}
+interface Props {}
 
-const Collections: React.FC<Props> = ({ address: userAddress, collection }) => {
+const Profile: React.FC<Props> = () => {
   const { address, status } = useAccount();
   const [isConnected, setIsConnected] = useState(false);
+  const [collection, setCollection] = useState<any>(null);
 
   useEffect(() => {
     if (address) {
@@ -23,6 +22,35 @@ const Collections: React.FC<Props> = ({ address: userAddress, collection }) => {
       setIsConnected(false);
     }
   }, [address, status]);
+
+  useEffect(() => {
+    const fetchUserCollections = async () => {
+      // axios call with content type application/json
+      const res = await axios({
+        method: "post",
+        url: "/api/get-user-collection",
+        data: {
+          address,
+        },
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (res.data.resultData) {
+        var tempCollection: any = [];
+        tempCollection = await Promise.all(
+          res.data.resultData.map(async (item: any) => {
+            const res = await getMintCollectionData(item.eventId);
+            return res;
+          })
+        );
+        setCollection(tempCollection);
+      }
+    };
+    if (isConnected && address) {
+      fetchUserCollections();
+    }
+  }, [address, isConnected]);
 
   if (!isConnected) {
     return (
@@ -52,11 +80,19 @@ const Collections: React.FC<Props> = ({ address: userAddress, collection }) => {
           {collection.length > 0 ? (
             <span className="px-5 text-lg font-bold">2023</span>
           ) : (
-            <NoToast />
+            <div className="w-full flex-initial justify-center items-center text-center">
+              <span className="px-5 text-lg font-bold">
+                <NoToast />
+              </span>
+            </div>
           )}
           <div className="flex flex-row flex-wrap justify-evenly">
             {collection.map((item: any) => {
-              return <CollectionItem event={item.event} key={item.event.id} />;
+              if (item != null) {
+                return (
+                  <CollectionItem key={item.event.id} event={item.event} />
+                );
+              }
             })}
           </div>
         </div>
@@ -65,22 +101,4 @@ const Collections: React.FC<Props> = ({ address: userAddress, collection }) => {
   );
 };
 
-export async function getServerSideProps({ params }: { params: any }) {
-  const res = await getUserCollection(params.address as string);
-  if (!res) {
-    return {
-      redirect: {
-        destination: "/404",
-        permanent: false,
-      },
-    };
-  }
-  return {
-    props: {
-      address: params.address,
-      collection: res,
-    },
-  };
-}
-
-export default Collections;
+export default Profile;

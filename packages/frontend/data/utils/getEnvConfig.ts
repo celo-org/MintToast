@@ -1,4 +1,5 @@
 import {
+  LOCAL_API_ENDPOINT,
   MAINNET_API_ENDPOINT,
   MAINNET_CONTRACT_ADDRESS,
   MAINNET_GRAPHQL_API,
@@ -27,6 +28,14 @@ export const getEnvConfig = (): {
         toastMasterPK: MAINNET_TOASTMASTER_PK,
         contractAddress: MAINNET_CONTRACT_ADDRESS,
         graphqlApi: MAINNET_GRAPHQL_API,
+      };
+    case "local":
+      return {
+        apiEndpoint: LOCAL_API_ENDPOINT,
+        rpcEndpoint: TESTNET_RPC_ENDPOINT,
+        toastMasterPK: TESTNET_TOASTMASTER_PK,
+        contractAddress: TESTNET_CONTRACT_ADDRESS,
+        graphqlApi: TESTNET_GRAPHQL_API,
       };
     default:
       return {

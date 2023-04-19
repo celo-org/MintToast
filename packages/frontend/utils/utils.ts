@@ -1,12 +1,10 @@
 export const formatDateFromString = (dateString: string) => {
-  // format of dateString is DD/MM/YYYY
-  let [day, month, year] = dateString.split("/");
-  const dateObj = new Date(+year, +month - 1, +day);
-  return dateObj.toLocaleDateString("en-US", {
-    month: "long",
-    day: "numeric",
-    year: "numeric",
-  });
+  // format of dateString is MM/DD/YYYY
+  const date = new Date(dateString);
+  const month = date.toLocaleString("default", { month: "long" });
+  const day = date.getDate();
+  const year = date.getFullYear();
+  return `${month} ${day}, ${year}`;
 };
 
 // convert the timestamp into date and then retuen the time elapsed from now till the date

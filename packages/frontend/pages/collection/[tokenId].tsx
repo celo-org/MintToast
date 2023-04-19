@@ -1,7 +1,8 @@
+import Loading from "@/components/common/Loading";
 import PrimaryButton from "@/components/common/PrimaryButton";
 import TwitterIcon from "@/components/icons/TwitterIcon";
+import { WEBSITE_URL } from "@/data/constant";
 import { getMintCollectionData } from "@/graphql/queries/getMintCollectionData";
-import { getTokenCollectionCount } from "@/graphql/queries/getTokenCollectionCount";
 import { formatIpfsData } from "@/utils/data";
 import { fetchImageUrl } from "@/utils/ipfs";
 import { formatDateFromString } from "@/utils/utils";
@@ -32,12 +33,12 @@ const CollectionItem: React.FC<Props> = ({ tokenId, uriData, data }) => {
   }, [address]);
 
   if (router.isFallback) {
-    return <div>Loading...</div>;
+    return <Loading />;
   }
   return (
     <>
       <Head>
-        <title>🍞 Mint Toast | Collection</title>
+        <title>Mint Toast | Collection</title>
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:site" content="@CeloOrg" />
         <meta name="twitter:title" content={uriData?.name ?? ""} />
@@ -70,7 +71,9 @@ const CollectionItem: React.FC<Props> = ({ tokenId, uriData, data }) => {
             <span className="font-semibold">#</span>
           </div>
           <div className="md:w-[400px] w-full px-2 md:mx-0 mt-8 flex flex-col">
-            <div className="text-gray-500">{uriData?.description ?? ""}</div>
+            <div className="text-gray-500 whitespace-pre-wrap">
+              {uriData?.description ?? ""}
+            </div>
             <Link
               className="justify-self-start mt-10 text-green"
               href={uriData?.websiteLink ?? "#"}
@@ -99,7 +102,15 @@ const CollectionItem: React.FC<Props> = ({ tokenId, uriData, data }) => {
             </Link>
             <div className="mt-12 w-full flex justify-center">
               <PrimaryButton
-                onClick={() => {}}
+                onClick={() => {
+                  window.open(
+                    "https://twitter.com/intent/tweet?text=I%20just%20minted%20a%20Toast%20on%20MintToast!%20Check%20it%20out%20at%20" +
+                      WEBSITE_URL +
+                      "%2Fevent%2F" +
+                      tokenId,
+                    "_blank"
+                  );
+                }}
                 text="Share on Twitter"
                 icon={<TwitterIcon />}
               />
@@ -112,18 +123,7 @@ const CollectionItem: React.FC<Props> = ({ tokenId, uriData, data }) => {
   );
 };
 
-export async function getStaticPaths() {
-  const res = await getTokenCollectionCount();
-  const count = res.events[0].id;
-  // create an array number from 0 till count
-  const paths = Array.from(Array(count).keys());
-  return {
-    paths: paths.map((id) => ({ params: { tokenId: id.toString() } })),
-    fallback: true,
-  };
-}
-
-export async function getStaticProps({ params }: { params: any }) {
+export async function getServerSideProps({ params }: { params: any }) {
   const res = await getMintCollectionData(params.tokenId as string);
   if (!res || !res.event) {
     return {

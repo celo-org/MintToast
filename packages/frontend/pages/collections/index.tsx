@@ -1,6 +1,7 @@
+import ConnectWalletMessage from "@/components/common/ConnectWalletMessage";
+import Loading from "@/components/common/Loading";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import { Puff } from "react-loader-spinner";
 import { useAccount } from "wagmi";
 
 export default function Collections() {
@@ -24,9 +25,7 @@ export default function Collections() {
   if (!userAddress) {
     return (
       <>
-        <div className="w-full text-center px-5 mt-10 text-lg font-bold">
-          Please connect the wallet to see your collection
-        </div>
+        <ConnectWalletMessage />
       </>
     );
   }
@@ -34,16 +33,7 @@ export default function Collections() {
   return (
     <>
       <div className="h-full w-full flex justify-center items-center">
-        <Puff
-          height="80"
-          width="80"
-          radius={1}
-          color="#FF84E2"
-          ariaLabel="puff-loading"
-          wrapperStyle={{}}
-          wrapperClass=""
-          visible={true}
-        />
+        <Loading />
       </div>
     </>
   );
