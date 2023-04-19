@@ -9,7 +9,8 @@ import { doc, getDoc } from "firebase/firestore";
 import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { useGoogleReCaptcha } from "react-google-recaptcha-v3";
 import { toast } from "react-toastify";
 import { useAccount } from "wagmi";
 
@@ -34,6 +35,8 @@ interface Props {
 
 const QRPage: React.FC<Props> = ({ tokenId, uriData, data }) => {
   // get the id from the url
+  const { executeRecaptcha } = useGoogleReCaptcha();
+
   const router = useRouter();
   const { address: walletAddress, isConnected } = useAccount();
   const [address, setAddress] = useState<string>("");
@@ -45,34 +48,42 @@ const QRPage: React.FC<Props> = ({ tokenId, uriData, data }) => {
     }
   }, [isConnected, walletAddress]);
 
-  const handleSubmit = async () => {
-    toast.loading("Minting your toast, please wait...");
-    try {
-      setMintLoading(true);
-      var res = await axios.post("/api/mint", {
-        tokenId,
-        address,
-      });
-      if (res.data["success"]) {
-        setAddress("");
-        toast.dismiss();
-        toast.success(
-          "💪🏼 Successfully minted Toast, redirecting to collection..."
-        );
-        setTimeout(() => {
-          router.push("/collections");
-        }, 5000);
-      } else if (res.data["error"]) {
-        toast.dismiss();
-        toast.error(res.data["error"]);
-      }
-    } catch (e) {
-      toast.dismiss();
-      toast.error(e as string);
-    } finally {
-      setMintLoading(false);
+  const handleSubmit = useCallback(async () => {
+    if (!executeRecaptcha) {
+      console.log("Execute recaptcha not yet available");
+      return;
     }
-  };
+
+    executeRecaptcha("enquiryFormSubmit").then(async (token) => {
+      toast.loading("Minting your toast, please wait...");
+      try {
+        setMintLoading(true);
+        var res = await axios.post("/api/mint", {
+          tokenId,
+          address,
+          token,
+        });
+        if (res.data["success"]) {
+          setAddress("");
+          toast.dismiss();
+          toast.success(
+            "💪🏼 Successfully minted Toast, redirecting to collection..."
+          );
+          setTimeout(() => {
+            router.push("/collections");
+          }, 5000);
+        } else if (res.data["error"]) {
+          toast.dismiss();
+          toast.error(res.data["error"]);
+        }
+      } catch (e) {
+        toast.dismiss();
+        toast.error(e as string);
+      } finally {
+        setMintLoading(false);
+      }
+    });
+  }, [address, executeRecaptcha, router, tokenId]);
 
   return (
     <>
@@ -137,6 +148,15 @@ const QRPage: React.FC<Props> = ({ tokenId, uriData, data }) => {
 export async function getServerSideProps({ params }: { params: any }) {
   var docSnapshot = await getDoc(doc(database, "events", params.tokenId));
   var resultData = docSnapshot.data();
+
+  if (!resultData)
+    return {
+      props: {
+        tokenId: "",
+        docId: params.tokenId,
+        data: {},
+      },
+    };
 
   const eventId = resultData!.eventId;
   const res = await getMintCollectionData(eventId as string);

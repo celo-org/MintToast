@@ -3,6 +3,7 @@ import formidable from "formidable";
 import { getContract } from "./../../utils/web3";
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 
+import { CAPTCH_SECRETKEY } from "@/data/constant";
 import { getRateLimitMiddlewares } from "@/data/utils/rate-limit";
 import type { NextApiRequest, NextApiResponse } from "next";
 
@@ -23,11 +24,11 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<Data>
 ) {
-  try {
-    await Promise.all(middlewares.map((middleware) => middleware(req, res)));
-  } catch {
-    return res.status(429).send({ error: "Too Many Requests" });
-  }
+  // try {
+  //   await Promise.all(middlewares.map((middleware) => middleware(req, res)));
+  // } catch {
+  //   return res.status(429).send({ error: "Too Many Requests" });
+  // }
 
   if (req.method !== "POST") {
     res.status(405).json({ error: "Method Not Allowed" });
@@ -37,28 +38,50 @@ export default async function handler(
     const form = new formidable.IncomingForm();
     await new Promise<void>((resolve, reject) => {
       form.parse(req, async (err, fields, files) => {
-        // Make contract call to upload the data
-        const address = fields.address;
-        const tokenId = fields.tokenId;
-
-        const contract = getContract();
-        try {
-          const tx = await contract.mint(address, tokenId);
-          await tx.wait();
-          res.status(200).json({ success: true });
-          return;
-        } catch (e) {
-          if ((e as object).toString().includes("Only One NFT per Wallet")) {
-            res.status(200).json({
-              error:
-                "You have already minted the Toast, please check you collection",
-            });
-            return;
-          } else {
-            res.status(500).json({ error: e as string });
-            return;
+        var reCaptchaRes = await fetch(
+          "https://www.google.com/recaptcha/api/siteverify",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/x-www-form-urlencoded",
+            },
+            body: `secret=${CAPTCH_SECRETKEY}&response=${fields.token}`,
           }
+        );
+        var reCaptchaResJson = await reCaptchaRes.json();
+        console.log(
+          reCaptchaResJson,
+          "Response from Google reCaptcha verification API"
+        );
+
+        if (reCaptchaResJson?.score > 0.5) {
+          const address = fields.address;
+          const tokenId = fields.tokenId;
+
+          const contract = getContract();
+          try {
+            const tx = await contract.mint(address, tokenId);
+            await tx.wait();
+            res.status(200).json({ success: true });
+            return;
+          } catch (e) {
+            if ((e as object).toString().includes("Only One NFT per Wallet")) {
+              res.status(200).json({
+                error:
+                  "You have already minted the Toast, please check you collection",
+              });
+              return;
+            } else {
+              res.status(500).json({ error: e as string });
+              return;
+            }
+          }
+        } else {
+          res.status(200).json({
+            error: "Recaptcha failed",
+          });
         }
+        // Make contract call to upload the data
       });
     });
   } catch (error) {

@@ -37,3 +37,6 @@ export const IPFS_API_KEY = process.env.IPFS_API_KEY;
 export const WHITELISTED_ADDRESS = [
   "0xE1061b397cC3C381E95a411967e3F053A7c50E70",
 ];
+
+export const CAPTCH_SITEKEY = process.env.NEXT_PUBLIC_CAPTCH_SITEKEY;
+export const CAPTCH_SECRETKEY = process.env.CAPTCH_SECRETKEY;

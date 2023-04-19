@@ -9,11 +9,15 @@ export const applyMiddleware =
       );
     });
 
-const getIP = (request: any) =>
-  request.ip ||
-  request.headers["x-forwarded-for"] ||
-  request.headers["x-real-ip"] ||
-  request.connection.remoteAddress;
+const getIP = (request: any) => {
+  var ip =
+    request.ip ||
+    request.headers["x-forwarded-for"] ||
+    request.headers["x-real-ip"] ||
+    request.connection.remoteAddress;
+  console.log("ip", ip);
+  return ip;
+};
 
 export const getRateLimitMiddlewares = ({
   limit = 2,
