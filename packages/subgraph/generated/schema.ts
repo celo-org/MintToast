@@ -213,6 +213,15 @@ export class Item extends Entity {
   set owner(value: string) {
     this.set("owner", Value.fromString(value));
   }
+
+  get idInSeries(): BigInt {
+    let value = this.get("idInSeries");
+    return value!.toBigInt();
+  }
+
+  set idInSeries(value: BigInt) {
+    this.set("idInSeries", Value.fromBigInt(value));
+  }
 }
 
 export class SeriesBalance extends Entity {
