@@ -4,13 +4,14 @@ schema:
 dataSources:
   - kind: ethereum
     name: Badge
-    network: celo-alfajores
+    network: celo
     source:
       abi: Badge
-      address: "0x36Eef317F736FC5d7D0CAAe80a1bD7aD1D93B874"
+      address: "0x6145602B5AA5646f54cd551097C74A189839D326"
+      startBlock: 18593181
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.7
+      apiVersion: 0.0.6
       language: wasm/assemblyscript
       entities:
         - ApprovalForAll
@@ -26,11 +27,11 @@ dataSources:
         - name: Badge
           file: ./abis/Badge.json
       eventHandlers:
+        - event: SeriesCreated(indexed address,indexed uint256,indexed uint256)
+          handler: handleSeriesCreated
         - event: TransferSingle(indexed address,indexed address,indexed
             address,uint256,uint256)
           handler: handleTransferSingle
-        - event: SeriesCreated(indexed address,indexed uint256,indexed uint256)
-          handler: handleSeriesCreated
         - event: URI(string,indexed uint256)
           handler: handleURI
       file: ./src/badge.ts

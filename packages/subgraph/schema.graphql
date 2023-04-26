@@ -3,26 +3,27 @@ type User @entity {
     collection: [Item!]! @derivedFrom(field: "owner")
 }
 
-type Event @entity {
+type Serie @entity {
     id: ID!
     creationTimestamp: BigInt!
     totalSupply: BigInt!
     currentSupply: BigInt!
     toaster: Bytes!
     uri: String!
-    items: [Item!]! @derivedFrom(field: "event")
+    items: [Item!]! @derivedFrom(field: "serie")
     mintStart: BigInt!
     mintEnd: BigInt!
 }
 
 type Item @entity {
     id: ID!
-    event: Event!
+    serie: Serie!
     timestamp: BigInt!
     owner: User!
+    idInSeries: BigInt!
 }
 
-type EventBalance @entity {
+type SeriesBalance @entity {
     id: ID!
     balance: BigInt!
 }

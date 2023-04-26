@@ -1,68 +1,90 @@
+import { Address, BigInt, ethereum } from "@graphprotocol/graph-ts";
+import { TransferSingle } from "../generated/Badge/Badge";
 import {
-  assert,
-  describe,
-  test,
-  clearStore,
-  beforeAll,
-  afterAll
-} from "matchstick-as/assembly/index"
-import { Address, BigInt, Bytes } from "@graphprotocol/graph-ts"
-import { ExampleEntity } from "../generated/schema"
-import { ApprovalForAll } from "../generated/Badge/Badge"
-import { handleApprovalForAll } from "../src/badge"
-import { createApprovalForAllEvent } from "./badge-utils"
+    describe,
+    test,
+    assert,
+    beforeAll,
+    newMockEvent,
+} from "matchstick-as/assembly/index";
+import { handleTransferSingle } from "../src/badge";
+import { Serie } from "../generated/schema";
 
-// Tests structure (matchstick-as >=0.5.0)
-// https://thegraph.com/docs/en/developer/matchstick/#tests-structure-0-5-0
+function createTransferSingleEvent(
+    operator: Address,
+    from: Address,
+    to: Address,
+    id: i32,
+    value: i32
+): TransferSingle {
+    let mockEvent = newMockEvent();
 
-describe("Describe entity assertions", () => {
-  beforeAll(() => {
-    let account = Address.fromString(
-      "0x0000000000000000000000000000000000000001"
-    )
-    let operator = Address.fromString(
-      "0x0000000000000000000000000000000000000001"
-    )
-    let approved = "boolean Not implemented"
-    let newApprovalForAllEvent = createApprovalForAllEvent(
-      account,
-      operator,
-      approved
-    )
-    handleApprovalForAll(newApprovalForAllEvent)
-  })
+    let newTransferSingle = new TransferSingle(
+        mockEvent.address,
+        mockEvent.logIndex,
+        mockEvent.transactionLogIndex,
+        mockEvent.logType,
+        mockEvent.block,
+        mockEvent.transaction,
+        mockEvent.parameters,
+        mockEvent.receipt
+    );
 
-  afterAll(() => {
-    clearStore()
-  })
+    newTransferSingle.parameters = new Array();
 
-  // For more test scenarios, see:
-  // https://thegraph.com/docs/en/developer/matchstick/#write-a-unit-test
+    let operatorParam = new ethereum.EventParam(
+        "operator",
+        ethereum.Value.fromAddress(operator)
+    );
 
-  test("ExampleEntity created and stored", () => {
-    assert.entityCount("ExampleEntity", 1)
+    let fromParam = new ethereum.EventParam(
+        "from",
+        ethereum.Value.fromAddress(from)
+    );
 
-    // 0xa16081f360e3847006db660bae1c6d1b2e17ec2a is the default address used in newMockEvent() function
-    assert.fieldEquals(
-      "ExampleEntity",
-      "0xa16081f360e3847006db660bae1c6d1b2e17ec2a",
-      "account",
-      "0x0000000000000000000000000000000000000001"
-    )
-    assert.fieldEquals(
-      "ExampleEntity",
-      "0xa16081f360e3847006db660bae1c6d1b2e17ec2a",
-      "operator",
-      "0x0000000000000000000000000000000000000001"
-    )
-    assert.fieldEquals(
-      "ExampleEntity",
-      "0xa16081f360e3847006db660bae1c6d1b2e17ec2a",
-      "approved",
-      "boolean Not implemented"
-    )
+    let toParam = new ethereum.EventParam("to", ethereum.Value.fromAddress(to));
 
-    // More assert options:
-    // https://thegraph.com/docs/en/developer/matchstick/#asserts
-  })
-})
+    let idParam = new ethereum.EventParam("id", ethereum.Value.fromI32(id));
+    let valueParam = new ethereum.EventParam(
+        "value",
+        ethereum.Value.fromI32(value)
+    );
+
+    newTransferSingle.parameters.push(operatorParam);
+    newTransferSingle.parameters.push(fromParam);
+    newTransferSingle.parameters.push(toParam);
+    newTransferSingle.parameters.push(idParam);
+    newTransferSingle.parameters.push(valueParam);
+
+    return newTransferSingle;
+}
+
+describe("MintToast Tests", () => {
+    beforeAll(() => {
+        let serie = new Serie("7");
+        serie.creationTimestamp = BigInt.fromString("100000000000");
+        serie.totalSupply = BigInt.fromString("100");
+        serie.mintStart = BigInt.fromString("100000000001");
+        serie.mintEnd = BigInt.fromString("100000000010");
+        serie.currentSupply = BigInt.fromString("0");
+        serie.toaster = Address.fromString(
+            "0x0fb8b800ca3086f5c78db451cf88cb7e4f399b5c"
+        );
+        serie.uri = "ipfs://QmPkQxZTvZxiXZLnNsaAqBMWN1EXZi97gZrpBULDxXCC9g";
+        serie.save();
+    });
+
+    test("Can handle TransferSingle event", () => {
+        let newTransferSingle = createTransferSingleEvent(
+            Address.fromString("0x0fb8b800ca3086f5c78db451cf88cb7e4f399b5c"),
+            Address.fromString("0x0000000000000000000000000000000000000000"),
+            Address.fromString("0xe1061b397cc3c381e95a411967e3f053a7c50e70"),
+            7,
+            1
+        );
+
+        handleTransferSingle(newTransferSingle);
+
+        assert.fieldEquals("Serie", "7", "currentSupply", "1");
+    });
+});
