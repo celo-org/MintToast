@@ -11,7 +11,7 @@ export const getUserCollection = async (address: string) => {
           id
           collection {
             id
-            event {
+            serie {
               id
               creationTimestamp
               uri
@@ -29,12 +29,12 @@ export const getUserCollection = async (address: string) => {
     },
   });
   if (res.data && res.data.data && res.data.data.user !== null) {
-    // remove duplicate events where event id is the same
+    // remove duplicate events where serie id is the same
     const collection = res.data.data.user!.collection.filter(
-      (item: { event: { id: any } }, index: any, self: any[]) =>
+      (item: { serie: { id: any } }, index: any, self: any[]) =>
         index ===
         self.findIndex(
-          (t: { event: { id: any } }) => t.event.id === item.event.id
+          (t: { serie: { id: any } }) => t.serie.id === item.serie.id
         )
     );
     return collection;

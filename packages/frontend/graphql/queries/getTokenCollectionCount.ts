@@ -7,7 +7,7 @@ export const getTokenCollectionCount = async () => {
     method: "post",
     data: {
       query: `query getTokenCollectionCount {
-        events(orderBy: "id",orderDirection: "desc", first: 1) {
+        series(orderBy: "id",orderDirection: "desc", first: 1) {
           id
         }
       }`,
@@ -17,7 +17,7 @@ export const getTokenCollectionCount = async () => {
       "Content-Type": "application/json",
     },
   });
-  if (res.data && res.data.data && res.data.data.events) {
+  if (res.data && res.data.data && res.data.data.series) {
     return { ...res.data.data };
   } else {
     return null;

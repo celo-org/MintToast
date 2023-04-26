@@ -8,7 +8,7 @@ export const getMintCollectionData = async (tokenId: string) => {
     method: "post",
     data: {
       query: `query getMintCollectionData($tokenId: Int!) {
-        event(id: $tokenId) {
+        serie(id: $tokenId) {
           id
           uri
           creationTimestamp
@@ -18,6 +18,7 @@ export const getMintCollectionData = async (tokenId: string) => {
           __typename
           items(orderDirection:desc, first: 50, orderBy: timestamp) {
             id
+            idInSeries
             timestamp
             owner {
               id
@@ -34,13 +35,13 @@ export const getMintCollectionData = async (tokenId: string) => {
       "Content-Type": "application/json",
     },
   });
-  if (res.data && res.data.data && res.data.data.event) {
+  if (res.data && res.data.data && res.data.data.serie) {
     var uriData = {};
     uriData = await fetchDataFromIPFS(
-      res.data.data.event.uri.replace("ipfs://", "").replace("ipfs://", "")
+      res.data.data.serie.uri.replace("ipfs://", "").replace("ipfs://", "")
     );
     // sort res.data.data.item by id
-    // res.data.data.event.items.sort((a: { id: number }, b: { id: number }) => {
+    // res.data.data.serie.items.sort((a: { id: number }, b: { id: number }) => {
     //   return a.id - b.id;
     // });
     return { ...res.data.data, uriData };

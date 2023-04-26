@@ -15,10 +15,10 @@ export const MAINNET_TOASTMASTER_PK = process.env.MAINNET_TOASTMASTER_PK ?? "";
 export const WEBSITE_URL = "https://minttoast.xyz";
 
 export const TESTNET_GRAPHQL_API =
-  "https://api.studio.thegraph.com/query/44345/minttoast-testnet/v0.0.1";
+  "https://api.studio.thegraph.com/query/44345/minttoast-testnet/v0.1.0";
 
 export const MAINNET_GRAPHQL_API =
-  "https://api.studio.thegraph.com/query/44345/minttoast/v0.0.11";
+  "https://api.studio.thegraph.com/query/44345/minttoast/v0.1.0";
 
 export const TESTNET_CONTRACT_ADDRESS =
   "0x36Eef317F736FC5d7D0CAAe80a1bD7aD1D93B874";

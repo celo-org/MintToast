@@ -8,7 +8,7 @@ export const getCollection = async (tokenId: number) => {
     method: "post",
     data: {
       query: `query getCollection($tokenId: Int!) {
-        event(id:$tokenId) {
+        serie(id:$tokenId) {
           id
           uri
           creationTimestamp
@@ -27,9 +27,9 @@ export const getCollection = async (tokenId: number) => {
     },
   });
 
-  if (res.data.data.event) {
+  if (res.data.data.serie) {
     var uriData = {};
-    uriData = await fetchDataFromIPFS(res.data.data.event.uri.substring(7));
+    uriData = await fetchDataFromIPFS(res.data.data.serie.uri.substring(7));
     return { ...res.data.data, uriData };
   } else {
     return null;

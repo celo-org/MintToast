@@ -164,7 +164,7 @@ export async function getServerSideProps({ params }: { params: any }) {
     props: {
       tokenId: eventId,
       docId: params.tokenId,
-      data: res.event,
+      data: res.serie,
       uriData: formatIpfsData(res.uriData),
     },
   };

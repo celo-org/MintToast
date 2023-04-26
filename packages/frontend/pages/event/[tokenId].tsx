@@ -160,7 +160,7 @@ const EventPage: React.FC<Props> = ({
                               key={index}
                               className="h-8 text-center border-b border-black"
                             >
-                              <td>#{item.id}</td>
+                              <td>#{item.idInSeries}</td>
                               <td>
                                 <a
                                   href={
@@ -211,32 +211,9 @@ const EventPage: React.FC<Props> = ({
   );
 };
 
-// export async function getStaticPaths() {
-//   const res = await getTokenCollectionCount();
-//   if (!res) {
-//     return {
-//       paths: [],
-//       fallback: true,
-//     };
-//   }
-
-//   var count;
-//   if (res && res.events && res.events.length > 0 && res.events[0].id) {
-//     count = res.events[0].id;
-//   } else {
-//     count = 0;
-//   }
-//   // create an array number from 0 till count
-//   const paths = Array.from(Array(count).keys());
-//   return {
-//     paths: paths.map((id) => ({ params: { tokenId: id.toString() } })),
-//     fallback: true,
-//   };
-// }
-
 export async function getServerSideProps({ params }: { params: any }) {
   const res = await getMintCollectionData(params.tokenId as string);
-  if (!res || !res.event) {
+  if (!res || !res.serie) {
     return {
       redirect: {
         destination: "/404",
@@ -252,6 +229,8 @@ export async function getServerSideProps({ params }: { params: any }) {
     )
   );
 
+  console.log("result", result);
+
   var resultData = result.docs.map((doc) => doc.data());
 
   var ownerAddress = "";
@@ -260,10 +239,11 @@ export async function getServerSideProps({ params }: { params: any }) {
     ownerAddress = resultData[0].ownerAddress;
     eventUUID = resultData[0].uuid;
   }
+  console.log("res.serie", res.serie);
   return {
     props: {
       tokenId: params.tokenId,
-      data: res.event,
+      data: res.serie,
       uriData: formatIpfsData(res.uriData),
       ownerAddress,
       eventUUID,

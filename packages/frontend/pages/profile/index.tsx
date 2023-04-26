@@ -90,7 +90,7 @@ const Profile: React.FC<Props> = () => {
             {collection.map((item: any) => {
               if (item != null) {
                 return (
-                  <CollectionItem key={item.event.id} event={item.event} />
+                  <CollectionItem key={item.serie.id} event={item.serie} />
                 );
               }
             })}

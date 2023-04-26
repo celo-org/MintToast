@@ -125,7 +125,7 @@ const CollectionItem: React.FC<Props> = ({ tokenId, uriData, data }) => {
 
 export async function getServerSideProps({ params }: { params: any }) {
   const res = await getMintCollectionData(params.tokenId as string);
-  if (!res || !res.event) {
+  if (!res || !res.serie) {
     return {
       redirect: {
         destination: "/404",
@@ -136,7 +136,7 @@ export async function getServerSideProps({ params }: { params: any }) {
   return {
     props: {
       tokenId: params.tokenId,
-      data: res.event,
+      data: res.serie,
       uriData: formatIpfsData(res.uriData),
     },
   };

@@ -56,7 +56,7 @@ const Collections: React.FC<Props> = ({ address: userAddress, collection }) => {
           )}
           <div className="flex flex-row flex-wrap justify-evenly">
             {collection.map((item: any) => {
-              return <CollectionItem event={item.event} key={item.event.id} />;
+              return <CollectionItem event={item.serie} key={item.serie.id} />;
             })}
           </div>
         </div>
@@ -67,6 +67,7 @@ const Collections: React.FC<Props> = ({ address: userAddress, collection }) => {
 
 export async function getServerSideProps({ params }: { params: any }) {
   const res = await getUserCollection(params.address as string);
+  console.log("res", res);
   if (!res) {
     return {
       redirect: {
