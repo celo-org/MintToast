@@ -5,7 +5,7 @@ import {
     TransferSingle,
     URI,
 } from "../generated/Badge/Badge";
-import { Serie, User, Item } from "../generated/schema";
+import { Serie, Item, User } from "../generated/schema";
 
 export function handleSeriesCreated(event: SeriesCreated): void {
     let collectionId = event.params.collectionId;
@@ -29,26 +29,20 @@ export function handleTransferSingle(event: TransferSingle): void {
     let collection = Serie.load(event.params.id.toString());
     if (collection) {
         let contract = Badge.bind(event.address);
-        collection.currentSupply = contract
+        let currentSupply = contract
             .currentSupply(event.params.id)
             .minus(new BigInt(1));
+        collection.currentSupply = currentSupply;
         collection.save();
 
-        let item = new Item(
-            contract
-                .currentSupply(event.params.id)
-                .minus(new BigInt(1))
-                .toString()
-        );
+        let item = new Item(event.transaction.hash.toHexString());
         item.serie = collection.id;
         item.owner = event.params.to.toHexString();
         item.timestamp = event.block.timestamp;
+        item.idInSeries = currentSupply;
         item.save();
-        let user = User.load(event.params.to.toString());
-        if (user) {
-            user.collection.push(item.id);
-            user.save();
-        } else {
+        let user = User.load(event.params.to.toHexString());
+        if (!user) {
             let user = new User(event.params.to.toHexString());
             user.save();
         }
