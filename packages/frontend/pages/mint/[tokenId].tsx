@@ -98,6 +98,7 @@ const QRPage: React.FC<Props> = ({ tokenId, uriData, data }) => {
               setAddress(e.target.value);
             }}
             placeholder="0x0..."
+            fieldName="address"
           />
 
           <div className="w-full flex justify-center mt-8">
