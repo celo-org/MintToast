@@ -15,7 +15,7 @@ export const config = {
 };
 
 type Data = {
-  dataID?: string;
+  success?: boolean;
   error?: string;
 };
 
@@ -43,16 +43,25 @@ export default async function handler(
         const endDate = fields.endDate;
         const websiteLink = fields.websiteLink;
         const totalToastSupply = fields.totalToastSupply as string;
-        const email = fields.email;
-        const communityName = fields.communityName;
         const ownerAddress = fields.ownerAddress;
         // upload the image to IPFS
         const imageID = await uploadImage(files.image as formidable.File);
 
-        if (!ownerAddress) {
-          res.status(500).json({ error: "Owner address is required" });
+        // check if all the required fields are present
+        if (
+          !title ||
+          !description ||
+          !startDate ||
+          !endDate ||
+          !websiteLink ||
+          !totalToastSupply ||
+          !ownerAddress ||
+          !imageID
+        ) {
+          res.status(400).json({ error: "Missing required fields" });
           return;
         }
+        res.status(200).json({ success: true });
 
         // create a json object with the above variables
         const toastObj = {
@@ -61,7 +70,6 @@ export default async function handler(
           external_url: "https://toast.celo.org/token/0",
           image: "ipfs://" + imageID,
           attributes: [
-            { trait_type: "community_name", value: communityName },
             {
               trait_type: "created_by",
               value: "0x8D6c17Df259C8c11eb334D1B52F44bB6F9752aeF",
@@ -74,7 +82,6 @@ export default async function handler(
               value: startDate,
             },
             { display_type: "date", trait_type: "end_date", value: endDate },
-            { trait_type: "email", value: email },
             { trait_type: "total_toast_supply", value: totalToastSupply },
           ],
         };
@@ -93,7 +100,8 @@ export default async function handler(
           endDateUnix
         );
         await tx.wait();
-        // // get countOfSeries from contract
+
+        // get countOfSeries from contract
         const countOfSeries: BigNumber = await contract.countOfSeries();
         // generate a UUID using uuid package and store it in firebase database
         const uuid = uuidv4();
@@ -103,7 +111,6 @@ export default async function handler(
           ownerAddress: ownerAddress,
           createdAt: serverTimestamp(),
         });
-        res.status(200).json({ dataID });
         resolve();
       });
     });

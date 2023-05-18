@@ -49,10 +49,6 @@ export default async function handler(
           }
         );
         var reCaptchaResJson = await reCaptchaRes.json();
-        console.log(
-          reCaptchaResJson,
-          "Response from Google reCaptcha verification API"
-        );
 
         if (reCaptchaResJson?.score > 0.5) {
           const address = fields.address;

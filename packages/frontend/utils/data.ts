@@ -30,6 +30,11 @@ export const formatIpfsData = (data: any): IPFSDataProps => {
 };
 
 const getAttr = (key: string, list: Array<any>) => {
-  var res = list.find((attr) => attr["trait_type"] === key)["value"];
-  return res;
+  var item = list.find((attr) => attr["trait_type"] === key);
+  if (item) {
+    var res = item["value"];
+    return res;
+  } else {
+    return null;
+  }
 };

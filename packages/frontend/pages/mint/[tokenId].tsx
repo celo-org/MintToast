@@ -50,7 +50,6 @@ const QRPage: React.FC<Props> = ({ tokenId, uriData, data }) => {
 
   const handleSubmit = useCallback(async () => {
     if (!executeRecaptcha) {
-      console.log("Execute recaptcha not yet available");
       return;
     }
 

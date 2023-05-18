@@ -15,7 +15,6 @@ const getIP = (request: any) => {
     request.headers["x-forwarded-for"] ||
     request.headers["x-real-ip"] ||
     request.connection.remoteAddress;
-  console.log("ip", ip);
   return ip;
 };
 

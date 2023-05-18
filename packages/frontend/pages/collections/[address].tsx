@@ -67,7 +67,6 @@ const Collections: React.FC<Props> = ({ address: userAddress, collection }) => {
 
 export async function getServerSideProps({ params }: { params: any }) {
   const res = await getUserCollection(params.address as string);
-  console.log("res", res);
   if (!res) {
     return {
       redirect: {

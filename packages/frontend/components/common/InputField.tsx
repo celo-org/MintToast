@@ -2,11 +2,21 @@ type Props = {
   label: string;
   value: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void;
   placeholder?: string;
   className?: string;
+  fieldName: string;
 };
 
-function InputField({ label, value, onChange, placeholder, className }: Props) {
+function InputField({
+  label,
+  value,
+  onChange,
+  placeholder,
+  className,
+  onBlur,
+  fieldName,
+}: Props) {
   return (
     <div className={className}>
       <label
@@ -22,7 +32,9 @@ function InputField({ label, value, onChange, placeholder, className }: Props) {
         placeholder={placeholder ?? ""}
         required
         value={value}
+        onBlur={onBlur}
         onChange={onChange}
+        name={fieldName}
       />
     </div>
   );

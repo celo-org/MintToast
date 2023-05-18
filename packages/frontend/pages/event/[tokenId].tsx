@@ -229,8 +229,6 @@ export async function getServerSideProps({ params }: { params: any }) {
     )
   );
 
-  console.log("result", result);
-
   var resultData = result.docs.map((doc) => doc.data());
 
   var ownerAddress = "";
@@ -239,7 +237,6 @@ export async function getServerSideProps({ params }: { params: any }) {
     ownerAddress = resultData[0].ownerAddress;
     eventUUID = resultData[0].uuid;
   }
-  console.log("res.serie", res.serie);
   return {
     props: {
       tokenId: params.tokenId,

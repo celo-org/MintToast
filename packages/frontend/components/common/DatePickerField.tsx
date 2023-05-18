@@ -1,14 +1,15 @@
+import DatePicker from "react-datepicker";
 type Props = {
   label: string;
   value: string;
-  onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
+  onChange: (field: string, value: any) => void;
   onBlur?: (e: React.FocusEvent<HTMLTextAreaElement>) => void;
   placeholder?: string;
   className?: string;
   fieldName: string;
 };
 
-function TextArea({
+function DatePickerField({
   label,
   value,
   onChange,
@@ -22,19 +23,16 @@ function TextArea({
       <label htmlFor="message" className="block mb-2 font-medium text-gray-500">
         {label}
       </label>
-      <textarea
-        id="message"
-        rows={6}
+      <DatePicker
+        selected={(value && new Date(value)) || null}
         className="block p-2.5 w-full text-sm text-black bg-white border border-black focus:ring-blue-500 focus:border-blue-500"
-        placeholder={placeholder ?? ""}
-        required
-        value={value}
-        onChange={onChange}
-        onBlur={onBlur}
-        name={fieldName}
-      ></textarea>
+        placeholderText={placeholder}
+        onChange={(val, e) => {
+          onChange(fieldName, val);
+        }}
+      />
     </div>
   );
 }
 
-export default TextArea;
+export default DatePickerField;

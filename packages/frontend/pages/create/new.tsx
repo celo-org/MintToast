@@ -1,13 +1,17 @@
+import DatePickerField from "@/components/common/DatePickerField";
 import InputField from "@/components/common/InputField";
 import PrimaryButton from "@/components/common/PrimaryButton";
 import TextArea from "@/components/common/TextField";
 import { WHITELISTED_ADDRESS } from "@/data/constant";
 import axios from "axios";
+import { useFormik } from "formik";
 import Head from "next/head";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import "react-datepicker/dist/react-datepicker.css";
 import { toast } from "react-toastify";
 import { useAccount } from "wagmi";
+import * as Yup from "yup";
 
 // create enum
 enum View {
@@ -23,7 +27,6 @@ export default function New() {
   const [endDate, setEndDate] = useState("");
   const [url, setUrl] = useState("");
   const [toastCount, setToastCount] = useState(10);
-  const [email, setEmail] = useState("");
   const [imageSrc, setImageSrc] = useState<any>(null);
   const [image, setImage] = useState<any>(null);
   const [loading, setLoading] = useState(false);
@@ -52,49 +55,74 @@ export default function New() {
     }
   };
 
-  const handleSubmit = async () => {
-    try {
-      setLoading(true);
-      toast.loading("Creating your event, please wait...");
-      var bodyFormData = new FormData();
-      bodyFormData.append("title", title);
-      bodyFormData.append("description", description);
-      bodyFormData.append("startDate", startDate);
-      bodyFormData.append("endDate", endDate);
-      bodyFormData.append("websiteLink", url);
-      bodyFormData.append("totalToastSupply", toastCount.toString());
-      bodyFormData.append("email", email);
-      bodyFormData.append("image", image);
-      bodyFormData.append("ownerAddress", address ?? "");
-
-      var res = await axios({
-        method: "post",
-        url: "/api/create-toast",
-        data: bodyFormData,
-        headers: { "Content-Type": "multipart/form-data" },
-      });
-      toast.dismiss();
-      toast.success("💪🏼 Event created successfully!");
-    } catch (e) {
-      toast.dismiss();
-      toast.error("🚨 Oops, toast burned, please try again...");
-    } finally {
-      setLoading(false);
-      clearForm();
-    }
-  };
-
   const clearForm = () => {
-    setTitle("");
-    setDescription("");
-    setStartDate("");
-    setEndDate("");
-    setUrl("");
-    setToastCount(0);
-    setEmail("");
-    setImageSrc("");
-    setImage("");
+    formik.resetForm();
+    setImageSrc(null);
+    setImage(null);
+    setView(View.IMAGE);
   };
+
+  const formik = useFormik({
+    initialValues: {
+      title: "",
+      description: "",
+      startDate: "",
+      endDate: "",
+      url: "",
+      toastCount: "",
+    },
+    validationSchema: Yup.object({
+      title: Yup.string()
+        .max(15, "Must be 15 characters or less")
+        .required("Title is required"),
+      description: Yup.string()
+        .max(100, "Must be 100 characters or less")
+        .required("Description is required"),
+      startDate: Yup.date()
+        .min(
+          new Date(Date.now() - 86400000),
+          "Start date cannot be before today"
+        )
+        .required("Start Date is required"),
+      endDate: Yup.date()
+        .min(Yup.ref("startDate"), "End date cannot be less than start date")
+        .required("End Date is required"),
+      url: Yup.string().url("Invalid URL").required("URL is required"),
+      toastCount: Yup.number().required("Toast Count is required"),
+    }),
+    onSubmit: async (values) => {
+      try {
+        console.log("values", values);
+        setLoading(true);
+        toast.loading("Creating your event, please wait...");
+        var bodyFormData = new FormData();
+        bodyFormData.append("title", values.title);
+        bodyFormData.append("description", values.description);
+        bodyFormData.append("startDate", values.startDate);
+        bodyFormData.append("endDate", values.endDate);
+        bodyFormData.append("websiteLink", values.url);
+        bodyFormData.append("totalToastSupply", values.toastCount.toString());
+        bodyFormData.append("image", image);
+        bodyFormData.append("ownerAddress", address ?? "");
+        var res = await axios({
+          method: "post",
+          url: "/api/create-toast",
+          data: bodyFormData,
+          headers: { "Content-Type": "multipart/form-data" },
+        });
+        toast.dismiss();
+        toast.success(
+          "💪🏼 We are working on creating your toast. Please check you profile section after 10-15 seconds."
+        );
+      } catch (e) {
+        toast.dismiss();
+        toast.error("🚨 Oops, toast burned, please try again...");
+      } finally {
+        setLoading(false);
+        clearForm();
+      }
+    },
+  });
 
   if (!isConnected) {
     return (
@@ -121,7 +149,11 @@ export default function New() {
       <Head>
         <title>Mint Toast | Create New Event</title>
       </Head>
-      <div className="flex flex-col justify-start items-start md:pt-2 pt-0 max-w-xl mx-auto px-4 md:px-0">
+      {/* <div className="flex flex-col justify-start items-start md:pt-2 pt-0 max-w-xl mx-auto px-4 md:px-0"> */}
+      <form
+        className="flex flex-col justify-start items-start md:pt-2 pt-0 max-w-xl mx-auto px-4 md:px-0"
+        onSubmit={formik.handleSubmit}
+      >
         {view == View.IMAGE ? (
           <>
             <Link href="/create" className="font-bold mx-3">
@@ -228,44 +260,64 @@ export default function New() {
               <div className="md:w-[400px] w-full px-2 md:mx-0 mt-0 flex flex-col">
                 <InputField
                   label="What are you celebrating?"
-                  value={title}
-                  onChange={(e) => {
-                    setTitle(e.target.value);
-                  }}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  value={formik.values.title}
                   placeholder="Title of the Toast"
+                  fieldName="title"
                 />
+                {formik.touched.title && formik.errors.title ? (
+                  <div className="mt-1 text-red-500 text-sm">
+                    *{formik.errors.title}
+                  </div>
+                ) : null}
+
                 <TextArea
                   label="Raise your toast"
                   placeholder="Speech, Speech, Speech"
-                  value={description}
-                  onChange={(e) => {
-                    setDescription(e.target.value);
-                  }}
+                  value={formik.values.description}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
                   className="mt-7"
+                  fieldName="description"
                 />
+                {formik.touched.description && formik.errors.description ? (
+                  <div className="mt-1 text-red-500 text-sm">
+                    *{formik.errors.description}
+                  </div>
+                ) : null}
 
                 <div className="flex flex-row w-full space-x-10 mt-8">
                   <div className="w-1/2">
-                    <InputField
-                      label="Start Date"
-                      value={startDate}
-                      onChange={(e) => {
-                        setStartDate(e.target.value);
-                      }}
+                    <DatePickerField
+                      value={formik.values.startDate}
                       placeholder="MM/DD/YYYY"
+                      onChange={formik.setFieldValue}
+                      fieldName="startDate"
+                      label="Start Date"
                     />
                   </div>
                   <div className="w-1/2">
-                    <InputField
-                      label="End Date"
-                      value={endDate}
-                      onChange={(e) => {
-                        setEndDate(e.target.value);
-                      }}
+                    <DatePickerField
+                      value={formik.values.endDate}
                       placeholder="MM/DD/YYYY"
+                      onChange={formik.setFieldValue}
+                      fieldName="endDate"
+                      label="End Date"
                     />
                   </div>
                 </div>
+                {formik.touched.startDate && formik.errors.startDate ? (
+                  <div className="mt-1 text-red-500 text-sm">
+                    *{formik.errors.startDate}
+                  </div>
+                ) : null}
+                {formik.touched.endDate && formik.errors.endDate ? (
+                  <div className="mt-1 text-red-500 text-sm">
+                    *{formik.errors.endDate}
+                  </div>
+                ) : null}
+
                 <div className="text-gray-500 mt-2">
                   Toasts are better served fresh. On one will be able to mint
                   this Toast after the expiry date.
@@ -273,62 +325,40 @@ export default function New() {
 
                 <InputField
                   label="Point your community to a link or website?"
-                  value={url}
-                  onChange={(e) => {
-                    setUrl(e.target.value);
-                  }}
+                  value={formik.values.url}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
                   placeholder="url"
                   className="mt-7"
+                  fieldName="url"
                 />
+                {formik.touched.url && formik.errors.url ? (
+                  <div className="mt-1 text-red-500 text-sm">
+                    *{formik.errors.url}
+                  </div>
+                ) : null}
 
                 <InputField
                   label="How many Toasts do you need?"
-                  value={toastCount.toString()}
-                  onChange={(e) => {
-                    setToastCount(parseInt(e.target.value));
-                  }}
-                  placeholder="Title of the Toast"
+                  value={formik.values.toastCount.toString()}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  placeholder=""
                   className="mt-7"
+                  fieldName="toastCount"
                 />
-
-                <InputField
-                  label="What is your email?"
-                  value={email}
-                  onChange={(e) => {
-                    setEmail(e.target.value);
-                  }}
-                  placeholder="Title of the Toast"
-                  className="mt-7"
-                />
+                {formik.touched.toastCount && formik.errors.toastCount ? (
+                  <div className="mt-1 text-red-500 text-sm">
+                    *{formik.errors.toastCount}
+                  </div>
+                ) : null}
                 {/* Image button */}
 
                 <div className="w-full flex justify-center mt-8">
                   <PrimaryButton
+                    sumbit={true}
                     text="👉 Save and Next"
-                    onClick={() => {
-                      if (!title) {
-                        toast.error("Please enter a Title");
-                        return;
-                      } else if (!description) {
-                        toast.error("Please enter a Description");
-                        return;
-                      } else if (!startDate) {
-                        toast.error("Please enter a Start date");
-                        return;
-                      } else if (!endDate) {
-                        toast.error("Please enter a End date");
-                        return;
-                      } else if (!url) {
-                        toast.error("Please enter a URL");
-                        return;
-                      } else if (!toastCount) {
-                        toast.error("Please enter Total Supply for your toast");
-                        return;
-                      } else if (!email) {
-                        toast.error("Please enter a Email");
-                        return;
-                      } else handleSubmit();
-                    }}
+                    onClick={() => {}}
                   />
                 </div>
               </div>
@@ -336,7 +366,8 @@ export default function New() {
             </div>
           </>
         )}
-      </div>
+      </form>
+      {/* </div> */}
     </>
   );
 }
