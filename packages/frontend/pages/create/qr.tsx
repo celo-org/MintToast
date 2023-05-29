@@ -110,8 +110,6 @@ export default function New() {
         );
         setLoading(false);
         clearForm();
-        console.log("res", res);
-        console.log("res.data", res.data);
         if (res.data && res.data.id) {
           setView(View.SUBMITTED);
           setId(res.data.id);

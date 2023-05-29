@@ -26,7 +26,6 @@ const CollectionItem: React.FC<Props> = ({ event }) => {
       const res = await fetchDataFromIPFS(
         event.uri.replace("ipfs://", "").replace("ipfs://", "")
       );
-      console.log("res", res);
       const formattedData = formatIpfsData(res);
       setData(formattedData);
     };

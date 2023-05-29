@@ -13,6 +13,7 @@ const nextConfig = {
       "mint-toast.infura-ipfs.io",
       "gateway.pinata.cloud",
       "images.ctfassets.net",
+      "mint-toast.infura-ipfs.io",
     ],
   },
   async redirects() {

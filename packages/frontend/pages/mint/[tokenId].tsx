@@ -31,9 +31,10 @@ interface Props {
   tokenId: string;
   uriData: DataProps;
   data: any;
+  docId: string;
 }
 
-const QRPage: React.FC<Props> = ({ tokenId, uriData, data }) => {
+const QRPage: React.FC<Props> = ({ tokenId, uriData, data, docId }) => {
   // get the id from the url
   const { executeRecaptcha } = useGoogleReCaptcha();
 
@@ -61,6 +62,7 @@ const QRPage: React.FC<Props> = ({ tokenId, uriData, data }) => {
           tokenId,
           address,
           token,
+          docId,
         });
         if (res.data["success"]) {
           setAddress("");
@@ -82,7 +84,7 @@ const QRPage: React.FC<Props> = ({ tokenId, uriData, data }) => {
         setMintLoading(false);
       }
     });
-  }, [address, executeRecaptcha, router, tokenId]);
+  }, [address, docId, executeRecaptcha, router, tokenId]);
 
   return (
     <>

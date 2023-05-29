@@ -49,5 +49,5 @@ export const fetchImageUrl = (cid: string) => {
   if (cid === "QmeWrZgkRBub7fkdeEJZpFHBip6VhpGi4HDozxBttWngdy") {
     return "/images/Celo-UGW-POAP.png";
   }
-  return "https://gateway.pinata.cloud/ipfs/" + cid;
+  return "https://mint-toast.infura-ipfs.io/ipfs/" + cid;
 };

@@ -5,6 +5,8 @@ import { getContract } from "./../../utils/web3";
 
 import { CAPTCH_SECRETKEY } from "@/data/constant";
 import { getRateLimitMiddlewares } from "@/data/utils/rate-limit";
+import { database } from "@/utils/firebase";
+import { doc, getDoc } from "firebase/firestore";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 export const config = {
@@ -24,12 +26,6 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<Data>
 ) {
-  // try {
-  //   await Promise.all(middlewares.map((middleware) => middleware(req, res)));
-  // } catch {
-  //   return res.status(429).send({ error: "Too Many Requests" });
-  // }
-
   if (req.method !== "POST") {
     res.status(405).json({ error: "Method Not Allowed" });
     return;
@@ -53,7 +49,18 @@ export default async function handler(
         if (reCaptchaResJson?.score > 0.5) {
           const address = fields.address;
           const tokenId = fields.tokenId;
+          const docId = fields.docId as string;
 
+          var docSnapshot = await getDoc(doc(database, "events", docId));
+          var resultData = docSnapshot.data();
+          if (resultData && resultData.isSecretProtected == true) {
+            if (resultData.secret != fields.secret) {
+              res.status(200).json({
+                error: "Secret is not correct",
+              });
+              return;
+            }
+          }
           const contract = getContract();
           try {
             const tx = await contract.mint(address, tokenId);

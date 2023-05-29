@@ -59,7 +59,6 @@ export default function Header() {
             </div>
           </div>
           <div className="md:absolute md:inset-y-0 md:right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
-            {/* <PrimaryButton onClick={() => {}} text="👾 Connect Wallet" /> */}
             <CustomConnectButton />
           </div>
         </div>
