@@ -1,5 +1,6 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import { createToastObj } from "@/helper/create-helpers";
+import { uploadImage } from "@/utils/ipfs";
 import formidable from "formidable";
 import type { NextApiRequest, NextApiResponse } from "next";
 
@@ -32,6 +33,7 @@ export default async function handler(
           res.status(500).json({ error: err.message });
           return;
         }
+        const imageID = await uploadImage(files.image as formidable.File);
         // check if all the required fields are present
         if (
           !fields.title ||
@@ -46,9 +48,9 @@ export default async function handler(
           res.status(400).json({ error: "Missing required fields" });
           return;
         }
-        res.status(200).json({ success: false });
 
-        await createToastObj(fields, true);
+        await createToastObj(fields, true, imageID);
+        res.status(200).json({ success: false });
         resolve();
       });
     });

@@ -2,14 +2,28 @@ import PrimaryButton from "@/components/common/PrimaryButton";
 import { View } from "@/utils/utils";
 import Link from "next/link";
 import { SetStateAction } from "react";
+import OTPInput from "react-otp-input";
 
 type Props = {
   handleImageUpload: (e: any) => void;
   imageSrc: any;
   setView: (value: SetStateAction<View>) => void;
+  otp: string;
+  setOtp: (value: SetStateAction<string>) => void;
 };
 
-function ImageView({ handleImageUpload, imageSrc, setView }: Props) {
+function SecretImageView({
+  handleImageUpload,
+  imageSrc,
+  setView,
+  otp,
+  setOtp,
+}: Props) {
+  const autogenerateSixAlphaNumPassword = () => {
+    const randomString = Math.random().toString(36).slice(-6);
+    setOtp(randomString);
+  };
+
   return (
     <>
       <Link href="/create" className="font-bold mx-3">
@@ -17,8 +31,29 @@ function ImageView({ handleImageUpload, imageSrc, setView }: Props) {
       </Link>
       <div className="flex flex-col justify-center w-full mt-10 items-center">
         <div className="md:w-[400px] w-full px-2 md:mx-0 mt-0 flex flex-col">
+          <span className="font-semibold text-gray-500">
+            Enter a six character password
+          </span>
+          <div className="flex items-center justify-center w-full my-5">
+            <OTPInput
+              value={otp}
+              onChange={(val) => {
+                setOtp(val);
+              }}
+              numInputs={6}
+              containerStyle="flex flex-row space-x-3"
+              inputStyle="bg-white border border-black text-black text-base focus:ring-blue-500 focus:border-blue-500 block !w-[30px] p-2.5"
+              renderInput={(props) => <input {...props} />}
+            />
+          </div>
+          <PrimaryButton
+            onClick={autogenerateSixAlphaNumPassword}
+            text="🧞‍♀️ Autogenerate"
+          />
           {/* Secret Phase */}
-          <span className="font-semibold text-gray-500">Toast artwork</span>
+          <span className="font-semibold text-gray-500 mt-14">
+            Toast artwork
+          </span>
           {/* Image button */}
           <div className="flex items-center justify-center w-full my-5">
             <label
@@ -87,7 +122,7 @@ function ImageView({ handleImageUpload, imageSrc, setView }: Props) {
               </div>
               <div className="w-full flex justify-center mt-8">
                 <PrimaryButton
-                  text="👉 Save and Next"
+                  text="👉 Next"
                   onClick={() => {
                     setView(View.ATTRIBUTES);
                   }}
@@ -102,4 +137,4 @@ function ImageView({ handleImageUpload, imageSrc, setView }: Props) {
   );
 }
 
-export default ImageView;
+export default SecretImageView;

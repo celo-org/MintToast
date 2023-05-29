@@ -49,9 +49,9 @@ export default async function handler(
           res.status(400).json({ error: "Missing required fields" });
           return;
         }
-        res.status(200).json({ success: true });
 
         await createToastObj(fields, true, imageID);
+        res.status(200).json({ success: true });
         resolve();
       });
     });

@@ -1,10 +1,15 @@
-import CreateForm from "@/components/create/qr/Form";
-import ImageView from "@/components/create/qr/ImageView";
+/* eslint-disable @next/next/no-img-element */
+import DatePickerField from "@/components/common/DatePickerField";
+import InputField from "@/components/common/InputField";
+import PrimaryButton from "@/components/common/PrimaryButton";
+import TextArea from "@/components/common/TextField";
+import SecretImageView from "@/components/create/SecretImageView";
 import { WHITELISTED_ADDRESS } from "@/data/constant";
-import { View } from "@/utils/utils";
+import { View, formatDateFromString } from "@/utils/utils";
 import axios from "axios";
 import { useFormik } from "formik";
 import Head from "next/head";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import "react-datepicker/dist/react-datepicker.css";
 import { toast } from "react-toastify";
@@ -19,6 +24,7 @@ export default function New() {
   const { address } = useAccount();
   const [isConnected, setIsConnected] = useState(false);
   const [canCreate, setCanCreate] = useState(false);
+  const [otp, setOtp] = useState("");
 
   useEffect(() => {
     if (address) {
@@ -80,7 +86,6 @@ export default function New() {
     }),
     onSubmit: async (values) => {
       try {
-        console.log("values", values);
         setLoading(true);
         toast.loading("Creating your event, please wait...");
         var bodyFormData = new FormData();
@@ -132,33 +137,200 @@ export default function New() {
     );
   }
 
-  const getView = () => {
-    if (view == View.IMAGE) {
-      return (
-        <ImageView
-          handleImageUpload={handleImageUpload}
-          imageSrc={imageSrc}
-          setView={setView}
-        />
-      );
-    } else if (view == View.ATTRIBUTES) {
-      <CreateForm setView={setView} formik={formik} />;
-    }
-  };
-
   return (
     <>
       <Head>
         <title>Mint Toast | Create New Event</title>
       </Head>
-      {/* <div className="flex flex-col justify-start items-start md:pt-2 pt-0 max-w-xl mx-auto px-4 md:px-0"> */}
       <form
         className="flex flex-col justify-start items-start md:pt-2 pt-0 max-w-xl mx-auto px-4 md:px-0"
         onSubmit={formik.handleSubmit}
       >
-        {getView()}
+        {view == View.IMAGE && (
+          <SecretImageView
+            handleImageUpload={handleImageUpload}
+            imageSrc={imageSrc}
+            setView={setView}
+            otp={otp}
+            setOtp={setOtp}
+          />
+        )}
+        {view == View.ATTRIBUTES && (
+          <>
+            <p
+              onClick={() => {
+                setView(View.IMAGE);
+              }}
+              className="font-bold mx-3 hover:cursor-pointer"
+            >
+              👈 Back
+            </p>
+            <div className="flex flex-col justify-center w-full mt-10 items-center">
+              <div className="md:w-[400px] w-full px-2 md:mx-0 mt-0 flex flex-col">
+                <InputField
+                  label="What are you celebrating?"
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  value={formik.values.title}
+                  placeholder="Title of the Toast"
+                  fieldName="title"
+                />
+                {formik.touched.title && formik.errors.title ? (
+                  <div className="mt-1 text-red-500 text-sm">
+                    *{formik.errors.title}
+                  </div>
+                ) : null}
+
+                <TextArea
+                  label="Raise your toast"
+                  placeholder="Speech, Speech, Speech"
+                  value={formik.values.description}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  className="mt-7"
+                  fieldName="description"
+                />
+                {formik.touched.description && formik.errors.description ? (
+                  <div className="mt-1 text-red-500 text-sm">
+                    *{formik.errors.description}
+                  </div>
+                ) : null}
+
+                <div className="flex flex-row w-full space-x-10 mt-8">
+                  <div className="w-1/2">
+                    <DatePickerField
+                      value={formik.values.startDate}
+                      placeholder="MM/DD/YYYY"
+                      onChange={formik.setFieldValue}
+                      fieldName="startDate"
+                      label="Start Date"
+                    />
+                  </div>
+                  <div className="w-1/2">
+                    <DatePickerField
+                      value={formik.values.endDate}
+                      placeholder="MM/DD/YYYY"
+                      onChange={formik.setFieldValue}
+                      fieldName="endDate"
+                      label="End Date"
+                    />
+                  </div>
+                </div>
+                {formik.touched.startDate && formik.errors.startDate ? (
+                  <div className="mt-1 text-red-500 text-sm">
+                    *{formik.errors.startDate}
+                  </div>
+                ) : null}
+                {formik.touched.endDate && formik.errors.endDate ? (
+                  <div className="mt-1 text-red-500 text-sm">
+                    *{formik.errors.endDate}
+                  </div>
+                ) : null}
+
+                <div className="text-gray-500 mt-2">
+                  Toasts are better served fresh. On one will be able to mint
+                  this Toast after the expiry date.
+                </div>
+
+                <InputField
+                  label="Point your community to a link or website?"
+                  value={formik.values.url}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  placeholder="url"
+                  className="mt-7"
+                  fieldName="url"
+                />
+                {formik.touched.url && formik.errors.url ? (
+                  <div className="mt-1 text-red-500 text-sm">
+                    *{formik.errors.url}
+                  </div>
+                ) : null}
+
+                <InputField
+                  label="How many Toasts do you need?"
+                  value={formik.values.toastCount.toString()}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  placeholder=""
+                  className="mt-7"
+                  fieldName="toastCount"
+                />
+                {formik.touched.toastCount && formik.errors.toastCount ? (
+                  <div className="mt-1 text-red-500 text-sm">
+                    *{formik.errors.toastCount}
+                  </div>
+                ) : null}
+                {/* Image button */}
+
+                <div className="w-full flex justify-center mt-8">
+                  <PrimaryButton
+                    text="👉 Preview"
+                    onClick={() => {
+                      setView(View.PREVIEW);
+                    }}
+                  />
+                </div>
+              </div>
+              <div className="flex w-full justify-start px-8"></div>
+            </div>
+          </>
+        )}
+        {view == View.PREVIEW && (
+          <>
+            <div
+              onClick={() => {
+                setView(View.ATTRIBUTES);
+              }}
+              className="font-bold mx-3"
+            >
+              👈 Back
+            </div>
+            <div className="flex flex-col justify-start items-start md:pt-2 pt-0 max-w-xl mx-auto">
+              <span className="mt-16 mb-2">Preview your Toast</span>
+              <div className="flex flex-col justify-center w-full items-center border-t-2 border-b-2 border-black py-9">
+                <span className="text-3xl font-bold text-center">
+                  {formik.values.title}
+                </span>
+                <img src={imageSrc} className="mt-8" alt={"Event Toast"} />
+                <div className="flex flex-row justify-between w-[285px] mt-3">
+                  <span className="font-semibold">
+                    {0}/{formik.values.toastCount ?? 0}
+                  </span>
+                  <span className="font-semibold">#</span>
+                </div>
+                <div className="md:w-[400px] w-full px-2 md:mx-0 mt-8 flex flex-col">
+                  <div className="text-gray-500 whitespace-pre-wrap">
+                    {formik.values.description ?? ""}
+                  </div>
+                  <Link
+                    className="justify-self-start mt-10 text-green"
+                    href={formik.values.url ?? "#"}
+                    target={"_blank"}
+                  >
+                    🌐 {formik.values.url ?? ""}
+                  </Link>
+                  <div className="mt-4">
+                    Start: 📆{" "}
+                    {formatDateFromString(
+                      formik.values.startDate ?? "01/01/2023"
+                    )}
+                  </div>
+                  <div className="mt-1">
+                    End: 📆{" "}
+                    {formatDateFromString(
+                      formik.values.endDate ?? "01/01/2023"
+                    )}
+                  </div>
+                </div>
+              </div>
+              <div className="mt-12 w-full flex justify-center">
+                <PrimaryButton onClick={() => {}} text="🍻 Create" />
+              </div>
+            </div>
+          </>
+        )}
       </form>
-      {/* </div> */}
     </>
   );
 }

@@ -39,4 +39,6 @@ export const formatTimestampToTimeElapsedForm = (timestamp: number) => {
 export enum View {
   IMAGE = "image",
   ATTRIBUTES = "attributes",
+  PREVIEW = "preview",
+  SUBMITTED = "submitted",
 }

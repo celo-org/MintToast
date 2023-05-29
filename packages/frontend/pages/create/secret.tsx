@@ -1,13 +1,16 @@
+/* eslint-disable @next/next/no-img-element */
 import DatePickerField from "@/components/common/DatePickerField";
 import InputField from "@/components/common/InputField";
 import PrimaryButton from "@/components/common/PrimaryButton";
 import TextArea from "@/components/common/TextField";
-import SecretImageView from "@/components/create/secret/SecretImageView";
+import SecretImageView from "@/components/create/SecretImageView";
+import SecretPreview from "@/components/create/SecretShare";
 import { WHITELISTED_ADDRESS } from "@/data/constant";
-import { View } from "@/utils/utils";
+import { View, formatDateFromString } from "@/utils/utils";
 import axios from "axios";
 import { useFormik } from "formik";
 import Head from "next/head";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import "react-datepicker/dist/react-datepicker.css";
 import { toast } from "react-toastify";
@@ -86,7 +89,7 @@ export default function New() {
     onSubmit: async (values) => {
       try {
         setLoading(true);
-        toast.loading("Creating your event, please wait...");
+        toast.loading("Creating your event, don't close the window...");
         var bodyFormData = new FormData();
         bodyFormData.append("title", values.title);
         bodyFormData.append("description", values.description);
@@ -113,6 +116,7 @@ export default function New() {
       } finally {
         setLoading(false);
         clearForm();
+        setView(View.SUBMITTED);
       }
     },
   });
@@ -263,11 +267,12 @@ export default function New() {
                 ) : null}
                 {/* Image button */}
 
-                <div className="w-full flex justify-center mt-8">
+                <div className="w-full flex justify-center my-8">
                   <PrimaryButton
-                    sumbit={true}
-                    text="👉 Save and Next"
-                    onClick={() => {}}
+                    text="👉 Preview"
+                    onClick={() => {
+                      setView(View.PREVIEW);
+                    }}
                   />
                 </div>
               </div>
@@ -275,6 +280,66 @@ export default function New() {
             </div>
           </>
         )}
+        {view == View.PREVIEW && (
+          <>
+            <div
+              onClick={() => {
+                setView(View.ATTRIBUTES);
+              }}
+              className="font-bold mx-3"
+            >
+              👈 Back
+            </div>
+            <div className="flex flex-col justify-start items-start md:pt-2 pt-0 max-w-xl mx-auto">
+              <span className="mt-16 mb-2">Preview your Toast</span>
+              <div className="flex flex-col justify-center w-full items-center border-t-2 border-b-2 border-black py-9">
+                <span className="text-3xl font-bold text-center">
+                  {formik.values.title}
+                </span>
+                <img src={imageSrc} className="mt-8" alt={"Event Toast"} />
+                <div className="flex flex-row justify-between w-[285px] mt-3">
+                  <span className="font-semibold">
+                    {0}/{formik.values.toastCount ?? 0}
+                  </span>
+                  <span className="font-semibold">#</span>
+                </div>
+                <div className="md:w-[400px] w-full px-2 md:mx-0 mt-8 flex flex-col">
+                  <div className="text-gray-500 whitespace-pre-wrap">
+                    {formik.values.description ?? ""}
+                  </div>
+                  <Link
+                    className="justify-self-start mt-10 text-green"
+                    href={formik.values.url ?? "#"}
+                    target={"_blank"}
+                  >
+                    🌐 {formik.values.url ?? ""}
+                  </Link>
+                  <div className="mt-4">
+                    Start: 📆{" "}
+                    {formatDateFromString(
+                      formik.values.startDate ?? "01/01/2023"
+                    )}
+                  </div>
+                  <div className="mt-1">
+                    End: 📆{" "}
+                    {formatDateFromString(
+                      formik.values.endDate ?? "01/01/2023"
+                    )}
+                  </div>
+                </div>
+              </div>
+              <div className="mt-12 w-full flex justify-center">
+                <PrimaryButton
+                  onClick={() => {
+                    formik.handleSubmit();
+                  }}
+                  text="🍻 Create"
+                />
+              </div>
+            </div>
+          </>
+        )}
+        {view == View.SUBMITTED && <SecretPreview otp={otp} />}
       </form>
     </>
   );
