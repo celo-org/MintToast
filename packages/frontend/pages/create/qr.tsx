@@ -3,7 +3,8 @@ import DatePickerField from "@/components/common/DatePickerField";
 import InputField from "@/components/common/InputField";
 import PrimaryButton from "@/components/common/PrimaryButton";
 import TextArea from "@/components/common/TextField";
-import SecretImageView from "@/components/create/SecretImageView";
+import ImageView from "@/components/create/ImageView";
+import Share from "@/components/create/Share";
 import { WHITELISTED_ADDRESS } from "@/data/constant";
 import { View, formatDateFromString } from "@/utils/utils";
 import axios from "axios";
@@ -24,7 +25,7 @@ export default function New() {
   const { address } = useAccount();
   const [isConnected, setIsConnected] = useState(false);
   const [canCreate, setCanCreate] = useState(false);
-  const [otp, setOtp] = useState("");
+  const [id, setId] = useState<string | null>(null);
 
   useEffect(() => {
     if (address) {
@@ -107,12 +108,18 @@ export default function New() {
         toast.success(
           "💪🏼 We are working on creating your toast. Please check you profile section after 10-15 seconds."
         );
+        setLoading(false);
+        clearForm();
+        console.log("res", res);
+        console.log("res.data", res.data);
+        if (res.data && res.data.id) {
+          setView(View.SUBMITTED);
+          setId(res.data.id);
+        }
       } catch (e) {
         toast.dismiss();
         toast.error("🚨 Oops, toast burned, please try again...");
       } finally {
-        setLoading(false);
-        clearForm();
       }
     },
   });
@@ -147,12 +154,10 @@ export default function New() {
         onSubmit={formik.handleSubmit}
       >
         {view == View.IMAGE && (
-          <SecretImageView
+          <ImageView
             handleImageUpload={handleImageUpload}
             imageSrc={imageSrc}
             setView={setView}
-            otp={otp}
-            setOtp={setOtp}
           />
         )}
         {view == View.ATTRIBUTES && (
@@ -325,11 +330,17 @@ export default function New() {
                 </div>
               </div>
               <div className="mt-12 w-full flex justify-center">
-                <PrimaryButton onClick={() => {}} text="🍻 Create" />
+                <PrimaryButton
+                  onClick={() => {
+                    formik.handleSubmit();
+                  }}
+                  text="🍻 Create"
+                />
               </div>
             </div>
           </>
         )}
+        {view == View.SUBMITTED && id != null && <Share id={id} />}
       </form>
     </>
   );

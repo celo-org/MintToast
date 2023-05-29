@@ -12,6 +12,7 @@ export const config = {
 
 type Data = {
   success?: boolean;
+  id?: string;
   error?: string;
 };
 
@@ -50,8 +51,8 @@ export default async function handler(
           return;
         }
 
-        await createToastObj(fields, true, imageID);
-        res.status(200).json({ success: true });
+        const id = await createToastObj(fields, true, imageID);
+        res.status(200).json({ success: true, id });
         resolve();
       });
     });

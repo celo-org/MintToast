@@ -12,6 +12,7 @@ export const config = {
 
 type Data = {
   success?: boolean;
+  id?: string;
   error?: string;
 };
 
@@ -43,14 +44,14 @@ export default async function handler(
           !fields.websiteLink ||
           !fields.totalToastSupply ||
           !fields.ownerAddress ||
-          !fields.imageID
+          !imageID
         ) {
           res.status(400).json({ error: "Missing required fields" });
           return;
         }
 
-        await createToastObj(fields, true, imageID);
-        res.status(200).json({ success: false });
+        const id = await createToastObj(fields, false, imageID);
+        res.status(200).json({ success: false, id });
         resolve();
       });
     });

@@ -1,31 +1,26 @@
+import { API_ENDPOINT } from "@/data/constant";
 import { toast } from "react-toastify";
 import PrimaryButton from "../common/PrimaryButton";
 
 type Props = {
-  otp: string;
+  id: string;
 };
 
-function SecretShare({ otp }: Props) {
+function Share({ id }: Props) {
+  const url = API_ENDPOINT + "/mint/" + id;
   return (
     <>
       <div className="flex flex-col justify-start items-start md:pt-2 pt-0 max-w-xl mx-auto">
         <span className="mt-16 mb-2 font-bold">Share your toast</span>
         <div className="flex flex-row space-x-5 mt-4">
-          {otp.split("").map((item, index) => {
-            return (
-              <div
-                key={index}
-                className="flex justify-center items-center bg-white border border-black w-[30px] h-[45px]"
-              >
-                {item}
-              </div>
-            );
-          })}
+          <div className="flex justify-center items-center bg-white border border-black w-full p-4">
+            {url}
+          </div>
         </div>
         <div className="mt-8 w-full flex justify-center">
           <PrimaryButton
             onClick={async () => {
-              await navigator.clipboard.writeText(otp);
+              await navigator.clipboard.writeText(url);
               toast.success("Copied to clipboard");
             }}
             text="Copy"
@@ -36,4 +31,4 @@ function SecretShare({ otp }: Props) {
   );
 }
 
-export default SecretShare;
+export default Share;

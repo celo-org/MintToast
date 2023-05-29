@@ -10,7 +10,7 @@ export const createToastObj = async (
   fields: formidable.Fields,
   isSecretProtected: boolean,
   imageID: string
-) => {
+): Promise<string> => {
   const toastObj = {
     name: fields.title,
     description: fields.description,
@@ -56,6 +56,7 @@ export const createToastObj = async (
     ownerAddress: fields.ownerAddress,
     createdAt: serverTimestamp(),
     isSecretProtected: isSecretProtected,
-    secret: fields.secret,
+    secret: isSecretProtected ? fields.secret : "",
   });
+  return uuid;
 };

@@ -4,7 +4,7 @@ import InputField from "@/components/common/InputField";
 import PrimaryButton from "@/components/common/PrimaryButton";
 import TextArea from "@/components/common/TextField";
 import SecretImageView from "@/components/create/SecretImageView";
-import SecretPreview from "@/components/create/SecretShare";
+import SecretShare from "@/components/create/SecretShare";
 import { WHITELISTED_ADDRESS } from "@/data/constant";
 import { View, formatDateFromString } from "@/utils/utils";
 import axios from "axios";
@@ -339,7 +339,7 @@ export default function New() {
             </div>
           </>
         )}
-        {view == View.SUBMITTED && <SecretPreview otp={otp} />}
+        {view == View.SUBMITTED && <SecretShare otp={otp} />}
       </form>
     </>
   );
