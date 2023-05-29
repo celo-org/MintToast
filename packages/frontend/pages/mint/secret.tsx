@@ -4,6 +4,7 @@ import { getMintCollectionData } from "@/graphql/queries/getMintCollectionData";
 import { formatIpfsData } from "@/utils/data";
 import { fetchImageUrl } from "@/utils/ipfs";
 import axios from "axios";
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { useCallback, useEffect, useState } from "react";
@@ -11,12 +12,16 @@ import { useGoogleReCaptcha } from "react-google-recaptcha-v3";
 import OTPInput from "react-otp-input";
 import { toast } from "react-toastify";
 import { useAccount } from "wagmi";
+import NewToastDropping from "../../public/images/NewToastDropping.png";
+import SuccessfulMinting from "../../public/images/SuccessfulMinting.png";
 
 type Props = {};
 
 export enum View {
   SECRET = "secret",
   MINT = "mint",
+  MINTLOADING = "mint-loading",
+  SUCCESS = "success",
 }
 
 const Secret: React.FC<Props> = ({}) => {
@@ -28,7 +33,6 @@ const Secret: React.FC<Props> = ({}) => {
   const [data, setData] = useState<any>({});
   const { address: walletAddress, isConnected } = useAccount();
   const [address, setAddress] = useState<string>();
-  const [mintLoading, setMintLoading] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
@@ -82,7 +86,7 @@ const Secret: React.FC<Props> = ({}) => {
     executeRecaptcha("enquiryFormSubmit").then(async (token) => {
       toast.loading("Minting your toast, please wait...");
       try {
-        setMintLoading(true);
+        setView(View.MINTLOADING);
         const tokenId = data.tokenId;
         var res = await axios.post("/api/mint", {
           tokenId,
@@ -107,8 +111,9 @@ const Secret: React.FC<Props> = ({}) => {
       } catch (e) {
         toast.dismiss();
         toast.error(e as string);
+        setView(View.MINT);
       } finally {
-        setMintLoading(false);
+        setView(View.SUCCESS);
       }
     });
   }, [address, data.docId, data.tokenId, executeRecaptcha, otp, router]);
@@ -163,7 +168,6 @@ const Secret: React.FC<Props> = ({}) => {
               <div className="w-full flex justify-center mt-8">
                 <PrimaryButton
                   text="👉 Mint Toast"
-                  isLoading={mintLoading}
                   onClick={() => {
                     if (!address) {
                       toast.error("Please enter an Address");
@@ -201,6 +205,25 @@ const Secret: React.FC<Props> = ({}) => {
             </div>
           </div>
         </>
+      )}
+      {view == View.MINTLOADING && (
+        <div className="flex flex-col justify-center w-full mt-10 items-center">
+          <span className="text-2xl font-bold">
+            Your new Toast is about to drop
+          </span>
+          <Image src={NewToastDropping} alt="Loading" />
+        </div>
+      )}
+      {view == View.SUCCESS && (
+        <div className="flex flex-col justify-center w-full mt-10 items-center">
+          <span className="text-2xl font-bold mb-5">
+            You have successfully minted a new Toast!
+          </span>
+          <Image src={SuccessfulMinting} alt="Success" />
+          <span className="text-2xl font-bold mt-5">
+            Go to your collection to see it
+          </span>
+        </div>
       )}
     </div>
   );

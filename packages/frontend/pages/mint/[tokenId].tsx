@@ -7,12 +7,15 @@ import { fetchImageUrl } from "@/utils/ipfs";
 import axios from "axios";
 import { doc, getDoc } from "firebase/firestore";
 import Head from "next/head";
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useCallback, useEffect, useState } from "react";
 import { useGoogleReCaptcha } from "react-google-recaptcha-v3";
 import { toast } from "react-toastify";
 import { useAccount } from "wagmi";
+import NewToastDropping from "../../public/images/NewToastDropping.png";
+import SuccessfulMinting from "../../public/images/SuccessfulMinting.png";
 
 export interface DataProps {
   name?: string;
@@ -34,6 +37,12 @@ interface Props {
   docId: string;
 }
 
+export enum View {
+  MINT = "mint",
+  MINTLOADING = "mint-loading",
+  SUCCESS = "success",
+}
+
 const QRPage: React.FC<Props> = ({ tokenId, uriData, data, docId }) => {
   // get the id from the url
   const { executeRecaptcha } = useGoogleReCaptcha();
@@ -41,7 +50,7 @@ const QRPage: React.FC<Props> = ({ tokenId, uriData, data, docId }) => {
   const router = useRouter();
   const { address: walletAddress, isConnected } = useAccount();
   const [address, setAddress] = useState<string>("");
-  const [mintLoading, setMintLoading] = useState<boolean>(false);
+  const [view, setView] = useState<View>(View.MINT);
 
   useEffect(() => {
     if (isConnected) {
@@ -57,7 +66,7 @@ const QRPage: React.FC<Props> = ({ tokenId, uriData, data, docId }) => {
     executeRecaptcha("enquiryFormSubmit").then(async (token) => {
       toast.loading("Minting your toast, please wait...");
       try {
-        setMintLoading(true);
+        setView(View.MINTLOADING);
         var res = await axios.post("/api/mint", {
           tokenId,
           address,
@@ -80,8 +89,9 @@ const QRPage: React.FC<Props> = ({ tokenId, uriData, data, docId }) => {
       } catch (e) {
         toast.dismiss();
         toast.error(e as string);
+        setView(View.MINT);
       } finally {
-        setMintLoading(false);
+        setView(View.SUCCESS);
       }
     });
   }, [address, docId, executeRecaptcha, router, tokenId]);
@@ -91,58 +101,78 @@ const QRPage: React.FC<Props> = ({ tokenId, uriData, data, docId }) => {
       <Head>
         <title>Mint Toast | Mint</title>
       </Head>
-      <div className="flex flex-col justify-center w-full mt-10 items-center">
-        <div className="md:w-[400px] w-full px-2 md:mx-0 mt-0 flex flex-col">
-          <InputField
-            label="What is your Address?"
-            value={address}
-            onChange={(e) => {
-              setAddress(e.target.value);
-            }}
-            placeholder="0x0..."
-            fieldName="address"
+      {view === View.MINT && (
+        <div className="flex flex-col justify-center w-full mt-10 items-center">
+          <div className="md:w-[400px] w-full px-2 md:mx-0 mt-0 flex flex-col">
+            <InputField
+              label="What is your Address?"
+              value={address}
+              onChange={(e) => {
+                setAddress(e.target.value);
+              }}
+              placeholder="0x0..."
+              fieldName="address"
+            />
+
+            <div className="w-full flex justify-center mt-8">
+              <PrimaryButton
+                text="👉 Mint Toast"
+                onClick={() => {
+                  if (!address) {
+                    toast.error("Please enter an Address");
+                    return;
+                  } else handleSubmit();
+                }}
+              />
+            </div>
+          </div>
+          <span className="text-3xl font-bold mt-8 text-center">
+            {uriData?.name ?? ""}
+          </span>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            className="border-2 border-black w-[285px] h-[285px] mt-5"
+            src={fetchImageUrl(uriData?.imageHash ?? "")}
+            alt={uriData?.name + " Image"}
           />
 
-          <div className="w-full flex justify-center mt-8">
-            <PrimaryButton
-              text="👉 Mint Toast"
-              isLoading={mintLoading}
-              onClick={() => {
-                if (!address) {
-                  toast.error("Please enter an Address");
-                  return;
-                } else handleSubmit();
-              }}
-            />
+          <span className="font-semibold mt-8">
+            {data?.currentSupply}/{uriData?.totalToastSupply ?? "0"}
+          </span>
+
+          <div className="md:w-[400px] w-full px-2 md:mx-0 mt-8 flex flex-col">
+            <div className="text-gray-500 whitespace-pre-wrap">
+              {uriData?.description ?? ""}
+            </div>
+            <Link
+              className="justify-self-start mt-10 text-green"
+              href={uriData?.websiteLink ?? "#"}
+              target={"_blank"}
+            >
+              🌐 {uriData?.websiteLink ?? ""}
+            </Link>
           </div>
         </div>
-        <span className="text-3xl font-bold mt-8 text-center">
-          {uriData?.name ?? ""}
-        </span>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          className="border-2 border-black w-[285px] h-[285px] mt-5"
-          src={fetchImageUrl(uriData?.imageHash ?? "")}
-          alt={uriData?.name + " Image"}
-        />
-
-        <span className="font-semibold mt-8">
-          {data?.currentSupply}/{uriData?.totalToastSupply ?? "0"}
-        </span>
-
-        <div className="md:w-[400px] w-full px-2 md:mx-0 mt-8 flex flex-col">
-          <div className="text-gray-500 whitespace-pre-wrap">
-            {uriData?.description ?? ""}
-          </div>
-          <Link
-            className="justify-self-start mt-10 text-green"
-            href={uriData?.websiteLink ?? "#"}
-            target={"_blank"}
-          >
-            🌐 {uriData?.websiteLink ?? ""}
-          </Link>
+      )}
+      {view == View.MINTLOADING && (
+        <div className="flex flex-col justify-center w-full mt-10 items-center">
+          <span className="text-2xl font-bold">
+            Your new Toast is about to drop
+          </span>
+          <Image src={NewToastDropping} alt="Loading" />
         </div>
-      </div>
+      )}
+      {view == View.SUCCESS && (
+        <div className="flex flex-col justify-center w-full mt-10 items-center">
+          <span className="text-2xl font-bold mb-5">
+            You have successfully minted a new Toast!
+          </span>
+          <Image src={SuccessfulMinting} alt="Success" />
+          <span className="text-2xl font-bold mt-5">
+            Go to your collection to see it
+          </span>
+        </div>
+      )}
     </>
   );
 };
