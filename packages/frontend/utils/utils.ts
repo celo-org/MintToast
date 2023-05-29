@@ -35,3 +35,8 @@ export const formatTimestampToTimeElapsedForm = (timestamp: number) => {
     return "now";
   }
 };
+
+export enum View {
+  IMAGE = "image",
+  ATTRIBUTES = "attributes",
+}

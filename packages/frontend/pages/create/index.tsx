@@ -58,7 +58,7 @@ export default function Home() {
             {/* Card 1 */}
             <div className="flex flex-col justify-start w-[170px]">
               <Link
-                href="/create/new"
+                href="/create/secret"
                 className="w-[170px] h-[170px] pushable-card select-none rounded-sm bg-black border-none p-0 cursor-pointer outline-offset-4 mt-5"
               >
                 <span className="w-[170px] h-[170px] front-card rounded-sm border-2 border-black text-black font-bold md:text-xl text-lg text-center bg-white flex justify-center items-center">
@@ -73,7 +73,7 @@ export default function Home() {
             </div>
             <div className="flex flex-col justify-start w-[170px]">
               <Link
-                href="/create/new"
+                href="/create/qr"
                 className="w-[170px] h-[170px] pushable-card select-none rounded-sm bg-black border-none p-0 cursor-pointer outline-offset-4 mt-5"
               >
                 <span className="w-[170px] h-[170px] front-card rounded-sm border-2 border-black text-black font-bold md:text-xl text-lg text-center bg-white flex justify-center items-center">
