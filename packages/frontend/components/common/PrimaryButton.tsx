@@ -7,6 +7,7 @@ type Props = {
   icon?: React.ReactNode;
   isLoading?: boolean;
   sumbit?: boolean;
+  form?: string;
 };
 
 const PrimaryButton: React.FC<Props> = ({
@@ -16,6 +17,7 @@ const PrimaryButton: React.FC<Props> = ({
   icon,
   isLoading = false,
   sumbit,
+  form,
 }) => {
   const getBgColor = () => {
     switch (varient) {
@@ -30,6 +32,7 @@ const PrimaryButton: React.FC<Props> = ({
 
   return (
     <button
+      form={form}
       type={sumbit ? "submit" : "button"}
       onClick={() => {
         if (!isLoading) {

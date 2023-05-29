@@ -10,7 +10,7 @@ type Props = {
   formik: any;
 };
 
-function CreateForm({ setView, formik }: Props) {
+function SecretCreateForm({ setView, formik }: Props) {
   return (
     <>
       <p
@@ -122,6 +122,7 @@ function CreateForm({ setView, formik }: Props) {
           <div className="w-full flex justify-center mt-8">
             <PrimaryButton
               sumbit={true}
+              form="secret-create-form"
               text="👉 Save and Next"
               onClick={() => {}}
             />
@@ -133,4 +134,4 @@ function CreateForm({ setView, formik }: Props) {
   );
 }
 
-export default CreateForm;
+export default SecretCreateForm;

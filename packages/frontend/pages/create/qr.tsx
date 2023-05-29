@@ -59,7 +59,7 @@ export default function New() {
     },
     validationSchema: Yup.object({
       title: Yup.string()
-        .max(15, "Must be 15 characters or less")
+        .max(25, "Must be 25 characters or less")
         .required("Title is required"),
       description: Yup.string()
         .max(100, "Must be 100 characters or less")
@@ -74,7 +74,9 @@ export default function New() {
         .min(Yup.ref("startDate"), "End date cannot be less than start date")
         .required("End Date is required"),
       url: Yup.string().url("Invalid URL").required("URL is required"),
-      toastCount: Yup.number().required("Toast Count is required"),
+      toastCount: Yup.number()
+        .required("Toast Count is required")
+        .max(420, "Maximum toast count is 420"),
     }),
     onSubmit: async (values) => {
       try {
@@ -92,7 +94,7 @@ export default function New() {
         bodyFormData.append("ownerAddress", address ?? "");
         var res = await axios({
           method: "post",
-          url: "/api/create-toast",
+          url: "/api/create-toast-qr",
           data: bodyFormData,
           headers: { "Content-Type": "multipart/form-data" },
         });
