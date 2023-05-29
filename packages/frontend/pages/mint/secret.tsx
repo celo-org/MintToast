@@ -29,6 +29,7 @@ const Secret: React.FC<Props> = ({}) => {
   const { address: walletAddress, isConnected } = useAccount();
   const [address, setAddress] = useState<string>();
   const [mintLoading, setMintLoading] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
     if (isConnected) {
@@ -37,33 +38,39 @@ const Secret: React.FC<Props> = ({}) => {
   }, [isConnected, walletAddress]);
 
   const fetchDataFromFirebase = async () => {
-    if (otp.length != 6) {
-      toast.error("Please enter a valid OTP");
-      return;
-    }
-    const res = await axios({
-      method: "post",
-      url: "/api/get-secret-data",
-      data: {
-        secret: otp,
-      },
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    if (res.data.resultData == null) {
-      toast.error("Invalid OTP");
-      return;
-    } else {
-      const eventId = res.data.resultData.eventId;
-      const dataRes = await getMintCollectionData(eventId as string);
-      setData({
-        tokenId: eventId,
-        docId: res.data.resultData.uuid,
-        data: dataRes.serie,
-        uriData: formatIpfsData(dataRes.uriData),
+    try {
+      setLoading(true);
+      if (otp.length != 6) {
+        toast.error("Please enter a valid OTP");
+        return;
+      }
+      const res = await axios({
+        method: "post",
+        url: "/api/get-secret-data",
+        data: {
+          secret: otp,
+        },
+        headers: {
+          "Content-Type": "application/json",
+        },
       });
-      setView(View.MINT);
+      if (res.data.resultData == null) {
+        toast.error("Invalid OTP");
+        return;
+      } else {
+        const eventId = res.data.resultData.eventId;
+        const dataRes = await getMintCollectionData(eventId as string);
+        setData({
+          tokenId: eventId,
+          docId: res.data.resultData.uuid,
+          data: dataRes.serie,
+          uriData: formatIpfsData(dataRes.uriData),
+        });
+        setView(View.MINT);
+      }
+    } catch (e) {
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -130,7 +137,11 @@ const Secret: React.FC<Props> = ({}) => {
                   renderInput={(props) => <input {...props} />}
                 />
               </div>
-              <PrimaryButton onClick={fetchDataFromFirebase} text="Continue" />
+              <PrimaryButton
+                onClick={fetchDataFromFirebase}
+                text="Continue"
+                isLoading={loading}
+              />
             </div>
           </div>
         </>
