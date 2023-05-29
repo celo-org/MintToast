@@ -29,14 +29,11 @@ const navigation = [
 
 export default function Footer() {
   return (
-    <footer className="bg-gypsum mt-auto border-black border-t-2 bg-white">
-      <div className="mx-auto max-w-7xl py-6 px-4 sm:px-6 md:flex md:items-center md:justify-center lg:px-8">
-        <div className="mt-8 md:order-1 md:mt-0">
-          <p className="text-center text-base text-black font-bold">
-            Toasting on Celo
-          </p>
-        </div>
-        {/* <div>11000 Toasts Given</div> */}
+    <footer className="bg-gypsum mt-auto border-black border-t-2 bg-white mb-14 md:mb-0">
+      <div className="mx-auto max-w-7xl py-6 px-4 flex items-center justify-center">
+        <p className="text-center text-base text-black font-bold">
+          Toasting on Celo
+        </p>
       </div>
     </footer>
   );

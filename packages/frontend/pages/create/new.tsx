@@ -21,12 +21,6 @@ enum View {
 
 export default function New() {
   const [view, setView] = useState<View>(View.IMAGE);
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
-  const [url, setUrl] = useState("");
-  const [toastCount, setToastCount] = useState(10);
   const [imageSrc, setImageSrc] = useState<any>(null);
   const [image, setImage] = useState<any>(null);
   const [loading, setLoading] = useState(false);
