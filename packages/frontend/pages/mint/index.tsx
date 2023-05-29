@@ -1,6 +1,7 @@
 import Head from "next/head";
 import Image from "next/image";
 import { toast } from "react-toastify";
+import MintANewToast from "../../public/images/MintANewToast.png";
 
 export default function Mint() {
   return (
@@ -8,56 +9,32 @@ export default function Mint() {
       <Head>
         <title>Mint Toast | Mint</title>
       </Head>
-      <div className="flex flex-col justify-center items-center md:pt-20 pt-4 max-w-xl mx-auto">
-        <span className="px-5 text-3xl font-bold">Mint a new Toast!</span>
-        <div className="flex flex-col justify-start w-full mt-20">
+      <div className="flex flex-col justify-center items-center md:pt-10 pt-1 max-w-xl mx-auto">
+        <span className="px-5 text-2xl font-bold text-center mb-4">
+          Have you encountered a wild Toast?
+        </span>
+        <Image src={MintANewToast} alt="Mint with 6 Digit code" />
+        <div className="flex flex-col justify-start w-full my-10">
           <div className="flex flex-row flex-wrap justify-evenly">
-            {/* Card 1 */}
             <div
               onClick={() => {
                 toast.error("Coming Soon!");
               }}
               className="w-[170px] h-[170px] pushable-card select-none rounded-sm bg-black border-none p-0 cursor-pointer outline-offset-4 mt-5"
             >
-              <span className="w-[170px] h-[170px] front-card rounded-sm border-2 border-black text-black font-bold text-base block">
-                <Image
-                  src="/images/MintWith6DigitCode.jpg"
-                  alt="Mint with 6 Digit code"
-                  width={170}
-                  height={170}
-                />
+              <span className="flex justify-center items-center px-4 text-lg w-[170px] h-[170px] front-card rounded-sm border-2 border-black text-black font-bold text-center bg-white">
+                🤫 <br />
+                Type a 6 character secret
               </span>
             </div>
-            {/* Card 2 */}
             <div
               onClick={() => {
                 toast.error("Coming Soon!");
               }}
               className="w-[170px] h-[170px] pushable-card select-none rounded-sm bg-black border-none p-0 cursor-pointer outline-offset-4 mt-5"
             >
-              <span className="w-[170px] h-[170px] front-card rounded-sm border-2 border-black text-black font-bold text-base block">
-                <Image
-                  src="/images/MintWithPassword.jpg"
-                  alt="Mint with Password"
-                  width={170}
-                  height={170}
-                />
-              </span>
-            </div>
-            {/* Card 3 */}
-            <div
-              onClick={() => {
-                toast.error("Coming Soon!");
-              }}
-              className="w-[170px] h-[170px] pushable-card select-none rounded-sm bg-black border-none p-0 cursor-pointer outline-offset-4 mt-5"
-            >
-              <span className="w-[170px] h-[170px] front-card rounded-sm border-2 border-black text-black font-bold text-base block">
-                <Image
-                  src="/images/MintWithQR.jpg"
-                  alt="Mint with QR Code"
-                  width={170}
-                  height={170}
-                />
+              <span className="flex justify-center items-center px-4 text-lg w-[170px] h-[170px] front-card rounded-sm border-2 border-black text-black font-bold text-center bg-white">
+                📷 <br /> Scan a QR code
               </span>
             </div>
           </div>
