@@ -3,7 +3,7 @@ import { toast } from "react-toastify";
 type Props = {
   text: string;
   onClick: () => void;
-  varient?: "primary" | "secondary";
+  varient?: "primary" | "secondary" | "twitter";
   icon?: React.ReactNode;
   isLoading?: boolean;
   sumbit?: boolean;
@@ -23,6 +23,8 @@ const PrimaryButton: React.FC<Props> = ({
         return "bg-primary";
       case "secondary":
         return "bg-white";
+      case "twitter":
+        return "bg-twitter";
     }
   };
 
@@ -39,8 +41,8 @@ const PrimaryButton: React.FC<Props> = ({
       }}
       className="pushable select-none rounded-sm bg-black border-none p-0 cursor-pointer outline-offset-4"
     >
-      <span
-        className={`front rounded-sm border-2 border-black text-black font-bold text-base block py-2 px-6 ${getBgColor()}`}
+      <div
+        className={`front rounded-sm border-2 border-black text-black font-bold text-base flex justify-center items-center py-3 px-3  ${getBgColor()}`}
       >
         {isLoading ? (
           <div className="flex justify-center items-center">
@@ -52,7 +54,7 @@ const PrimaryButton: React.FC<Props> = ({
             <span className={icon ? "ml-1" : "ml-0"}>{text}</span>
           </div>
         )}
-      </span>
+      </div>
     </button>
   );
 };

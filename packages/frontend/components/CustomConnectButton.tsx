@@ -1,5 +1,6 @@
 import { Menu, Transition } from "@headlessui/react";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
+import Image from "next/image";
 import { useRouter } from "next/router";
 import { Fragment } from "react";
 import { toast } from "react-toastify";
@@ -9,7 +10,6 @@ import CopyIcon from "./icons/CopyIcon";
 import OpenUrlIcon from "./icons/OpenUrlIcon";
 import PowerOffIcon from "./icons/PowerOffIcon";
 import TwitterIcon from "./icons/TwitterIcon";
-import UserIcon from "./icons/UserIcon";
 
 type Props = {};
 
@@ -69,7 +69,7 @@ export const CustomConnectButton = () => {
                 <div className="w-56 text-right">
                   <Menu as="div" className="relative inline-block text-left">
                     <div>
-                      <Menu.Button className=" border border-black px-4 py-1">
+                      <Menu.Button className="font-bold border border-black px-4 py-1">
                         👾 {account.displayName}
                       </Menu.Button>
                     </div>
@@ -82,16 +82,10 @@ export const CustomConnectButton = () => {
                       leaveFrom="transform opacity-100 scale-100"
                       leaveTo="transform opacity-0 scale-95"
                     >
-                      <Menu.Items className="absolute right-0 mt-2 origin-top-right divide-y divide-gray-100 bg-background shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none md:w-[375px] w-[355px] border-2 border-black">
+                      <Menu.Items className="absolute right-0 mt-2 origin-top-right bg-background shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none md:w-[375px] w-[355px] border-2 border-black">
                         <div className="flex flex-row items-center justify-between p-4 border-b-2 border-black">
                           <div>👾 {account.displayName}</div>
                           <div className="flex flex-row space-x-2">
-                            <IconButton
-                              icon={<UserIcon />}
-                              onClick={() => {
-                                router.push("/profile");
-                              }}
-                            />
                             <IconButton
                               icon={<CopyIcon />}
                               onClick={async () => {
@@ -116,43 +110,41 @@ export const CustomConnectButton = () => {
                             />
                           </div>
                         </div>
+                        <div className="flex flex-col items-start px-4 py-3 border-b-2 border-black">
+                          <div className="text-lg mb-1">Network</div>
+                          <div className="flex flex-row space-x-3 justify-end items-center">
+                            <Image
+                              src="https://images.ctfassets.net/wr0no19kwov9/1kUyahp0Q6X7T9sVXZ16Ho/d553a9dd0e18fac0f14c8bf8b789a303/brand-kit-symbol-image-01.png?fm=webp&w=3840&q=70"
+                              alt="Celo Logo"
+                              width={25}
+                              height={25}
+                            />
+                            <span className="text-3xl font-bold">Celo</span>
+                          </div>
+                        </div>
+                        <div className="flex flex-col items-start px-4 py-3 border-b-2 border-black">
+                          <div className="text-lg mb-1">Balance</div>
+                          <div className="flex flex-row space-x-3 justify-end items-center">
+                            <span className="text-3xl font-bold">5.4 CELO</span>
+                          </div>
+                        </div>
+                        <div className="flex flex-col items-start px-4 py-3 border-b-2 border-black">
+                          <div className="text-lg mb-1">MintToast Balance</div>
+                          <div className="flex flex-row space-x-3 justify-end items-center">
+                            <span className="text-3xl font-bold">
+                              26 Toasts
+                            </span>
+                          </div>
+                        </div>
                         {/* User Account Info */}
                         <div className="p-6 flex flex-col">
-                          <div className="mt-4 flex flex-row">
-                            <div className="w-1/2 flex flex-col items-center">
-                              <span className="text-sm font-thin">
-                                Celo Balance
-                              </span>
-                              <span className="md:text-2xl text-lg font-semibold mt-1 text-center">
-                                {account.displayBalance
-                                  ? `${parseFloat(
-                                      account.balanceFormatted ?? "0"
-                                    ).toFixed(2)} CELO`
-                                  : ""}
-                              </span>
-                            </div>
-                            <div className="w-1/2 flex flex-col items-center">
-                              <span className="text-sm font-thin">
-                                MintToast Balance
-                              </span>
-                              <span className="md:text-2xl text-lg font-semibold mt-1">
-                                26 Toasts
-                              </span>
-                            </div>
-                          </div>
-
                           {/* Buttons */}
-                          <div className="flex flex-col space-y-4 mt-10">
+                          <div className="flex flex-col space-y-4">
                             <PrimaryButton
                               onClick={() => {}}
-                              text="Link your Twitter account"
-                              varient="secondary"
+                              text="Link your Twitter handle"
+                              varient="twitter"
                               icon={<TwitterIcon />}
-                            />
-                            <PrimaryButton
-                              onClick={() => {}}
-                              text="🇬🇧 Language - EN"
-                              varient="secondary"
                             />
                           </div>
                         </div>

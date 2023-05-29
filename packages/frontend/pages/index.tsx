@@ -22,7 +22,7 @@ export default function Home() {
       <Head>
         <title>Mint Toast</title>
       </Head>
-      <div className="flex flex-col justify-center items-center md:pt-20 pt-4">
+      <div className="flex flex-col justify-center items-center md:pt-16 pt-4">
         <div className="font-semibold md:text-4xl text-lg">
           gm! MintToast is a
         </div>
@@ -66,7 +66,7 @@ export default function Home() {
         </div>
         <div className="mt-24 mx-4">
           <PrimaryButton
-            text="gm? Toast? Toastmaster? Help me, I am toasted"
+            text="🤔 gm? Toast? Toastmaster? Help me, I am toasted"
             varient="secondary"
             onClick={() => {}}
           />

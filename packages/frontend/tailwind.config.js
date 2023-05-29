@@ -11,6 +11,7 @@ module.exports = {
         background: "#F2F2EE",
         green: "#25A094",
         yellow: "#FDC900",
+        twitter: "#1DA1F2",
       },
       fontFamily: {
         sans: ["Roboto Mono", "monospace"],
