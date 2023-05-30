@@ -3,6 +3,7 @@ import { WHITELISTED_ADDRESS } from "@/data/constant";
 import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useAccount } from "wagmi";
 import CreateToast from "../../public/images/CreateToast.png";
@@ -11,6 +12,7 @@ import NeedToasterRoleToCreate from "../../public/images/NeedToasterRoleToCreate
 export default function Home() {
   const [canCreate, setCanCreate] = useState(false);
   const { address } = useAccount();
+  const router = useRouter();
 
   useEffect(() => {
     if (address) {
@@ -88,7 +90,12 @@ export default function Home() {
           </div>
         </div>
         <div className="my-12">
-          <PrimaryButton onClick={() => {}} text="🍞 See your Toasts" />
+          <PrimaryButton
+            onClick={() => {
+              router.push("/my-toasts");
+            }}
+            text="🍞 See your Toasts"
+          />
         </div>
       </div>
     </>

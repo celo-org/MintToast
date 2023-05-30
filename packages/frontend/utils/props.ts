@@ -10,4 +10,6 @@ export interface IPFSDataProps {
   endDate?: string;
   email?: string;
   tokenId?: string;
+  formattedEndDate?: string;
+  formattedStartDate?: string;
 }

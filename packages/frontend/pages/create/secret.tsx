@@ -26,7 +26,6 @@ export default function New() {
   const [isConnected, setIsConnected] = useState(false);
   const [canCreate, setCanCreate] = useState(false);
   const [otp, setOtp] = useState("");
-  const [secret, setSecret] = useState("");
 
   useEffect(() => {
     if (address) {

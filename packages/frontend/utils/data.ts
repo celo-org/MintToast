@@ -12,6 +12,8 @@ export const formatIpfsData = (data: any): IPFSDataProps => {
   var imageHash = getAttr("image_hash", data["attributes"] as Array<any>) ?? "";
   var startDate = getAttr("start_date", data["attributes"] as Array<any>) ?? "";
   var endDate = getAttr("end_date", data["attributes"] as Array<any>) ?? "";
+  var formattedStartDate = new Date(startDate).toLocaleDateString();
+  var formattedEndDate = new Date(endDate).toLocaleDateString();
   var email = getAttr("email", data["attributes"] as Array<any>) ?? "";
 
   var ipfsData: IPFSDataProps = {
@@ -25,6 +27,8 @@ export const formatIpfsData = (data: any): IPFSDataProps => {
     startDate: startDate,
     endDate: endDate,
     email: email,
+    formattedStartDate: formattedStartDate,
+    formattedEndDate: formattedEndDate,
   };
   return ipfsData;
 };
