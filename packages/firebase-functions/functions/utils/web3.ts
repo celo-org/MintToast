@@ -1,10 +1,10 @@
+import { ethers } from "ethers";
 import {
   CONTRACT_ADDRESS,
   RPC_ENDPOINT,
   TOASTMASTER_PK,
-} from "@/data/constant";
-import { ethers } from "ethers";
-import ABI from "../utils/contract-abi.json";
+} from "../data/constant";
+import ABI from "./contract-abi.json";
 
 export const getProvider = () => {
   const provider = new ethers.providers.JsonRpcProvider(RPC_ENDPOINT);

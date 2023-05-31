@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 export const formatDateFromString = (dateString: string) => {
   // format of dateString is MM/DD/YYYY
   const date = new Date(dateString);

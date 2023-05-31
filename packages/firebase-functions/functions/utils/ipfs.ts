@@ -1,8 +1,8 @@
-import { IPFS_API_KEY, IPFS_PROJECT_ID } from "@/data/constant";
 import axios from "axios";
 import formidable from "formidable";
 import fs from "fs";
 import { create } from "ipfs-http-client";
+import { IPFS_API_KEY, IPFS_PROJECT_ID } from "../data/constant";
 
 export const getIPFSClient = () => {
   const projectId = IPFS_PROJECT_ID;
@@ -38,7 +38,9 @@ export const uploadJSON = async (data: any) => {
 
 export const fetchDataFromIPFS = async (cid: string) => {
   try {
-    var res = await axios.get("https://mint-toast.infura-ipfs.io/ipfs/" + cid);
+    const res = await axios.get(
+      "https://mint-toast.infura-ipfs.io/ipfs/" + cid
+    );
     return res.data;
   } catch (error) {
     console.error("Error fetching data from IPFS:", error);

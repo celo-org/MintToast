@@ -1,15 +1,15 @@
-import { database } from "@/utils/firebase";
-import { uploadJSON } from "@/utils/ipfs";
-import { getContract } from "@/utils/web3";
 import { BigNumber } from "ethers";
-import { doc, serverTimestamp, setDoc } from "firebase/firestore";
+import admin from "firebase-admin";
 import formidable from "formidable";
 import { v4 as uuidv4 } from "uuid";
+import { uploadJSON } from "../utils/ipfs";
+import { getContract } from "../utils/web3";
 
 export const createToastObj = async (
   fields: formidable.Fields,
   isSecretProtected: boolean,
-  imageID: string
+  imageID: string,
+  db: admin.firestore.Firestore
 ): Promise<string> => {
   const toastObj = {
     name: fields.title,
@@ -31,7 +31,7 @@ export const createToastObj = async (
       { trait_type: "total_toast_supply", value: fields.totalToastSupply },
     ],
   };
-  var dataID = await uploadJSON(toastObj);
+  const dataID = await uploadJSON(toastObj);
   // convert start date from mm/dd/yyyy to unix timestamp
   const startDateUnix = new Date(fields.startDate as string).getTime() / 1000;
   // convert end date from mm/dd/yyyy to unix timestamp
@@ -50,13 +50,17 @@ export const createToastObj = async (
   // get countOfSeries from contract
   const countOfSeries: BigNumber = await contract.countOfSeries();
   const uuid = uuidv4();
-  await setDoc(doc(database, "events", uuid), {
-    uuid: uuid,
-    eventId: countOfSeries.toNumber() - 1,
-    ownerAddress: fields.ownerAddress,
-    createdAt: serverTimestamp(),
-    isSecretProtected: isSecretProtected,
-    secret: isSecretProtected ? fields.secret : "",
-  });
+
+  await db
+    .collection("events")
+    .doc(uuid)
+    .set({
+      uuid: uuid,
+      eventId: countOfSeries.toNumber() - 1,
+      ownerAddress: fields.ownerAddress,
+      createdAt: admin.firestore.FieldValue.serverTimestamp(),
+      isSecretProtected: isSecretProtected,
+      secret: isSecretProtected ? fields.secret : "",
+    });
   return uuid;
 };
