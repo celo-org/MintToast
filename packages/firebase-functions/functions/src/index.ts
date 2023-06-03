@@ -12,12 +12,20 @@ import admin from "firebase-admin";
 
 admin.initializeApp();
 
-export const mint = onRequest(mintHandler);
-export const createToastQR = onRequest(createToastQRHandler);
-export const createToastSecret = onRequest(createToastSecretHandler);
+const cors = { cors: ["flutter.com"] };
 
-export const getAllEventUUID = onRequest(getAllEventUUIDHandler);
-export const getEventId = onRequest(getEventIdHandler);
-export const getOwner = onRequest(getOwnerHandler);
-export const getSecretData = onRequest(getSecretDataHandler);
-export const getUserCollection = onRequest(getUserCollectionHandler);
+export const mint = onRequest({ ...cors, timeoutSeconds: 120 }, mintHandler);
+export const createToastQR = onRequest(
+  { ...cors, timeoutSeconds: 120 },
+  createToastQRHandler
+);
+export const createToastSecret = onRequest(
+  { ...cors, timeoutSeconds: 120 },
+  createToastSecretHandler
+);
+
+export const getAllEventUUID = onRequest(cors, getAllEventUUIDHandler);
+export const getEventId = onRequest(cors, getEventIdHandler);
+export const getOwner = onRequest(cors, getOwnerHandler);
+export const getSecretData = onRequest(cors, getSecretDataHandler);
+export const getUserCollection = onRequest(cors, getUserCollectionHandler);

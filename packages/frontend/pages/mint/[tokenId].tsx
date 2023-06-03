@@ -1,8 +1,6 @@
 import InputField from "@/components/common/InputField";
 import PrimaryButton from "@/components/common/PrimaryButton";
 import { getMintCollectionData } from "@/graphql/queries/getMintCollectionData";
-import { formatIpfsData } from "@/utils/data";
-import { database } from "@/utils/firebase";
 import { fetchImageUrl } from "@/utils/ipfs";
 import axios from "axios";
 import { doc, getDoc } from "firebase/firestore";
@@ -16,6 +14,8 @@ import { toast } from "react-toastify";
 import { useAccount } from "wagmi";
 import NewToastDropping from "../../public/images/NewToastDropping.png";
 import SuccessfulMinting from "../../public/images/SuccessfulMinting.png";
+import { formatIpfsData } from "../../utils/data";
+import { database } from "../../utils/firebase";
 
 export interface DataProps {
   name?: string;

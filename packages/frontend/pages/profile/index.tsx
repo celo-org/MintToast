@@ -3,6 +3,7 @@ import ConnectWalletMessage from "@/components/common/ConnectWalletMessage";
 import NoToast from "@/components/common/NoToast";
 import { getMintCollectionData } from "@/graphql/queries/getMintCollectionData";
 import axios from "axios";
+import "firebase/functions";
 import Head from "next/head";
 import { useEffect, useState } from "react";
 import { useAccount } from "wagmi";

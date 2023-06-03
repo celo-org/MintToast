@@ -1,11 +1,10 @@
 import admin from "firebase-admin";
-import formidable from "formidable";
 import { v4 as uuidv4 } from "uuid";
 import { uploadJSON } from "../utils/ipfs";
 import { getContract } from "../utils/web3";
 
 export const createToastObj = async (
-  fields: formidable.Fields,
+  fields: any,
   isSecretProtected: boolean,
   db: admin.firestore.Firestore
 ): Promise<string> => {
@@ -60,6 +59,6 @@ export const createToastObj = async (
       isSecretProtected: isSecretProtected,
       secret: isSecretProtected ? fields.secret : "",
     });
-  console.log("8");
+
   return uuid;
 };
