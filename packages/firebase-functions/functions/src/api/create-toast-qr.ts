@@ -1,10 +1,9 @@
+import admin from "firebase-admin";
+/* eslint-disable guard-for-in */
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import e from "express";
-import admin from "firebase-admin";
 import { Request } from "firebase-functions/v2/https";
-import formidable from "formidable";
 import { createToastObj } from "../../helper/create-helpers";
-import { uploadImage } from "../../utils/ipfs";
 
 export const config = {
   api: {
@@ -15,6 +14,7 @@ export const config = {
 type Data = {
   success?: boolean;
   id?: string;
+  data?: any;
   error?: string;
 };
 
@@ -25,38 +25,22 @@ export default async function handler(req: Request, res: e.Response<Data>) {
     return;
   }
   try {
-    // accept image file from the req.body multipart/form-data
-    const form = new formidable.IncomingForm();
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    await new Promise<void>((resolve, reject) => {
-      form.parse(req, async (err, fields, files) => {
-        if (err) {
-          console.error("Error", err);
-          res.status(500).json({ error: err.message });
-          return;
-        }
-        const imageID = await uploadImage(files.image as formidable.File);
-        // check if all the required fields are present
-        if (
-          !fields.title ||
-          !fields.description ||
-          !fields.startDate ||
-          !fields.endDate ||
-          !fields.websiteLink ||
-          !fields.totalToastSupply ||
-          !fields.ownerAddress ||
-          !imageID
-        ) {
-          res.status(400).json({ error: "Missing required fields" });
-          return;
-        }
-
-        const id = await createToastObj(fields, false, imageID, db);
-        res.status(200).json({ success: false, id });
-        resolve();
-      });
-    });
-    return;
+    const fields = req.body;
+    if (
+      !fields.title ||
+      !fields.description ||
+      !fields.startDate ||
+      !fields.endDate ||
+      !fields.websiteLink ||
+      !fields.totalToastSupply ||
+      !fields.ownerAddress ||
+      !fields.imageID
+    ) {
+      res.status(400).json({ error: "Missing required fields" });
+      return;
+    }
+    const id = await createToastObj(fields, false, db);
+    res.status(200).json({ success: true, id });
   } catch (error) {
     console.error("Error", error);
     res.status(500).json({ error: error as string });

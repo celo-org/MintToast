@@ -90,17 +90,17 @@ export default function New() {
         setLoading(true);
         toast.loading("Creating your event, please wait...");
         var bodyFormData = new FormData();
-        bodyFormData.append("title", values.title);
-        bodyFormData.append("description", values.description);
-        bodyFormData.append("startDate", values.startDate);
-        bodyFormData.append("endDate", values.endDate);
-        bodyFormData.append("websiteLink", values.url);
-        bodyFormData.append("totalToastSupply", values.toastCount.toString());
+        // bodyFormData.append("title", values.title);
+        // bodyFormData.append("description", values.description);
+        // bodyFormData.append("startDate", values.startDate);
+        // bodyFormData.append("endDate", values.endDate);
+        // bodyFormData.append("websiteLink", values.url);
+        // bodyFormData.append("totalToastSupply", values.toastCount.toString());
+        // bodyFormData.append("ownerAddress", address ?? "");
         bodyFormData.append("image", image);
-        bodyFormData.append("ownerAddress", address ?? "");
         var res = await axios({
           method: "post",
-          url: "/api/create-toast-qr",
+          url: "/api/upload",
           data: bodyFormData,
           headers: { "Content-Type": "multipart/form-data" },
         });

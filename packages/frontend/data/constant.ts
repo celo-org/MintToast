@@ -6,6 +6,10 @@ export const TESTNET_API_ENDPOINT = "https://minttoast-testnet.netlify.app";
 export const MAINNET_API_ENDPOINT = "http://minttoast.xyz";
 export const LOCAL_API_ENDPOINT = "http://localhost:3000";
 
+export const LOCAL_FIREBASE_FUNCTION_ENDPOINT =
+  "http://127.0.0.1:5001/mint-toast/us-central1";
+export const TESTNET_FIREBASE_FUNCTION_ENDPOINT = "";
+
 export const TESTNET_RPC_ENDPOINT = "https://alfajores-forno.celo-testnet.org";
 export const MAINNET_RPC_ENDPOINT = "https://forno.celo.org";
 

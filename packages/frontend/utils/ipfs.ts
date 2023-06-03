@@ -1,8 +1,7 @@
+import { IPFS_API_KEY, IPFS_PROJECT_ID } from "@/data/constant";
 import axios from "axios";
-
 import fs from "fs";
 import { create } from "ipfs-http-client";
-import { IPFS_API_KEY, IPFS_PROJECT_ID } from "../data/constant";
 
 export const getIPFSClient = () => {
   const projectId = IPFS_PROJECT_ID;
@@ -27,7 +26,6 @@ export const uploadImage = async (image: any) => {
   const result = await client.add(data);
   return result.cid.toString();
 };
-
 export const uploadJSON = async (data: any) => {
   const client = getIPFSClient();
   const jsonString = JSON.stringify(data);

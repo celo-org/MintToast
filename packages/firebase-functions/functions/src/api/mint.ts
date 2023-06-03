@@ -6,12 +6,6 @@ import formidable from "formidable";
 import { CAPTCH_SECRETKEY } from "../../data/constant";
 import { getContract } from "./../../utils/web3";
 
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-};
-
 type Data = {
   success?: boolean;
   error?: string;

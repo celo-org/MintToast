@@ -79,10 +79,6 @@ export default function MyToast() {
           "Content-Type": "application/json",
         },
       });
-      console.log(
-        "res.data.resultData",
-        res.data.resultData[0].isSecretProtected
-      );
       setShareData(res.data.resultData[0]);
       if (res.data.resultData[0].isSecretProtected) {
         setView(View.ShareSecret);

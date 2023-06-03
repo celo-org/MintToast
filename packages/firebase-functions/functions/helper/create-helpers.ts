@@ -1,4 +1,3 @@
-import { BigNumber } from "ethers";
 import admin from "firebase-admin";
 import formidable from "formidable";
 import { v4 as uuidv4 } from "uuid";
@@ -8,20 +7,19 @@ import { getContract } from "../utils/web3";
 export const createToastObj = async (
   fields: formidable.Fields,
   isSecretProtected: boolean,
-  imageID: string,
   db: admin.firestore.Firestore
 ): Promise<string> => {
   const toastObj = {
     name: fields.title,
     description: fields.description,
-    image: "ipfs://" + imageID,
+    image: "ipfs://" + fields.imageID,
     attributes: [
       {
         trait_type: "created_by",
         value: "0x8D6c17Df259C8c11eb334D1B52F44bB6F9752aeF",
       },
       { trait_type: "website_link", value: fields.websiteLink },
-      { trait_type: "image_hash", value: imageID },
+      { trait_type: "image_hash", value: fields.imageID },
       {
         display_type: "date",
         trait_type: "start_date",
@@ -48,7 +46,7 @@ export const createToastObj = async (
   await tx.wait();
 
   // get countOfSeries from contract
-  const countOfSeries: BigNumber = await contract.countOfSeries();
+  const countOfSeries: any = await contract.countOfSeries();
   const uuid = uuidv4();
 
   await db
@@ -62,5 +60,6 @@ export const createToastObj = async (
       isSecretProtected: isSecretProtected,
       secret: isSecretProtected ? fields.secret : "",
     });
+  console.log("8");
   return uuid;
 };

@@ -10,9 +10,7 @@ export default async function handler(req: Request, res: e.Response) {
     return;
   }
   try {
-    console.log("req.body", req.body);
     const { docId } = req.body;
-    console.log("docId", docId);
     const docSnapshot = await db.collection("events").doc(docId).get();
     const resultData = docSnapshot.data();
     res.status(200).json({ resultData });
