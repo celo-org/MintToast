@@ -1,7 +1,7 @@
 import InputField from "@/components/common/InputField";
 import PrimaryButton from "@/components/common/PrimaryButton";
 import { getMintCollectionData } from "@/graphql/queries/getMintCollectionData";
-import { formatIpfsData } from "@/utils/data";
+import { formatIpfsData, getApiEndpoint } from "@/utils/data";
 import { fetchImageUrl } from "@/utils/ipfs";
 import axios from "axios";
 import Image from "next/image";
@@ -50,7 +50,7 @@ const Secret: React.FC<Props> = ({}) => {
       }
       const res = await axios({
         method: "post",
-        url: "/api/get-secret-data",
+        url: getApiEndpoint().getSecretDataEndpoint,
         data: {
           secret: otp,
         },
@@ -88,7 +88,7 @@ const Secret: React.FC<Props> = ({}) => {
       try {
         setView(View.MINTLOADING);
         const tokenId = data.tokenId;
-        var res = await axios.post("/api/mint", {
+        var res = await axios.post(getApiEndpoint().mintEndpoint, {
           tokenId,
           address,
           token,

@@ -6,6 +6,8 @@ import TextArea from "@/components/common/TextField";
 import ImageView from "@/components/create/ImageView";
 import Share from "@/components/create/Share";
 import { WHITELISTED_ADDRESS } from "@/data/constant";
+import { getApiEndpoint } from "@/utils/data";
+import { uploadImageToIpfs } from "@/utils/helper";
 import { View, formatDateFromString } from "@/utils/utils";
 import axios from "axios";
 import { useFormik } from "formik";
@@ -89,20 +91,22 @@ export default function New() {
       try {
         setLoading(true);
         toast.loading("Creating your event, please wait...");
-        var bodyFormData = new FormData();
-        // bodyFormData.append("title", values.title);
-        // bodyFormData.append("description", values.description);
-        // bodyFormData.append("startDate", values.startDate);
-        // bodyFormData.append("endDate", values.endDate);
-        // bodyFormData.append("websiteLink", values.url);
-        // bodyFormData.append("totalToastSupply", values.toastCount.toString());
-        // bodyFormData.append("ownerAddress", address ?? "");
-        bodyFormData.append("image", image);
-        var res = await axios({
+        const imageID = await uploadImageToIpfs(image);
+
+        var firebaseRes = await axios({
           method: "post",
-          url: "/api/upload",
-          data: bodyFormData,
-          headers: { "Content-Type": "multipart/form-data" },
+          url: getApiEndpoint().createToastQREndpoint,
+          data: {
+            title: values.title,
+            description: values.description,
+            startDate: formatDateFromString(values.startDate),
+            endDate: formatDateFromString(values.endDate),
+            websiteLink: values.url,
+            totalToastSupply: values.toastCount.toString(),
+            ownerAddress: address ?? "",
+            imageID,
+          },
+          headers: { "Content-Type": "application/json" },
         });
         toast.dismiss();
         toast.success(
@@ -110,9 +114,9 @@ export default function New() {
         );
         setLoading(false);
         clearForm();
-        if (res.data && res.data.id) {
+        if (firebaseRes.data && firebaseRes.data.id) {
           setView(View.SUBMITTED);
-          setId(res.data.id);
+          setId(firebaseRes.data.id);
         }
       } catch (e) {
         toast.dismiss();

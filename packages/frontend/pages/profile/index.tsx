@@ -2,6 +2,7 @@ import CollectionItem from "@/components/collection/CollectionItem";
 import ConnectWalletMessage from "@/components/common/ConnectWalletMessage";
 import NoToast from "@/components/common/NoToast";
 import { getMintCollectionData } from "@/graphql/queries/getMintCollectionData";
+import { getApiEndpoint } from "@/utils/data";
 import axios from "axios";
 import "firebase/functions";
 import Head from "next/head";
@@ -26,10 +27,9 @@ const Profile: React.FC<Props> = () => {
 
   useEffect(() => {
     const fetchUserCollections = async () => {
-      // axios call with content type application/json
       const res = await axios({
         method: "post",
-        url: "/api/get-user-collection",
+        url: getApiEndpoint().getUserCollectionEndpoint,
         data: {
           address,
         },

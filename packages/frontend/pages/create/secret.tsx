@@ -6,6 +6,8 @@ import TextArea from "@/components/common/TextField";
 import SecretImageView from "@/components/create/SecretImageView";
 import SecretShare from "@/components/create/SecretShare";
 import { WHITELISTED_ADDRESS } from "@/data/constant";
+import { getApiEndpoint } from "@/utils/data";
+import { uploadImageToIpfs } from "@/utils/helper";
 import { View, formatDateFromString } from "@/utils/utils";
 import axios from "axios";
 import { useFormik } from "formik";
@@ -89,21 +91,23 @@ export default function New() {
       try {
         setLoading(true);
         toast.loading("Creating your event, don't close the window...");
-        var bodyFormData = new FormData();
-        bodyFormData.append("title", values.title);
-        bodyFormData.append("description", values.description);
-        bodyFormData.append("startDate", values.startDate);
-        bodyFormData.append("endDate", values.endDate);
-        bodyFormData.append("websiteLink", values.url);
-        bodyFormData.append("totalToastSupply", values.toastCount.toString());
-        bodyFormData.append("image", image);
-        bodyFormData.append("ownerAddress", address ?? "");
-        bodyFormData.append("secret", otp);
-        var res = await axios({
+
+        const imageID = await uploadImageToIpfs(image);
+        var firebaseRes = await axios({
           method: "post",
-          url: "/api/create-toast-secret",
-          data: bodyFormData,
-          headers: { "Content-Type": "multipart/form-data" },
+          url: getApiEndpoint().createToastSecretEndpoint,
+          data: {
+            title: values.title,
+            description: values.description,
+            startDate: formatDateFromString(values.startDate),
+            endDate: formatDateFromString(values.endDate),
+            websiteLink: values.url,
+            totalToastSupply: values.toastCount.toString(),
+            ownerAddress: address ?? "",
+            imageID,
+            secret: otp,
+          },
+          headers: { "Content-Type": "application/json" },
         });
         toast.dismiss();
         toast.success(

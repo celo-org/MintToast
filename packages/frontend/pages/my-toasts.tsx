@@ -4,6 +4,7 @@ import MyToastItem from "@/components/common/MyToastItem";
 import SecretShare from "@/components/create/SecretShare";
 import Share from "@/components/create/Share";
 import { getMintCollectionData } from "@/graphql/queries/getMintCollectionData";
+import { getApiEndpoint } from "@/utils/data";
 import axios from "axios";
 import Head from "next/head";
 import Link from "next/link";
@@ -39,7 +40,7 @@ export default function MyToast() {
       setView(View.Loading);
       const res = await axios({
         method: "post",
-        url: "/api/get-user-collection",
+        url: getApiEndpoint().getUserCollectionEndpoint,
         data: {
           address,
         },
@@ -71,7 +72,7 @@ export default function MyToast() {
       setView(View.Loading);
       const res = await axios({
         method: "post",
-        url: "/api/get-owner",
+        url: getApiEndpoint().getOwnerEndpoint,
         data: {
           tokenId,
         },

@@ -1,6 +1,6 @@
 import * as firebase from "firebase/app";
 import { getFirestore } from "firebase/firestore";
-import "firebase/functions";
+import { getFunctions } from "firebase/functions";
 
 const firebaseConfig = {
   apiKey: process.env.FIREBASE_API_KEY,
@@ -15,5 +15,6 @@ const firebaseConfig = {
 // Initialize Firebase
 export const app = firebase.initializeApp(firebaseConfig);
 export const database = getFirestore(app);
+export const functions = getFunctions(app);
 
 export default firebase;

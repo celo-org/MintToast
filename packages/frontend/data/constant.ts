@@ -45,3 +45,42 @@ export const WHITELISTED_ADDRESS = [
 
 export const CAPTCH_SITEKEY = process.env.NEXT_PUBLIC_CAPTCH_SITEKEY;
 export const CAPTCH_SECRETKEY = process.env.CAPTCH_SECRETKEY;
+
+export const createToastQREndpointMainnet = "http://localhost:8080";
+export const createToastQREndpointTestnet =
+  "https://createtoastqr-ehg6drsqxq-uc.a.run.app";
+export const createToastQREndpointLocal = "http://localhost:8080";
+
+export const createToastSecretEndpointMainnet = "http://localhost:8080";
+export const createToastSecretEndpointTestnet =
+  "https://createtoastsecret-ehg6drsqxq-uc.a.run.app";
+export const createToastSecretEndpointLocal = "http://localhost:8080";
+
+export const getAllEventUUIDEndpointMainnet = "http://localhost:8080";
+export const getAllEventUUIDEndpointTestnet =
+  "https://getalleventuuid-ehg6drsqxq-uc.a.run.app";
+export const getAllEventUUIDEndpointLocal = "http://localhost:8080";
+
+export const getEventIdEndpointMainnet = "http://localhost:8080";
+export const getEventIdEndpointTestnet =
+  "https://geteventid-ehg6drsqxq-uc.a.run.app";
+export const getEventIdEndpointLocal = "http://localhost:8080";
+
+export const getOwnerEndpointMainnet = "http://localhost:8080";
+export const getOwnerEndpointTestnet =
+  "https://getowner-ehg6drsqxq-uc.a.run.app";
+export const getOwnerEndpointLocal = "http://localhost:8080";
+
+export const getSecretDataEndpointMainnet = "http://localhost:8080";
+export const getSecretDataEndpointTestnet =
+  "https://getsecretdata-ehg6drsqxq-uc.a.run.app";
+export const getSecretDataEndpointLocal = "http://localhost:8080";
+
+export const getUserCollectionEndpointMainnet = "http://localhost:8080";
+export const getUserCollectionEndpointTestnet =
+  "https://getusercollection-ehg6drsqxq-uc.a.run.app";
+export const getUserCollectionEndpointLocal = "http://localhost:8080";
+
+export const mintEndpointMainnet = "http://localhost:8080";
+export const mintEndpointTestnet = "https://mint-ehg6drsqxq-uc.a.run.app";
+export const mintEndpointLocal = "http://localhost:8080";

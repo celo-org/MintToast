@@ -14,7 +14,7 @@ import { toast } from "react-toastify";
 import { useAccount } from "wagmi";
 import NewToastDropping from "../../public/images/NewToastDropping.png";
 import SuccessfulMinting from "../../public/images/SuccessfulMinting.png";
-import { formatIpfsData } from "../../utils/data";
+import { formatIpfsData, getApiEndpoint } from "../../utils/data";
 import { database } from "../../utils/firebase";
 
 export interface DataProps {
@@ -67,7 +67,7 @@ const QRPage: React.FC<Props> = ({ tokenId, uriData, data, docId }) => {
       toast.loading("Minting your toast, please wait...");
       try {
         setView(View.MINTLOADING);
-        var res = await axios.post("/api/mint", {
+        var res = await axios.post(getApiEndpoint().mintEndpoint, {
           tokenId,
           address,
           token,

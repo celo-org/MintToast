@@ -1,3 +1,30 @@
+import {
+  NETWORK_MODE,
+  createToastQREndpointLocal,
+  createToastQREndpointMainnet,
+  createToastQREndpointTestnet,
+  createToastSecretEndpointLocal,
+  createToastSecretEndpointMainnet,
+  createToastSecretEndpointTestnet,
+  getAllEventUUIDEndpointLocal,
+  getAllEventUUIDEndpointMainnet,
+  getAllEventUUIDEndpointTestnet,
+  getEventIdEndpointLocal,
+  getEventIdEndpointMainnet,
+  getEventIdEndpointTestnet,
+  getOwnerEndpointLocal,
+  getOwnerEndpointMainnet,
+  getOwnerEndpointTestnet,
+  getSecretDataEndpointLocal,
+  getSecretDataEndpointMainnet,
+  getSecretDataEndpointTestnet,
+  getUserCollectionEndpointLocal,
+  getUserCollectionEndpointMainnet,
+  getUserCollectionEndpointTestnet,
+  mintEndpointLocal,
+  mintEndpointMainnet,
+  mintEndpointTestnet,
+} from "@/data/constant";
 import { IPFSDataProps } from "./props";
 
 export const formatIpfsData = (data: any): IPFSDataProps => {
@@ -43,5 +70,54 @@ const getAttr = (key: string, list: Array<any>) => {
     return res;
   } else {
     return null;
+  }
+};
+
+export const getApiEndpoint = () => {
+  switch (NETWORK_MODE) {
+    case "mainnet":
+      return {
+        createToastQREndpoint: createToastQREndpointMainnet,
+        createToastSecretEndpoint: createToastSecretEndpointMainnet,
+        getAllEventUUIDEndpoint: getAllEventUUIDEndpointMainnet,
+        getEventIdEndpoint: getEventIdEndpointMainnet,
+        getOwnerEndpoint: getOwnerEndpointMainnet,
+        getSecretDataEndpoint: getSecretDataEndpointMainnet,
+        getUserCollectionEndpoint: getUserCollectionEndpointMainnet,
+        mintEndpoint: mintEndpointMainnet,
+      };
+    case "testnet":
+      return {
+        createToastQREndpoint: createToastQREndpointTestnet,
+        createToastSecretEndpoint: createToastSecretEndpointTestnet,
+        getAllEventUUIDEndpoint: getAllEventUUIDEndpointTestnet,
+        getEventIdEndpoint: getEventIdEndpointTestnet,
+        getOwnerEndpoint: getOwnerEndpointTestnet,
+        getSecretDataEndpoint: getSecretDataEndpointTestnet,
+        getUserCollectionEndpoint: getUserCollectionEndpointTestnet,
+        mintEndpoint: mintEndpointTestnet,
+      };
+    case "local":
+      return {
+        createToastQREndpoint: createToastQREndpointLocal,
+        createToastSecretEndpoint: createToastSecretEndpointLocal,
+        getAllEventUUIDEndpoint: getAllEventUUIDEndpointLocal,
+        getEventIdEndpoint: getEventIdEndpointLocal,
+        getOwnerEndpoint: getOwnerEndpointLocal,
+        getSecretDataEndpoint: getSecretDataEndpointLocal,
+        getUserCollectionEndpoint: getUserCollectionEndpointLocal,
+        mintEndpoint: mintEndpointLocal,
+      };
+    default:
+      return {
+        createToastQREndpoint: createToastQREndpointLocal,
+        createToastSecretEndpoint: createToastSecretEndpointLocal,
+        getAllEventUUIDEndpoint: getAllEventUUIDEndpointLocal,
+        getEventIdEndpoint: getEventIdEndpointLocal,
+        getOwnerEndpoint: getOwnerEndpointLocal,
+        getSecretDataEndpoint: getSecretDataEndpointLocal,
+        getUserCollectionEndpoint: getUserCollectionEndpointLocal,
+        mintEndpoint: mintEndpointLocal,
+      };
   }
 };
