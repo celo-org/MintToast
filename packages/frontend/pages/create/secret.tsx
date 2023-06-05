@@ -71,7 +71,7 @@ export default function New() {
         .max(35, "Must be 35 characters or less")
         .required("Title is required"),
       description: Yup.string()
-        .max(300, "Must be 300 characters or less")
+        .max(500, "Must be 500 characters or less")
         .required("Description is required"),
       startDate: Yup.date()
         .min(
