@@ -68,10 +68,10 @@ export default function New() {
     },
     validationSchema: Yup.object({
       title: Yup.string()
-        .max(25, "Must be 25 characters or less")
+        .max(35, "Must be 35 characters or less")
         .required("Title is required"),
       description: Yup.string()
-        .max(100, "Must be 100 characters or less")
+        .max(300, "Must be 300 characters or less")
         .required("Description is required"),
       startDate: Yup.date()
         .min(
