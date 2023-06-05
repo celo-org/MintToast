@@ -14,6 +14,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import Emoji from "react-emoji-render";
 import { useAccount } from "wagmi";
 import { DataProps } from "../mint/[tokenId]";
 
@@ -89,7 +90,7 @@ const EventPage: React.FC<Props> = ({
 
             <div className="md:w-[400px] w-full px-2 md:mx-0 mt-8 flex flex-col">
               <div className="text-gray-500 whitespace-pre-wrap">
-                {uriData?.description ?? ""}
+                <Emoji>{uriData?.description ?? ""}</Emoji>
               </div>
               {ownerAddress == userAddress && (
                 <>

@@ -9,6 +9,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useCallback, useEffect, useState } from "react";
+import Emoji from "react-emoji-render";
 import { useGoogleReCaptcha } from "react-google-recaptcha-v3";
 import { toast } from "react-toastify";
 import { useAccount } from "wagmi";
@@ -142,7 +143,7 @@ const QRPage: React.FC<Props> = ({ tokenId, uriData, data, docId }) => {
 
           <div className="md:w-[400px] w-full px-2 md:mx-0 mt-8 flex flex-col">
             <div className="text-gray-500 whitespace-pre-wrap">
-              {uriData?.description ?? ""}
+              <Emoji>{uriData?.description ?? ""}</Emoji>
             </div>
             <Link
               className="justify-self-start mt-10 text-green"
