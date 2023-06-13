@@ -39,3 +39,8 @@
 .pushable-card:focus:not(:focus-visible) {
   outline: none;
 }
+
+.image-box {
+  border: 2px black;
+  border-right: 0px;
+}

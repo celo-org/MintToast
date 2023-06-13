@@ -1,4 +1,3 @@
-import localFont from "@next/font/local";
 import {
   connectorsForWallets,
   RainbowKitProvider,
@@ -10,6 +9,7 @@ import {
   walletConnectWallet,
 } from "@rainbow-me/rainbowkit/wallets";
 import type { AppProps } from "next/app";
+import { Roboto_Mono } from "next/font/google";
 import NextNProgress from "nextjs-progressbar";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -56,76 +56,15 @@ const wagmiClient = createClient({
   provider,
 });
 
-const robotoMono = localFont({
-  src: [
-    {
-      path: "../public/fonts/RobotoMono-Bold.ttf",
-      weight: "700",
-    },
-    {
-      path: "../public/fonts/RobotoMono-BoldItalic.ttf",
-      weight: "700",
-      style: "italic",
-    },
-    {
-      path: "../public/fonts/RobotoMono-ExtraLight.ttf",
-      weight: "200",
-    },
-    {
-      path: "../public/fonts/RobotoMono-ExtraLightItalic.ttf",
-      weight: "200",
-      style: "italic",
-    },
-    {
-      path: "../public/fonts/RobotoMono-Italic.ttf",
-      style: "italic",
-    },
-    {
-      path: "../public/fonts/RobotoMono-Light.ttf",
-      weight: "300",
-    },
-    {
-      path: "../public/fonts/RobotoMono-LightItalic.ttf",
-      weight: "300",
-      style: "italic",
-    },
-    {
-      path: "../public/fonts/RobotoMono-Medium.ttf",
-      weight: "500",
-    },
-    {
-      path: "../public/fonts/RobotoMono-MediumItalic.ttf",
-      weight: "500",
-      style: "italic",
-    },
-    {
-      path: "../public/fonts/RobotoMono-Regular.ttf",
-    },
-    {
-      path: "../public/fonts/RobotoMono-SemiBold.ttf",
-      weight: "600",
-    },
-    {
-      path: "../public/fonts/RobotoMono-SemiBoldItalic.ttf",
-      weight: "600",
-      style: "italic",
-    },
-    {
-      path: "../public/fonts/RobotoMono-Thin.ttf",
-      weight: "100",
-    },
-    {
-      path: "../public/fonts/RobotoMono-ThinItalic.ttf",
-      weight: "100",
-      style: "italic",
-    },
-  ],
-  variable: "--font-robotomono",
+const roboto_mono = Roboto_Mono({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-roboto-mono",
 });
 
 function App({ Component, pageProps }: AppProps) {
   return (
-    <>
+    <main className={roboto_mono.className}>
       <NextNProgress
         color="#FF84E2"
         startPosition={0.3}
@@ -159,7 +98,7 @@ function App({ Component, pageProps }: AppProps) {
           </Layout>
         </RainbowKitProvider>
       </WagmiConfig>
-    </>
+    </main>
   );
 }
 
