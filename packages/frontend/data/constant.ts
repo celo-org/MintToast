@@ -65,7 +65,8 @@ export const getAllEventUUIDEndpointMainnet =
   "https://getalleventuuid-gf4tpo3gda-uc.a.run.app";
 export const getAllEventUUIDEndpointTestnet =
   "https://getalleventuuid-ehg6drsqxq-uc.a.run.app";
-export const getAllEventUUIDEndpointLocal = "getAllEventUUID";
+export const getAllEventUUIDEndpointLocal =
+  "http://localhost:5000/mint-toast/us-central1/getAllEventUUID";
 
 export const getEventIdEndpointMainnet =
   "https://geteventid-gf4tpo3gda-uc.a.run.app";

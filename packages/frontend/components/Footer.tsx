@@ -29,7 +29,7 @@ const navigation = [
 
 export default function Footer() {
   return (
-    <footer className="bg-gypsum mt-auto border-black border-t-2 bg-white mb-14 md:mb-0">
+    <footer className="mt-auto border-black border-t-2 bg-white mb-14 md:mb-0">
       <div className="mx-auto max-w-7xl py-6 px-4 flex items-center justify-center">
         <p className="text-center text-base text-black font-bold">
           Toasting on Celo

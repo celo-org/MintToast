@@ -23,9 +23,7 @@ import { CeloDance, CeloWallet, Valora } from "@celo/rainbowkit-celo/wallets";
 // Import CELO chain information
 import { Alfajores, Celo } from "@celo/rainbowkit-celo/chains";
 
-import { CAPTCH_SITEKEY } from "@/data/constant";
 import Head from "next/head";
-import { GoogleReCaptchaProvider } from "react-google-recaptcha-v3";
 import Layout from "../components/Layout";
 
 const { chains, provider } = configureChains(
@@ -73,35 +71,26 @@ function App({ Component, pageProps }: AppProps) {
           href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍞</text></svg>"
         />
       </Head>
-      <GoogleReCaptchaProvider
-        reCaptchaKey={CAPTCH_SITEKEY as string}
-        scriptProps={{
-          async: false,
-          defer: false,
-          appendTo: "head",
-          nonce: undefined,
-        }}
-      >
-        <WagmiConfig client={wagmiClient}>
-          <RainbowKitProvider chains={chains} coolMode={true}>
-            <Layout>
-              <Component {...pageProps} />
-              <ToastContainer
-                position="top-right"
-                autoClose={5000}
-                hideProgressBar={false}
-                newestOnTop
-                closeOnClick
-                rtl={false}
-                pauseOnFocusLoss
-                draggable
-                pauseOnHover
-                theme="dark"
-              />
-            </Layout>
-          </RainbowKitProvider>
-        </WagmiConfig>
-      </GoogleReCaptchaProvider>
+
+      <WagmiConfig client={wagmiClient}>
+        <RainbowKitProvider chains={chains} coolMode={true}>
+          <Layout>
+            <Component {...pageProps} />
+            <ToastContainer
+              position="top-right"
+              autoClose={5000}
+              hideProgressBar={false}
+              newestOnTop
+              closeOnClick
+              rtl={false}
+              pauseOnFocusLoss
+              draggable
+              pauseOnHover
+              theme="dark"
+            />
+          </Layout>
+        </RainbowKitProvider>
+      </WagmiConfig>
     </>
   );
 }

@@ -1,5 +1,6 @@
 import InputField from "@/components/common/InputField";
 import PrimaryButton from "@/components/common/PrimaryButton";
+import { CAPTCH_SITEKEY } from "@/data/constant";
 import { getMintCollectionData } from "@/graphql/queries/getMintCollectionData";
 import { formatIpfsData, getApiEndpoint } from "@/utils/data";
 import { fetchImageUrl } from "@/utils/ipfs";
@@ -8,7 +9,10 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { useCallback, useEffect, useState } from "react";
-import { useGoogleReCaptcha } from "react-google-recaptcha-v3";
+import {
+  GoogleReCaptchaProvider,
+  useGoogleReCaptcha,
+} from "react-google-recaptcha-v3";
 import OTPInput from "react-otp-input";
 import { toast } from "react-toastify";
 import { useAccount } from "wagmi";
@@ -119,113 +123,123 @@ const Secret: React.FC<Props> = ({}) => {
   }, [address, data.docId, data.tokenId, executeRecaptcha, otp, router]);
 
   return (
-    <div className="mt-10">
-      {view == View.SECRET && (
-        <>
-          <Link href="/mint" className="font-bold mx-3">
-            👈 Back
-          </Link>
-          <div className="flex flex-col justify-center w-full mt-10 items-center">
-            <div className="md:w-[400px] w-full px-2 md:mx-0 mt-10 flex flex-col">
-              <span className="font-semibold ">
-                Enter a six character password:
-              </span>
-              <div className="flex items-center justify-center w-full mt-5 mb-10">
-                <OTPInput
-                  value={otp}
-                  onChange={(val) => {
-                    setOtp(val);
-                  }}
-                  numInputs={6}
-                  containerStyle="flex flex-row space-x-5"
-                  inputStyle="bg-white border border-black text-black text-base focus:ring-blue-500 focus:border-blue-500 block !w-[30px] p-2.5"
-                  renderInput={(props) => <input {...props} />}
-                />
-              </div>
-              <PrimaryButton
-                onClick={fetchDataFromFirebase}
-                text="Continue"
-                isLoading={loading}
-              />
-            </div>
-          </div>
-        </>
-      )}
-      {view == View.MINT && (
-        <>
-          <div className="flex flex-col justify-center w-full mt-10 items-center">
-            <div className="md:w-[400px] w-full px-2 md:mx-0 mt-0 flex flex-col">
-              <InputField
-                label="What is your Address?"
-                value={address as string}
-                onChange={(e) => {
-                  setAddress(e.target.value);
-                }}
-                placeholder="0x0..."
-                fieldName="address"
-              />
-
-              <div className="w-full flex justify-center mt-8">
+    <GoogleReCaptchaProvider
+      reCaptchaKey={CAPTCH_SITEKEY as string}
+      scriptProps={{
+        async: false,
+        defer: false,
+        appendTo: "head",
+        nonce: undefined,
+      }}
+    >
+      <div className="mt-10">
+        {view == View.SECRET && (
+          <>
+            <Link href="/mint" className="font-bold mx-3">
+              👈 Back
+            </Link>
+            <div className="flex flex-col justify-center w-full mt-10 items-center">
+              <div className="md:w-[400px] w-full px-2 md:mx-0 mt-10 flex flex-col">
+                <span className="font-semibold ">
+                  Enter a six character password:
+                </span>
+                <div className="flex items-center justify-center w-full mt-5 mb-10">
+                  <OTPInput
+                    value={otp}
+                    onChange={(val) => {
+                      setOtp(val);
+                    }}
+                    numInputs={6}
+                    containerStyle="flex flex-row space-x-5"
+                    inputStyle="bg-white border border-black text-black text-base focus:ring-blue-500 focus:border-blue-500 block !w-[30px] p-2.5"
+                    renderInput={(props) => <input {...props} />}
+                  />
+                </div>
                 <PrimaryButton
-                  text="👉 Mint Toast"
-                  onClick={() => {
-                    if (!address) {
-                      toast.error("Please enter an Address");
-                      return;
-                    } else handleSubmit();
-                  }}
+                  onClick={fetchDataFromFirebase}
+                  text="Continue"
+                  isLoading={loading}
                 />
               </div>
             </div>
-            <span className="text-3xl font-bold mt-8 text-center">
-              {data.uriData?.name ?? ""}
-            </span>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              className="border-2 border-black w-[285px] h-[285px] mt-5"
-              src={fetchImageUrl(data.uriData?.imageHash ?? "")}
-              alt={data.uriData?.name + " Image"}
-            />
+          </>
+        )}
+        {view == View.MINT && (
+          <>
+            <div className="flex flex-col justify-center w-full mt-10 items-center">
+              <div className="md:w-[400px] w-full px-2 md:mx-0 mt-0 flex flex-col">
+                <InputField
+                  label="What is your Address?"
+                  value={address as string}
+                  onChange={(e) => {
+                    setAddress(e.target.value);
+                  }}
+                  placeholder="0x0..."
+                  fieldName="address"
+                />
 
-            <span className="font-semibold mt-8">
-              {data?.data.currentSupply}/{data.data?.totalSupply ?? "0"}
-            </span>
-
-            <div className="md:w-[400px] w-full px-2 md:mx-0 mt-8 flex flex-col">
-              <div className="text-gray-500 whitespace-pre-wrap">
-                {data.uriData?.description ?? ""}
+                <div className="w-full flex justify-center mt-8">
+                  <PrimaryButton
+                    text="👉 Mint Toast"
+                    onClick={() => {
+                      if (!address) {
+                        toast.error("Please enter an Address");
+                        return;
+                      } else handleSubmit();
+                    }}
+                  />
+                </div>
               </div>
-              <Link
-                className="justify-self-start mt-10 text-green"
-                href={data.uriData?.websiteLink ?? "#"}
-                target={"_blank"}
-              >
-                🌐 {data.uriData?.websiteLink ?? ""}
-              </Link>
+              <span className="text-3xl font-bold mt-8 text-center">
+                {data.uriData?.name ?? ""}
+              </span>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                className="border-2 border-black w-[285px] h-[285px] mt-5"
+                src={fetchImageUrl(data.uriData?.imageHash ?? "")}
+                alt={data.uriData?.name + " Image"}
+              />
+
+              <span className="font-semibold mt-8">
+                {data?.data.currentSupply}/{data.data?.totalSupply ?? "0"}
+              </span>
+
+              <div className="md:w-[400px] w-full px-2 md:mx-0 mt-8 flex flex-col">
+                <div className="text-gray-500 whitespace-pre-wrap">
+                  {data.uriData?.description ?? ""}
+                </div>
+                <Link
+                  className="justify-self-start mt-10 text-green"
+                  href={data.uriData?.websiteLink ?? "#"}
+                  target={"_blank"}
+                >
+                  🌐 {data.uriData?.websiteLink ?? ""}
+                </Link>
+              </div>
             </div>
+          </>
+        )}
+        {view == View.MINTLOADING && (
+          <div className="flex flex-col justify-center w-full mt-10 items-center">
+            <span className="text-2xl font-bold">
+              Your new Toast is about to drop
+            </span>
+            <Image src={NewToastDropping} alt="Loading" />
           </div>
-        </>
-      )}
-      {view == View.MINTLOADING && (
-        <div className="flex flex-col justify-center w-full mt-10 items-center">
-          <span className="text-2xl font-bold">
-            Your new Toast is about to drop
-          </span>
-          <Image src={NewToastDropping} alt="Loading" />
-        </div>
-      )}
-      {view == View.SUCCESS && (
-        <div className="flex flex-col justify-center w-full mt-10 items-center">
-          <span className="text-2xl font-bold mb-5">
-            You have successfully minted a new Toast!
-          </span>
-          <Image src={SuccessfulMinting} alt="Success" />
-          <span className="text-2xl font-bold mt-5">
-            Go to your collection to see it
-          </span>
-        </div>
-      )}
-    </div>
+        )}
+        {view == View.SUCCESS && (
+          <div className="flex flex-col justify-center w-full mt-10 items-center">
+            <span className="text-2xl font-bold mb-5">
+              You have successfully minted a new Toast!
+            </span>
+            <Image src={SuccessfulMinting} alt="Success" />
+            <span className="text-2xl font-bold mt-5">
+              Go to your collection to see it
+            </span>
+          </div>
+        )}
+      </div>
+    </GoogleReCaptchaProvider>
   );
 };
 

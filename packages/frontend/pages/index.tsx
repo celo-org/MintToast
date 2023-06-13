@@ -22,54 +22,61 @@ export default function Home() {
       <Head>
         <title>Mint Toast</title>
       </Head>
-      <div className="flex flex-col justify-center items-center md:pt-16 pt-4">
-        <div className="font-semibold md:text-4xl text-lg">
-          gm! MintToast is a
-        </div>
-        <div className="font-semibold md:text-4xl text-lg">
-          community of toastmasters
-        </div>
-        <div className="flex md:flex-row flex-col md:flex-nowrap flex-wrap mt-10">
-          <div className="w-[285px] h-[285px] border-2 border-black flex flex-col justify-end items-center">
-            <Image
-              alt="Mint Toast"
-              src="/images/Home_2.png"
-              width={285}
-              height={285}
+      <div className="h-full">
+        <div className="flex flex-col justify-center items-center md:pt-16 pt-4 h-full">
+          <div className="font-semibold md:text-4xl text-lg">
+            gm! MintToast is a
+          </div>
+          <div className="font-semibold md:text-4xl text-lg">
+            community of toastmasters
+          </div>
+          <div className="flex md:flex-row flex-col md:flex-nowrap flex-wrap mt-10">
+            <div className="w-[285px] h-[285px] border-2 border-black flex flex-col justify-end items-center">
+              <Image
+                alt="Mint Toast"
+                src="/images/Home_2.png"
+                width={285}
+                height={285}
+              />
+            </div>
+            <div className="w-[285px] h-[285px] border-2 border-black flex flex-col justify-end items-center">
+              <Image
+                alt="Mint Toast"
+                src="/images/Home_1.png"
+                width={285}
+                height={285}
+              />
+            </div>
+          </div>
+          <div className="flex md:flex-row flex-col md:flex-nowrap flex-wrap mt-4">
+            <div className="w-[285px] text-center flex flex-col justify-end items-center font-semibold">
+              Earn and mint digital collectibles
+            </div>
+            <div className="w-[285px] text-center flex flex-col justify-end items-center font-semibold">
+              Celebrate your community with TOASTS
+            </div>
+          </div>
+          <div className="mt-8">
+            <PrimaryButton
+              text={"👾 Connect Wallet to get started"}
+              onClick={() => {
+                if (!walletConnected) {
+                  openConnectModal!();
+                } else {
+                  toast.info(
+                    "There is nothing to do here, you are already connected 😄"
+                  );
+                }
+              }}
             />
           </div>
-          <div className="w-[285px] h-[285px] border-2 border-black flex flex-col justify-end items-center">
-            <Image
-              alt="Mint Toast"
-              src="/images/Home_1.png"
-              width={285}
-              height={285}
+          <div className="mt-10 mx-4">
+            <PrimaryButton
+              text="🤔 gm? Toast? Toastmaster? Help me, I am toasted"
+              varient="secondary"
+              onClick={() => {}}
             />
           </div>
-        </div>
-        <div className="font-semibold md:text-xl text-lg mt-8 text-center">
-          Mint, collect and create event badges
-        </div>
-        <div className="mt-7">
-          <PrimaryButton
-            text={"👾 Connect Wallet to get started"}
-            onClick={() => {
-              if (!walletConnected) {
-                openConnectModal!();
-              } else {
-                toast.info(
-                  "There is nothing to do here, you are already connected 😄"
-                );
-              }
-            }}
-          />
-        </div>
-        <div className="mt-24 mx-4">
-          <PrimaryButton
-            text="🤔 gm? Toast? Toastmaster? Help me, I am toasted"
-            varient="secondary"
-            onClick={() => {}}
-          />
         </div>
       </div>
     </>
