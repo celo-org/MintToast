@@ -14,7 +14,7 @@ module.exports = {
         twitter: "#1DA1F2",
       },
       fontFamily: {
-        sans: ["Roboto Mono", "monospace"],
+        sans: ["var(--font-robotomono)"],
       },
     },
   },

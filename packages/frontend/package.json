@@ -12,6 +12,7 @@
     "@celo/rainbowkit-celo": "^0.11.0",
     "@headlessui/react": "^1.7.13",
     "@heroicons/react": "^2.0.17",
+    "@next/font": "^13.4.5",
     "@rainbow-me/rainbowkit": "^0.11.0",
     "@types/express-slow-down": "^1.3.2",
     "@types/react-datepicker": "^4.11.2",
