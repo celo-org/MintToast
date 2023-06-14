@@ -1,17 +1,24 @@
 import Image from "next/image";
+import ConnectWallet from "../../public/images/connect-wallet.png";
+import PrimaryButton from "./PrimaryButton";
 
 type Props = {};
 
 function ConnectWalletMessage({}: Props) {
   return (
-    <div className="w-full flex flex-col justify-center items-center text-center px-5 mt-10 text-lg font-bold">
+    <div className="flex flex-col justify-center items-center md:pt-0 pt-1 max-w-xl mx-auto">
       <Image
-        src="/images/connect-wallet.png"
-        alt="Conenct Wallet"
-        width={250}
-        height={250}
+        src={ConnectWallet}
+        className="w-[290px] h-[290px]"
+        alt="Mint with 6 Digit code"
       />
-      Please connect the wallet to see your collection
+      <span className="px-5 text-xl font-bold text-center my-12">
+        Please connect your wallet to see your collection
+      </span>
+      <PrimaryButton
+        onClick={() => {}}
+        text="👾 Connect Wallet to get started"
+      />
     </div>
   );
 }

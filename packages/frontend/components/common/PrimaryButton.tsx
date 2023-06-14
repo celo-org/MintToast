@@ -8,6 +8,7 @@ type Props = {
   isLoading?: boolean;
   sumbit?: boolean;
   form?: string;
+  fullWidth?: boolean;
 };
 
 const PrimaryButton: React.FC<Props> = ({
@@ -18,6 +19,7 @@ const PrimaryButton: React.FC<Props> = ({
   isLoading = false,
   sumbit,
   form,
+  fullWidth,
 }) => {
   const getBgColor = () => {
     switch (varient) {
@@ -42,10 +44,12 @@ const PrimaryButton: React.FC<Props> = ({
           toast.error("It's loading, please wait...");
         }
       }}
-      className="pushable select-none rounded-sm bg-black border-none p-0 cursor-pointer outline-offset-4"
+      className={`pushable select-none rounded-sm bg-black border-none p-0 cursor-pointer outline-offset-4 ${
+        fullWidth ? "w-80" : "w-auto"
+      }`}
     >
       <div
-        className={`front rounded-sm border-2 border-black text-black font-bold text-base flex justify-center items-center py-3 px-3  ${getBgColor()}`}
+        className={`front rounded-sm border-2 border-black text-black font-bold text-base flex justify-center items-center py-3 px-8 ${getBgColor()}`}
       >
         {isLoading ? (
           <div className="flex justify-center items-center">

@@ -1,4 +1,5 @@
 import PrimaryButton from "@/components/common/PrimaryButton";
+import useMobileDetect from "@/hooks/useMobileDetect";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import Head from "next/head";
 import Image from "next/image";
@@ -10,6 +11,7 @@ export default function Home() {
   const { openConnectModal } = useConnectModal();
   const { address } = useAccount();
   const [walletConnected, setWalletConnected] = useState(false);
+  const isMobile = useMobileDetect();
 
   useEffect(() => {
     if (address) {
@@ -102,8 +104,13 @@ export default function Home() {
           </div>
           <div className="mt-10 mx-4">
             <PrimaryButton
-              text="🤔 gm? Toast? Toastmaster? Help me, I am toasted"
+              text={`🤔 ${
+                isMobile
+                  ? "FAQ"
+                  : "gm? Toast? Toastmaster? Help me, I am toasted"
+              } `}
               varient="secondary"
+              fullWidth={isMobile}
               onClick={() => {}}
             />
           </div>

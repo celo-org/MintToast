@@ -1,11 +1,10 @@
-import PrimaryButton from "@/components/common/PrimaryButton";
+import ConnectWalletMessage from "@/components/common/ConnectWalletMessage";
 import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useAccount } from "wagmi";
 import MintANewToast from "../../public/images/MintANewToast.png";
-import ConnectWallet from "../../public/images/connect-wallet.png";
 
 export default function Mint() {
   const { address } = useAccount();
@@ -18,22 +17,7 @@ export default function Mint() {
   }, [address]);
 
   if (!isConnected) {
-    return (
-      <div className="flex flex-col justify-center items-center md:pt-0 pt-1 max-w-xl mx-auto">
-        <Image
-          src={ConnectWallet}
-          className="w-[290px] h-[290px]"
-          alt="Mint with 6 Digit code"
-        />
-        <span className="px-5 text-xl font-bold text-center my-12">
-          Please connect your wallet to see your collection
-        </span>
-        <PrimaryButton
-          onClick={() => {}}
-          text="👾 Connect Wallet to get started"
-        />
-      </div>
-    );
+    return <ConnectWalletMessage />;
   }
 
   return (
