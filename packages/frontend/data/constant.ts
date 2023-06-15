@@ -6,6 +6,9 @@ export const TESTNET_API_ENDPOINT = "https://minttoast-testnet.netlify.app";
 export const MAINNET_API_ENDPOINT = "http://minttoast.xyz";
 export const LOCAL_API_ENDPOINT = "http://localhost:3000";
 
+export const TESTNET_CHAINID = 44787;
+export const MAINNET_CHAINID = 42220;
+
 export const LOCAL_FIREBASE_FUNCTION_ENDPOINT =
   "http://127.0.0.1:5001/mint-toast/us-central1";
 export const TESTNET_FIREBASE_FUNCTION_ENDPOINT = "";
@@ -34,6 +37,8 @@ export const RPC_ENDPOINT = getEnvConfig().rpcEndpoint;
 export const TOASTMASTER_PK = getEnvConfig().toastMasterPK;
 export const CONTRACT_ADDRESS = getEnvConfig().contractAddress;
 export const GRAPHQL_API = getEnvConfig().graphqlApi;
+export const NETWORK_NAME = getEnvConfig().networkName;
+export const CHAINID = getEnvConfig().chainId;
 
 export const IPFS_PROJECT_ID = process.env.IPFS_PROJECT_ID;
 export const IPFS_API_KEY = process.env.IPFS_API_KEY;

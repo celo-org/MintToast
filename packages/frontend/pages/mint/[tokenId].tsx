@@ -3,6 +3,8 @@ import PrimaryButton from "@/components/common/PrimaryButton";
 import { CAPTCH_SITEKEY } from "@/data/constant";
 import { getMintCollectionData } from "@/graphql/queries/getMintCollectionData";
 import { fetchImageUrl } from "@/utils/ipfs";
+import { ResolveMasa } from "@/utils/masa";
+import { getNetworkNameByChainId } from "@masa-finance/masa-sdk";
 import axios from "axios";
 import { doc, getDoc } from "firebase/firestore";
 import Head from "next/head";
@@ -56,6 +58,7 @@ const QRPage: React.FC<Props> = ({ tokenId, uriData, data, docId }) => {
   const { address: walletAddress, isConnected } = useAccount();
   const [address, setAddress] = useState<string>("");
   const [view, setView] = useState<View>(View.MINT);
+  const { connector } = useAccount();
 
   useEffect(() => {
     if (isConnected) {
@@ -64,41 +67,70 @@ const QRPage: React.FC<Props> = ({ tokenId, uriData, data, docId }) => {
   }, [isConnected, walletAddress]);
 
   const handleSubmit = useCallback(async () => {
-    if (!executeRecaptcha) {
-      return;
-    }
-
-    executeRecaptcha("enquiryFormSubmit").then(async (token) => {
+    if (address) {
       toast.loading("Minting your toast, please wait...");
-      try {
-        setView(View.MINTLOADING);
-        var res = await axios.post(getApiEndpoint().mintEndpoint, {
-          tokenId,
-          address,
-          token,
-          docId,
-        });
-        if (res.data["success"]) {
-          setAddress("");
-          toast.dismiss();
-          toast.success(
-            "💪🏼 Successfully minted Toast, redirecting to collection..."
-          );
-          setTimeout(() => {
-            router.push("/collections");
-          }, 5000);
-        } else if (res.data["error"]) {
-          toast.dismiss();
-          toast.error(res.data["error"]);
-        }
-      } catch (e) {
-        toast.dismiss();
-        toast.error(e as string);
-        setView(View.MINT);
-      } finally {
-        setView(View.SUCCESS);
+      var resolvedAddress: string = "";
+      if (address.length < 42 && !address.includes(".celo")) {
+        toast.error("Please enter a valid address!");
+        return;
       }
-    });
+
+      if (address.includes(".celo")) {
+        const signer = await connector?.getSigner();
+        let resolver = new ResolveMasa({
+          networkName: getNetworkNameByChainId(42220),
+          signer,
+        });
+        const { resolutions, errors } = await resolver?.resolve(address);
+        if (errors.length) {
+          console.log(errors);
+          toast.error("Something went wrong!");
+        } else {
+          if (resolutions.length) {
+            resolvedAddress = resolutions[0].address;
+          } else {
+            toast.error("No .celo name found!");
+          }
+        }
+      } else {
+        resolvedAddress = address;
+      }
+
+      if (!executeRecaptcha) {
+        return;
+      }
+      console.log("resolvedAddress", resolvedAddress);
+      executeRecaptcha("enquiryFormSubmit").then(async (token) => {
+        try {
+          setView(View.MINTLOADING);
+          var res = await axios.post(getApiEndpoint().mintEndpoint, {
+            tokenId,
+            resolvedAddress,
+            token,
+            docId,
+          });
+          if (res.data["success"]) {
+            setAddress("");
+            toast.dismiss();
+            toast.success(
+              "💪🏼 Successfully minted Toast, redirecting to collection..."
+            );
+            setTimeout(() => {
+              router.push("/collections");
+            }, 5000);
+          } else if (res.data["error"]) {
+            toast.dismiss();
+            toast.error(res.data["error"]);
+          }
+        } catch (e) {
+          toast.dismiss();
+          toast.error(e as string);
+          setView(View.MINT);
+        } finally {
+          setView(View.SUCCESS);
+        }
+      });
+    }
   }, [address, docId, executeRecaptcha, router, tokenId]);
 
   return (
@@ -123,7 +155,7 @@ const QRPage: React.FC<Props> = ({ tokenId, uriData, data, docId }) => {
               onChange={(e) => {
                 setAddress(e.target.value);
               }}
-              placeholder="0x0..."
+              placeholder="0x0... or .celo name"
               fieldName="address"
             />
 

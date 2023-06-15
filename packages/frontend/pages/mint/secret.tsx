@@ -4,6 +4,8 @@ import { CAPTCH_SITEKEY } from "@/data/constant";
 import { getMintCollectionData } from "@/graphql/queries/getMintCollectionData";
 import { formatIpfsData, getApiEndpoint } from "@/utils/data";
 import { fetchImageUrl } from "@/utils/ipfs";
+import { ResolveMasa } from "@/utils/masa";
+import { getNetworkNameByChainId } from "@masa-finance/masa-sdk";
 import axios from "axios";
 import Image from "next/image";
 import Link from "next/link";
@@ -35,7 +37,7 @@ const Secret: React.FC<Props> = ({}) => {
   const [otp, setOtp] = useState("");
   const [view, setView] = useState<View>(View.SECRET);
   const [data, setData] = useState<any>({});
-  const { address: walletAddress, isConnected } = useAccount();
+  const { address: walletAddress, isConnected, connector } = useAccount();
   const [address, setAddress] = useState<string>();
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -83,43 +85,73 @@ const Secret: React.FC<Props> = ({}) => {
   };
 
   const handleSubmit = useCallback(async () => {
-    if (!executeRecaptcha) {
-      return;
-    }
-
-    executeRecaptcha("enquiryFormSubmit").then(async (token) => {
+    if (address) {
       toast.loading("Minting your toast, please wait...");
-      try {
-        setView(View.MINTLOADING);
-        const tokenId = data.tokenId;
-        var res = await axios.post(getApiEndpoint().mintEndpoint, {
-          tokenId,
-          address,
-          token,
-          docId: data.docId,
-          secret: otp,
-        });
-        if (res.data["success"]) {
-          setAddress("");
-          toast.dismiss();
-          toast.success(
-            "💪🏼 Successfully minted Toast, redirecting to collection..."
-          );
-          setTimeout(() => {
-            router.push("/collections");
-          }, 5000);
-        } else if (res.data["error"]) {
-          toast.dismiss();
-          toast.error(res.data["error"]);
-        }
-      } catch (e) {
-        toast.dismiss();
-        toast.error(e as string);
-        setView(View.MINT);
-      } finally {
-        setView(View.SUCCESS);
+      var resolvedAddress: string = "";
+      if (address.length < 42 && !address.includes(".celo")) {
+        toast.error("Please enter a valid address!");
+        return;
       }
-    });
+
+      if (address.includes(".celo")) {
+        const signer = await connector?.getSigner();
+        let resolver = new ResolveMasa({
+          networkName: getNetworkNameByChainId(42220),
+          signer,
+        });
+        const { resolutions, errors } = await resolver?.resolve(address);
+        if (errors.length) {
+          console.log(errors);
+          toast.error("Something went wrong!");
+        } else {
+          if (resolutions.length) {
+            resolvedAddress = resolutions[0].address;
+          } else {
+            toast.error("No .celo name found!");
+          }
+        }
+      } else {
+        resolvedAddress = address;
+      }
+
+      if (!executeRecaptcha) {
+        return;
+      }
+
+      executeRecaptcha("enquiryFormSubmit").then(async (token) => {
+        toast.loading("Minting your toast, please wait...");
+        try {
+          setView(View.MINTLOADING);
+          const tokenId = data.tokenId;
+          var res = await axios.post(getApiEndpoint().mintEndpoint, {
+            tokenId,
+            address,
+            token,
+            docId: data.docId,
+            secret: otp,
+          });
+          if (res.data["success"]) {
+            setAddress("");
+            toast.dismiss();
+            toast.success(
+              "💪🏼 Successfully minted Toast, redirecting to collection..."
+            );
+            setTimeout(() => {
+              router.push("/collections");
+            }, 5000);
+          } else if (res.data["error"]) {
+            toast.dismiss();
+            toast.error(res.data["error"]);
+          }
+        } catch (e) {
+          toast.dismiss();
+          toast.error(e as string);
+          setView(View.MINT);
+        } finally {
+          setView(View.SUCCESS);
+        }
+      });
+    }
   }, [address, data.docId, data.tokenId, executeRecaptcha, otp, router]);
 
   return (

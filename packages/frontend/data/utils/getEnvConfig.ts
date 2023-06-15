@@ -1,12 +1,14 @@
 import {
   LOCAL_API_ENDPOINT,
   MAINNET_API_ENDPOINT,
+  MAINNET_CHAINID,
   MAINNET_CONTRACT_ADDRESS,
   MAINNET_GRAPHQL_API,
   MAINNET_RPC_ENDPOINT,
   MAINNET_TOASTMASTER_PK,
   NETWORK_MODE,
   TESTNET_API_ENDPOINT,
+  TESTNET_CHAINID,
   TESTNET_CONTRACT_ADDRESS,
   TESTNET_GRAPHQL_API,
   TESTNET_RPC_ENDPOINT,
@@ -19,6 +21,8 @@ export const getEnvConfig = (): {
   toastMasterPK: string;
   contractAddress: string;
   graphqlApi: string;
+  networkName: string;
+  chainId: number;
 } => {
   switch (NETWORK_MODE) {
     case "mainnet":
@@ -28,6 +32,8 @@ export const getEnvConfig = (): {
         toastMasterPK: MAINNET_TOASTMASTER_PK,
         contractAddress: MAINNET_CONTRACT_ADDRESS,
         graphqlApi: MAINNET_GRAPHQL_API,
+        networkName: "celo",
+        chainId: MAINNET_CHAINID,
       };
     case "local":
       return {
@@ -36,6 +42,8 @@ export const getEnvConfig = (): {
         toastMasterPK: TESTNET_TOASTMASTER_PK,
         contractAddress: TESTNET_CONTRACT_ADDRESS,
         graphqlApi: TESTNET_GRAPHQL_API,
+        networkName: "alfajores",
+        chainId: TESTNET_CHAINID,
       };
     default:
       return {
@@ -44,6 +52,8 @@ export const getEnvConfig = (): {
         toastMasterPK: TESTNET_TOASTMASTER_PK,
         contractAddress: TESTNET_CONTRACT_ADDRESS,
         graphqlApi: TESTNET_GRAPHQL_API,
+        networkName: "alfajores",
+        chainId: TESTNET_CHAINID,
       };
   }
 };

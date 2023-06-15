@@ -96,9 +96,12 @@ export const CustomConnectButton = () => {
                         leaveFrom="transform opacity-100 scale-100"
                         leaveTo="transform opacity-0 scale-95"
                       >
-                        <Menu.Items className="z-50 absolute -right-5 mt-2 origin-top-right bg-background shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none w-screen border-2 border-black">
+                        <Menu.Items
+                          style={{ zIndex: 9999 }}
+                          className="absolute -right-5 mt-2 origin-top-right bg-background shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none w-screen border-2 border-black"
+                        >
                           <div className="flex flex-col items-start px-4 py-3 border-b-2 border-black">
-                            <div className="text-sm mb-1">Account</div>
+                            <div className="text-sm mb-1">Accounts</div>
                             <div className="flex flex-row space-x-3 justify-end items-center text-xl font-bold">
                               <div>👾 {account.displayName}</div>
                             </div>
@@ -190,7 +193,10 @@ export const CustomConnectButton = () => {
                         leaveFrom="transform opacity-100 scale-100"
                         leaveTo="transform opacity-0 scale-95"
                       >
-                        <Menu.Items className="absolute right-0 mt-2 origin-top-right bg-background shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none md:w-[375px] w-[355px] border-2 border-black">
+                        <Menu.Items
+                          style={{ zIndex: 9999 }}
+                          className="absolute right-0 mt-2 origin-top-right bg-background shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none md:w-[375px] w-[355px] border-2 border-black"
+                        >
                           <div className="flex flex-row items-center justify-between p-4 border-b-2 border-black">
                             <div>👾 {account.displayName}</div>
                             <div className="flex flex-row space-x-2">
