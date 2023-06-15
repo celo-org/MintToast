@@ -2,7 +2,9 @@
 import e from "express";
 import admin from "firebase-admin";
 import { Request } from "firebase-functions/v2/https";
+import { WHITELISTED_ADDRESS } from "../../data/constant";
 import { createToastObj } from "../../helper/create-helpers";
+import { verifySignature } from "../../utils/web3";
 
 export const config = {
   api: {
@@ -25,6 +27,24 @@ export default async function handler(req: Request, res: e.Response<Data>) {
   }
   try {
     const fields = req.body;
+    if (!WHITELISTED_ADDRESS.includes(fields.ownerAddress)) {
+      res.status(401).json({ error: "Unauthorized" });
+      return;
+    }
+
+    const signature = fields.signature;
+    delete fields.signature;
+    const message = JSON.stringify(fields);
+    const verified = await verifySignature(
+      message,
+      signature,
+      fields.ownerAddress
+    );
+    if (!verified) {
+      res.status(401).json({ error: "Unauthorized" });
+      return;
+    }
+
     if (
       !fields.title ||
       !fields.description ||

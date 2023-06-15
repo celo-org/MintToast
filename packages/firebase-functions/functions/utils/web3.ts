@@ -22,3 +22,15 @@ export const getContract = () => {
   const contract = new ethers.Contract(CONTRACT_ADDRESS, ABI, wallet);
   return contract;
 };
+
+export const verifySignature = async (
+  message: string,
+  signature: string,
+  address: string
+): Promise<boolean> => {
+  const recoveredAddress = ethers.utils.verifyMessage(message, signature);
+  if (recoveredAddress !== address) {
+    return false;
+  }
+  return true;
+};

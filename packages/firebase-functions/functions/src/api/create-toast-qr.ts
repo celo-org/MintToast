@@ -1,9 +1,11 @@
 import admin from "firebase-admin";
 /* eslint-disable guard-for-in */
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
+import { createToastObj } from "@/helper/create-helpers";
 import e from "express";
 import { Request } from "firebase-functions/v2/https";
-import { createToastObj } from "../../helper/create-helpers";
+import { WHITELISTED_ADDRESS } from "../../data/constant";
+import { verifySignature } from "../../utils/web3";
 
 export const config = {
   api: {
@@ -27,6 +29,24 @@ export default async function handler(req: Request, res: e.Response<Data>) {
   }
   try {
     const fields = req.body;
+    if (!WHITELISTED_ADDRESS.includes(fields.ownerAddress)) {
+      res.status(401).json({ error: "Unauthorized" });
+      return;
+    }
+
+    const signature = fields.signature;
+    delete fields.signature;
+    const message = JSON.stringify(fields);
+    const verified = await verifySignature(
+      message,
+      signature,
+      fields.ownerAddress
+    );
+    if (!verified) {
+      res.status(401).json({ error: "Unauthorized" });
+      return;
+    }
+
     if (
       !fields.title ||
       !fields.description ||

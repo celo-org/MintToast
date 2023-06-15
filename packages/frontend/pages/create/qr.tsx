@@ -29,6 +29,8 @@ export default function New() {
   const [canCreate, setCanCreate] = useState(false);
   const [id, setId] = useState<string | null>(null);
 
+  const { connector } = useAccount();
+
   useEffect(() => {
     if (address) {
       setIsConnected(true);
@@ -92,20 +94,24 @@ export default function New() {
         setLoading(true);
         toast.loading("Creating your event, please wait...");
         const imageID = await uploadImageToIpfs(image);
+        const reqObj = {
+          title: values.title,
+          description: values.description,
+          startDate: formatDateFromString(values.startDate),
+          endDate: formatDateFromString(values.endDate),
+          websiteLink: values.url,
+          totalToastSupply: values.toastCount.toString(),
+          ownerAddress: address ?? "",
+          imageID,
+        };
+
+        const signer = await connector?.getSigner();
+        const signature = await signer?.signMessage(JSON.stringify(reqObj));
 
         var firebaseRes = await axios({
           method: "post",
           url: getApiEndpoint().createToastQREndpoint,
-          data: {
-            title: values.title,
-            description: values.description,
-            startDate: formatDateFromString(values.startDate),
-            endDate: formatDateFromString(values.endDate),
-            websiteLink: values.url,
-            totalToastSupply: values.toastCount.toString(),
-            ownerAddress: address ?? "",
-            imageID,
-          },
+          data: { ...reqObj, signature },
           headers: { "Content-Type": "application/json" },
         });
         toast.dismiss();
@@ -295,7 +301,7 @@ export default function New() {
             </div>
             <div className="flex flex-col justify-start items-start md:pt-2 pt-0 max-w-xl mx-auto">
               <span className="mt-16 mb-2">Preview your Toast</span>
-              <div className="flex flex-col justify-center w-full items-center border-t-2 border-b-2 border-black py-9">
+              <div className="flex md:w-[400px] flex-col justify-center w-full items-center border-t-2 border-b-2 border-black py-9">
                 <span className="text-3xl font-bold text-center">
                   {formik.values.title}
                 </span>
