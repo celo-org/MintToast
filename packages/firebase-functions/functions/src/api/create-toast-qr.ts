@@ -1,10 +1,10 @@
 import admin from "firebase-admin";
 /* eslint-disable guard-for-in */
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
-import { createToastObj } from "@/helper/create-helpers";
 import e from "express";
 import { Request } from "firebase-functions/v2/https";
 import { WHITELISTED_ADDRESS } from "../../data/constant";
+import { createToastObj } from "../../helper/create-helpers";
 import { verifySignature } from "../../utils/web3";
 
 export const config = {
