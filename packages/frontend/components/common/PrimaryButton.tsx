@@ -1,3 +1,4 @@
+import useMobileDetect from "@/hooks/useMobileDetect";
 import { toast } from "react-toastify";
 
 type Props = {
@@ -32,6 +33,8 @@ const PrimaryButton: React.FC<Props> = ({
     }
   };
 
+  const isMobile = useMobileDetect();
+
   return (
     <button
       form={form}
@@ -45,7 +48,7 @@ const PrimaryButton: React.FC<Props> = ({
         }
       }}
       className={`pushable select-none rounded-sm bg-black border-none p-0 cursor-pointer outline-offset-4 ${
-        fullWidth ? "w-80" : "w-auto"
+        fullWidth ? (isMobile ? "w-full" : "w-full") : "w-auto"
       }`}
     >
       <div
