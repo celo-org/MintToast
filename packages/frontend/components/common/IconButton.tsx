@@ -8,7 +8,7 @@ type Props = {
 function IconButton({ icon, onClick }: Props) {
   return (
     <button
-      className="border-2 border-black rounded-xl p-2 bg-white"
+      className="border-2 border-black rounded-xl py-2 px-3 bg-white"
       onClick={onClick}
     >
       {icon}

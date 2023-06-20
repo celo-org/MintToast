@@ -1,9 +1,10 @@
 import useMobileDetect from "@/hooks/useMobileDetect";
+import { auth } from "@/utils/firebase";
 import { Menu, Transition } from "@headlessui/react";
 import { ClipboardDocumentIcon, LinkIcon } from "@heroicons/react/24/outline";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
+import { TwitterAuthProvider, signInWithPopup } from "firebase/auth";
 import Image from "next/image";
-import { useRouter } from "next/router";
 import { Fragment } from "react";
 import { toast } from "react-toastify";
 import IconButton from "./common/IconButton";
@@ -16,8 +17,39 @@ import TwitterIcon from "./icons/TwitterIcon";
 type Props = {};
 
 export const CustomConnectButton = () => {
-  const router = useRouter();
   const isMobile = useMobileDetect();
+
+  const handleTwitter = async () => {
+    try {
+      const provider = new TwitterAuthProvider();
+      const result = await signInWithPopup(auth, provider);
+      const credential = TwitterAuthProvider.credentialFromResult(result);
+      console.log(
+        "🚀 ~ file: CustomConnectButton.tsx:27 ~ handleTwitter ~ credential:",
+        credential
+      );
+      if (credential) {
+        const token = credential.accessToken;
+        console.log(
+          "🚀 ~ file: CustomConnectButton.tsx:29 ~ handleTwitter ~ token:",
+          token
+        );
+        const secret = credential.secret;
+        console.log(
+          "🚀 ~ file: CustomConnectButton.tsx:31 ~ handleTwitter ~ secret:",
+          secret
+        );
+      }
+      const user = result.user;
+      console.log(
+        "🚀 ~ file: CustomConnectButton.tsx:41 ~ handleTwitter ~ user:",
+        user
+      );
+    } catch (error: any) {
+      toast.error(error.message);
+    }
+  };
+
   return (
     <ConnectButton.Custom>
       {({
@@ -86,58 +118,82 @@ export const CustomConnectButton = () => {
                         </Menu.Button>
                       )}
                     </div>
-                    {isMobile ? (
-                      <Transition
-                        as={Fragment}
-                        enter="transition ease-out duration-100"
-                        enterFrom="transform opacity-0 scale-95"
-                        enterTo="transform opacity-100 scale-100"
-                        leave="transition ease-in duration-75"
-                        leaveFrom="transform opacity-100 scale-100"
-                        leaveTo="transform opacity-0 scale-95"
+
+                    <Transition
+                      as={Fragment}
+                      enter="transition ease-out duration-100"
+                      enterFrom="transform opacity-0 scale-95"
+                      enterTo="transform opacity-100 scale-100"
+                      leave="transition ease-in duration-75"
+                      leaveFrom="transform opacity-100 scale-100"
+                      leaveTo="transform opacity-0 scale-95"
+                    >
+                      <Menu.Items
+                        style={{ zIndex: 9999 }}
+                        className="absolute -right-5 md:right-0 mt-2 origin-top-right bg-background shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none w-screen md:w-[400px] border-2 border-black"
                       >
-                        <Menu.Items
-                          style={{ zIndex: 9999 }}
-                          className="absolute -right-5 mt-2 origin-top-right bg-background shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none w-screen border-2 border-black"
-                        >
-                          <div className="flex flex-col items-start px-4 py-3 border-b-2 border-black">
-                            <div className="text-sm mb-1">Accounts</div>
-                            <div className="flex flex-row space-x-3 justify-end items-center text-xl font-bold">
+                        <div className="flex flex-row justify-between border-b-2 border-black py-0 md:py-3 pr-3">
+                          <div className="flex flex-col items-start px-4 py-3 ">
+                            <div className="text-sm mb-1 block md:hidden">
+                              Accounts
+                            </div>
+                            <div className="flex flex-row space-x-3 justify-end items-center text-xl md:text-base font-bold md:font-normal">
                               <div>👾 {account.displayName}</div>
                             </div>
                           </div>
-                          <div className="flex flex-col items-start px-4 py-3 border-b-2 border-black">
-                            <div className="text-sm mb-1">Network</div>
-                            <div className="flex flex-row space-x-3 justify-end items-center">
-                              <Image
-                                src="https://images.ctfassets.net/wr0no19kwov9/1kUyahp0Q6X7T9sVXZ16Ho/d553a9dd0e18fac0f14c8bf8b789a303/brand-kit-symbol-image-01.png?fm=webp&w=3840&q=70"
-                                alt="Celo Logo"
-                                width={25}
-                                height={25}
-                              />
-                              <span className="text-xl font-bold">Celo</span>
-                            </div>
+                          <div className="md:flex flex-row space-x-2 hidden">
+                            <IconButton
+                              icon={<CopyIcon />}
+                              onClick={async () => {
+                                await navigator.clipboard.writeText(
+                                  account.address
+                                );
+                                toast.success("Copied to clipboard");
+                              }}
+                            />
+                            <IconButton
+                              icon={<OpenUrlIcon />}
+                              onClick={() => {
+                                window.open(
+                                  `https://explorer.celo.org/address/${account.address}/transactions`,
+                                  "_blank"
+                                );
+                              }}
+                            />
+                            <IconButton
+                              icon={<PowerOffIcon />}
+                              onClick={openAccountModal}
+                            />
                           </div>
-                          <div className="flex flex-col items-start px-4 py-3 border-b-2 border-black">
-                            <div className="text-sm mb-1">Balance</div>
-                            <div className="flex flex-row space-x-3 justify-end items-center">
-                              <span className="text-xl font-bold">
-                                5.4 CELO
-                              </span>
-                            </div>
+                        </div>
+
+                        <div className="flex flex-col items-start px-4 py-3 border-b-2 border-black">
+                          <div className="text-sm mb-1">Network</div>
+                          <div className="flex flex-row space-x-3 justify-end items-center">
+                            <Image
+                              src="https://images.ctfassets.net/wr0no19kwov9/1kUyahp0Q6X7T9sVXZ16Ho/d553a9dd0e18fac0f14c8bf8b789a303/brand-kit-symbol-image-01.png?fm=webp&w=3840&q=70"
+                              alt="Celo Logo"
+                              width={25}
+                              height={25}
+                            />
+                            <span className="text-xl font-bold">Celo</span>
                           </div>
-                          <div className="flex flex-col items-start px-4 py-3 border-b-2 border-black">
-                            <div className="text-sm mb-1">
-                              MintToast Balance
-                            </div>
-                            <div className="flex flex-row space-x-3 justify-end items-center">
-                              <span className="text-xl font-bold">
-                                26 Toasts
-                              </span>
-                            </div>
+                        </div>
+                        <div className="flex flex-col items-start px-4 py-3 border-b-2 border-black">
+                          <div className="text-sm mb-1">Balance</div>
+                          <div className="flex flex-row space-x-3 justify-end items-center">
+                            <span className="text-xl font-bold">5.4 CELO</span>
                           </div>
-                          <div className="px-6 py-5 flex flex-col">
-                            <div className="flex flex-col space-y-4">
+                        </div>
+                        <div className="flex flex-col items-start px-4 py-3 border-b-2 border-black">
+                          <div className="text-sm mb-1">MintToast Balance</div>
+                          <div className="flex flex-row space-x-3 justify-end items-center">
+                            <span className="text-xl font-bold">26 Toasts</span>
+                          </div>
+                        </div>
+                        <div className="px-6 py-5 flex flex-col">
+                          <div className="flex flex-col space-y-4 md:space-y-3">
+                            {isMobile && (
                               <PrimaryButton
                                 onClick={async () => {
                                   await navigator.clipboard.writeText(
@@ -151,6 +207,8 @@ export const CustomConnectButton = () => {
                                   <ClipboardDocumentIcon className="text-black h-5 w-5" />
                                 }
                               />
+                            )}
+                            {isMobile && (
                               <PrimaryButton
                                 onClick={() => {
                                   window.open(
@@ -164,114 +222,33 @@ export const CustomConnectButton = () => {
                                   <LinkIcon className="text-black h-5 w-5" />
                                 }
                               />
-                              <PrimaryButton
-                                onClick={() => {}}
-                                text="Link your Twitter handle"
-                                varient="twitter"
-                                icon={<TwitterIcon />}
-                              />
-                            </div>
-                          </div>
-                          <div className="px-6 pt-5 pb-4 border-t-2 border-black flex flex-col">
-                            <div className="flex flex-col space-y-4">
-                              <PrimaryButton
-                                onClick={openAccountModal}
-                                text="Disconnect"
-                                varient="primary"
-                              />
-                            </div>
-                          </div>
-                        </Menu.Items>
-                      </Transition>
-                    ) : (
-                      <Transition
-                        as={Fragment}
-                        enter="transition ease-out duration-100"
-                        enterFrom="transform opacity-0 scale-95"
-                        enterTo="transform opacity-100 scale-100"
-                        leave="transition ease-in duration-75"
-                        leaveFrom="transform opacity-100 scale-100"
-                        leaveTo="transform opacity-0 scale-95"
-                      >
-                        <Menu.Items
-                          style={{ zIndex: 9999 }}
-                          className="absolute right-0 mt-2 origin-top-right bg-background shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none md:w-[375px] w-[355px] border-2 border-black"
-                        >
-                          <div className="flex flex-row items-center justify-between p-4 border-b-2 border-black">
-                            <div>👾 {account.displayName}</div>
-                            <div className="flex flex-row space-x-2">
-                              <IconButton
-                                icon={<CopyIcon />}
-                                onClick={async () => {
-                                  await navigator.clipboard.writeText(
-                                    account.address
-                                  );
-                                  toast.success("Copied to clipboard");
-                                }}
-                              />
-                              <IconButton
-                                icon={<OpenUrlIcon />}
-                                onClick={() => {
-                                  window.open(
-                                    `https://explorer.celo.org/address/${account.address}/transactions`,
-                                    "_blank"
-                                  );
-                                }}
-                              />
-                              <IconButton
-                                icon={<PowerOffIcon />}
-                                onClick={openAccountModal}
-                              />
-                            </div>
-                          </div>
-                          <div className="flex flex-col items-start px-4 py-3 border-b-2 border-black">
-                            <div className="text-lg mb-1">Network</div>
-                            <div className="flex flex-row space-x-3 justify-end items-center">
-                              <Image
-                                src="https://images.ctfassets.net/wr0no19kwov9/1kUyahp0Q6X7T9sVXZ16Ho/d553a9dd0e18fac0f14c8bf8b789a303/brand-kit-symbol-image-01.png?fm=webp&w=3840&q=70"
-                                alt="Celo Logo"
-                                width={25}
-                                height={25}
-                              />
-                              <span className="text-3xl font-bold">Celo</span>
-                            </div>
-                          </div>
-                          <div className="flex flex-col items-start px-4 py-3 border-b-2 border-black">
-                            <div className="text-lg mb-1">Balance</div>
-                            <div className="flex flex-row space-x-3 justify-end items-center">
-                              <span className="text-3xl font-bold">
-                                5.4 CELO
-                              </span>
-                            </div>
-                          </div>
-                          <div className="flex flex-col items-start px-4 py-3 border-b-2 border-black">
-                            <div className="text-lg mb-1">
-                              MintToast Balance
-                            </div>
-                            <div className="flex flex-row space-x-3 justify-end items-center">
-                              <span className="text-3xl font-bold">
-                                26 Toasts
-                              </span>
-                            </div>
-                          </div>
-                          <div className="p-6 flex flex-col">
-                            <div className="flex flex-col space-y-4">
-                              <PrimaryButton
-                                onClick={() => {}}
-                                text="Link your Twitter handle"
-                                varient="twitter"
-                                icon={<TwitterIcon />}
-                              />
-                            </div>
-                            <div className="text-xs mt-3 text-gray-400">
+                            )}
+                            <PrimaryButton
+                              onClick={() => {
+                                handleTwitter();
+                              }}
+                              text="Link your Twitter handle"
+                              varient="twitter"
+                              icon={<TwitterIcon />}
+                            />
+                            <div className="text-xs mt-4 text-gray-400 hidden md:block">
                               You will be directed to Twitter and asked to
                               authorize MintToast to have access to your handle
                               and Tweets.
                             </div>
                           </div>
-                        </Menu.Items>
-                      </Transition>
-                    )}
+                        </div>
+                        <div className="px-6 pt-5 pb-4 border-t-2 border-black flex flex-col md:hidden">
+                          <div className="flex flex-col space-y-4">
+                            <PrimaryButton
+                              onClick={openAccountModal}
+                              text="Disconnect"
+                              varient="primary"
+                            />
+                          </div>
+                        </div>
+                      </Menu.Items>
+                    </Transition>
                   </Menu>
                 </div>
               );

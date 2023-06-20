@@ -8,6 +8,7 @@ import getOwnerHandler from "./api/get-owner";
 import getSecretDataHandler from "./api/get-secret-data";
 import getUserCollectionHandler from "./api/get-user-collection";
 import mintHandler from "./api/mint";
+import registerTwitterHandler from "./api/register-twitter";
 
 const corsHandler = cors({ origin: true });
 
@@ -40,4 +41,8 @@ export const getSecretData = onRequest((req, res) =>
 );
 export const getUserCollection = onRequest((req, res) =>
   corsHandler(req, res, () => getUserCollectionHandler(req, res))
+);
+
+export const registerTwitter = onRequest({ timeoutSeconds: 300 }, (req, res) =>
+  corsHandler(req, res, () => registerTwitterHandler(req, res))
 );
