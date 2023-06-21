@@ -34,7 +34,6 @@ export const authSigner: AuthSigner = {
 };
 
 const provider = getProvider();
-console.log("provider", provider);
 export const issuer = new Wallet(
   process.env.ISSUER_PRIVATE_KEY as string,
   provider
@@ -64,46 +63,39 @@ export const stableTokenContract = new ethers.Contract(
 );
 
 export async function checkAndTopUpODISQuota() {
-  console.log("issuer?.address", issuer?.address);
-  console.log("authSigner", authSigner);
   const { remainingQuota } = await OdisUtils.Quota.getPnpQuotaStatus(
     issuer?.address,
     authSigner,
     serviceContext
   );
-  console.log("Remaining Quota", remainingQuota);
 
   if (remainingQuota < 1) {
     const currentAllowance = await stableTokenContract.allowance(
       issuer.address,
       odisPaymentsContract.address
     );
-    console.log("current allowance:", currentAllowance.toString());
     let enoughAllowance = false;
 
-    if (ONE_CENT_CUSD.gt(currentAllowance)) {
+    if (ONE_CENT_CUSD.mul(10).lt(currentAllowance)) {
       const tx = await stableTokenContract.increaseAllowance(
         odisPaymentsContract.address,
         ONE_CENT_CUSD.mul(100)
       );
       const approvalTxReceipt = await tx.wait();
-      // const approvalTxReceipt =
-      console.log("approval status", approvalTxReceipt.status);
-      enoughAllowance = approvalTxReceipt.status;
+      if (approvalTxReceipt.statu == 1) {
+        enoughAllowance = true;
+      }
     } else {
       enoughAllowance = true;
     }
 
     // increase quota
-    if (!enoughAllowance) {
+    if (enoughAllowance) {
       const tx = await odisPaymentsContract.payInCUSD(
         issuer.address,
         ONE_CENT_CUSD.mul(10)
       );
-      const odisPayment = await tx.wait();
-
-      console.log("odis payment tx status:", odisPayment.status);
-      console.log("odis payment tx hash:", odisPayment.transactionHash);
+      await tx.wait();
     } else {
       throw new Error("Not enough allowance");
     }
@@ -111,14 +103,7 @@ export async function checkAndTopUpODISQuota() {
 }
 
 export async function getIdentifier(twitterHandle: string) {
-  console.log(
-    "🚀 ~ file: odis.ts:114 ~ getIdentifier ~ twitterHandle:",
-    twitterHandle
-  );
-  console.log("issuer.address", issuer.address);
-  console.log("serviceContext", serviceContext);
   try {
-    console.log("Fetching quota");
     await checkAndTopUpODISQuota();
     const { obfuscatedIdentifier } =
       await OdisUtils.Identifier.getObfuscatedIdentifier(
@@ -128,15 +113,11 @@ export async function getIdentifier(twitterHandle: string) {
         authSigner,
         serviceContext
       );
-    console.log(
-      "🚀 ~ file: odis.ts:118 ~ getIdentifier ~ obfuscatedIdentifier:",
-      obfuscatedIdentifier
-    );
 
     return obfuscatedIdentifier;
   } catch (e) {
     console.log(e);
-    return null;
+    throw e;
   }
 }
 
@@ -144,27 +125,49 @@ export const registerIdentifier = async (
   twitterHandle: string,
   address: string
 ) => {
-  try {
-    const identifier = await getIdentifier(twitterHandle);
-    console.log(
-      "🚀 ~ file: register.ts:12 ~ registerIdentifier ~ identifier:",
-      identifier
-    );
-
-    const tx = await federatedAttestationsContract.registerAttestationAsIssuer(
-      identifier,
-      address,
-      NOW_TIMESTAMP
-    );
-    console.log("🚀 ~ file: register.ts:22 ~ registerIdentifier ~ tx:", tx);
-
-    const receipt = await tx.wait();
-    console.log(
-      "🚀 ~ file: register.ts:25 ~ registerIdentifier ~ receipt:",
-      receipt
-    );
-    return receipt;
-  } catch (error) {
-    return error;
+  const accounts = await getAccountsFromTwitterHandle(twitterHandle);
+  if (accounts.length) {
+    throw new Error("Identifier already registered");
   }
+  const identifier = await getIdentifier(twitterHandle);
+  const tx = await federatedAttestationsContract.registerAttestationAsIssuer(
+    identifier,
+    address,
+    NOW_TIMESTAMP
+  );
+
+  const receipt = await tx.wait();
+  return receipt;
+};
+
+export const getAccountsFromTwitterHandle = async (twitterHandle: string) => {
+  const obfuscatedIdentifier = await getIdentifier(twitterHandle);
+  const attestations = await federatedAttestationsContract.lookupAttestations(
+    obfuscatedIdentifier,
+    [issuer.address]
+  );
+  return attestations.accounts;
+};
+
+export const checkIfIdentifierIsRegisteredAlreadyUnderIssuer = async (
+  twitterHandle: string
+) => {
+  const accounts = await getAccountsFromTwitterHandle(twitterHandle);
+  return accounts.length;
+};
+
+export const revokeIdentifier = async (
+  twitterHandle: string,
+  address: string
+) => {
+  const identifier = await getIdentifier(twitterHandle);
+
+  const tx = await federatedAttestationsContract.revokeAttestation(
+    identifier,
+    issuer.address,
+    address
+  );
+
+  const receipt = await tx.wait();
+  return receipt;
 };

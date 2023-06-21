@@ -1,13 +1,14 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import e from "express";
-import admin from "firebase-admin";
 import { Request } from "firebase-functions/v2/https";
 import { TwitterApi } from "twitter-api-v2";
 import { TWITTER_API_KEY, TWITTER_API_SECRET } from "../../data/constant";
-import { registerIdentifier } from "../../utils/odis";
+import {
+  getAccountsFromTwitterHandle,
+  revokeIdentifier,
+} from "../../utils/odis";
 
 export default async function handler(req: Request, res: e.Response) {
-  const db = admin.firestore();
   res.setHeader("Access-Control-Allow-Origin", "*");
   if (req.method !== "POST") {
     res.status(405).json({ error: "Method Not Allowed" });
@@ -24,30 +25,25 @@ export default async function handler(req: Request, res: e.Response) {
     });
 
     const result = await client.currentUser();
-    const {
-      screen_name: screenName,
-      profile_image_url_https: profileImageUrlHttps,
-      name,
-    } = result;
-
-    const receipt = await registerIdentifier(screenName, address);
+    const { screen_name: screenName } = result;
+    let accounts: string[] = await getAccountsFromTwitterHandle(screenName);
+    accounts = accounts.map((item) => item.toLowerCase());
+    if (!accounts.includes(address.toLowerCase())) {
+      console.log("HERE");
+      res
+        .status(500)
+        .json({ error: "The address is not attested to the username" });
+      return;
+    }
+    const receipt = await revokeIdentifier(screenName, address);
     if (!receipt) {
       res.status(500).json({ error: "Failed to register identifier" });
       return;
     }
-
-    await db.collection("odis").doc(address).set({
-      username: screenName,
-      timestamp: admin.firestore.FieldValue.serverTimestamp(),
-      address,
-      profileImageUrlHttps,
-      name,
-    });
-
-    res.status(200).json({ success: true });
+    res.status(200).json({ success: true, receipt });
   } catch (error: any) {
-    console.error("Error >>>>> ", error.message);
-    console.error("Error >>>>> ", typeof error.message);
     res.status(500).json({ error: error.message });
   }
 }
+// 0x1ee88b8bf623609f0ce76659e30ba42b0948e9a7;
+// 0x1ee88b8bf623609f0ce76659e30ba42b0948e9a7;

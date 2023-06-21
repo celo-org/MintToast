@@ -30,16 +30,13 @@ export default async function handler(req: Request, res: e.Response<Data>) {
         body: `secret=${CAPTCH_SECRETKEY}&response=${fields.token}`,
       }
     );
-    console.log("recaptch res fetched");
     const reCaptchaResJson = await reCaptchaRes.json();
 
     if (reCaptchaResJson?.score > 0.5) {
       const address = fields.address;
       const tokenId = fields.tokenId;
       const docId = fields.docId as string;
-      console.log("fetching doc");
       const docSnapshot = await db.collection("events").doc(docId).get();
-      console.log("fetched doc");
       const resultData = docSnapshot.data();
       if (resultData && resultData.isSecretProtected == true) {
         if (resultData.secret != fields.secret) {
@@ -51,11 +48,8 @@ export default async function handler(req: Request, res: e.Response<Data>) {
       }
       const contract = getContract();
       try {
-        console.log("minting");
         const tx = await contract.mint(address, tokenId);
-        console.log("minted 1");
         await tx.wait();
-        console.log("minted 2");
         res.status(200).json({ success: true });
         return;
       } catch (e) {

@@ -2,6 +2,7 @@ import * as cors from "cors";
 import { onRequest } from "firebase-functions/v2/https";
 import createToastQRHandler from "./api/create-toast-qr";
 import createToastSecretHandler from "./api/create-toast-secret";
+import getAccountsFromTwitter from "./api/get-account-from-twitter";
 import getAllEventUUIDHandler from "./api/get-all-event-uuid";
 import getEventIdHandler from "./api/get-event-id";
 import getOwnerHandler from "./api/get-owner";
@@ -9,6 +10,7 @@ import getSecretDataHandler from "./api/get-secret-data";
 import getUserCollectionHandler from "./api/get-user-collection";
 import mintHandler from "./api/mint";
 import registerTwitterHandler from "./api/register-twitter";
+import revokeTwitterHandler from "./api/revoke-twitter";
 
 const corsHandler = cors({ origin: true });
 
@@ -45,4 +47,12 @@ export const getUserCollection = onRequest((req, res) =>
 
 export const registerTwitter = onRequest({ timeoutSeconds: 300 }, (req, res) =>
   corsHandler(req, res, () => registerTwitterHandler(req, res))
+);
+
+export const revokeTwitter = onRequest({ timeoutSeconds: 300 }, (req, res) =>
+  corsHandler(req, res, () => revokeTwitterHandler(req, res))
+);
+
+export const getAccountsFromTwitterHandle = onRequest((req, res) =>
+  corsHandler(req, res, () => getAccountsFromTwitter(req, res))
 );
