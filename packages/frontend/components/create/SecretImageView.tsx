@@ -1,5 +1,4 @@
 import PrimaryButton from "@/components/common/PrimaryButton";
-import { View } from "@/utils/utils";
 import Link from "next/link";
 import { SetStateAction } from "react";
 import OTPInput from "react-otp-input";
@@ -7,17 +6,19 @@ import OTPInput from "react-otp-input";
 type Props = {
   handleImageUpload: (e: any) => void;
   imageSrc: any;
-  setView: (value: SetStateAction<View>) => void;
+  handleSecretCheck: () => void;
   otp: string;
   setOtp: (value: SetStateAction<string>) => void;
+  secretCheckLoading: boolean;
 };
 
 function SecretImageView({
   handleImageUpload,
   imageSrc,
-  setView,
+  handleSecretCheck,
   otp,
   setOtp,
+  secretCheckLoading,
 }: Props) {
   const autogenerateSixAlphaNumPassword = () => {
     const randomString = Math.random().toString(36).slice(-6);
@@ -42,7 +43,7 @@ function SecretImageView({
               }}
               numInputs={6}
               containerStyle="flex flex-row space-x-3"
-              inputStyle="bg-white border border-black text-black text-base focus:ring-blue-500 focus:border-blue-500 block !w-[30px] p-2.5"
+              inputStyle="bg-white border border-black text-black text-base focus:ring-blue-500 focus:border-blue-500 block !w-[30px] py-2.5"
               renderInput={(props) => <input {...props} />}
             />
           </div>
@@ -124,8 +125,9 @@ function SecretImageView({
                 <PrimaryButton
                   text="👉 Next"
                   onClick={() => {
-                    setView(View.ATTRIBUTES);
+                    handleSecretCheck();
                   }}
+                  isLoading={secretCheckLoading}
                 />
               </div>
             </>

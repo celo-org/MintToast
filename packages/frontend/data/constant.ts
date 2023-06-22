@@ -123,3 +123,9 @@ export const getAccountsFromTwitterHandleEndpointTestnet =
   "https://getaccountsfromtwitterhandle-ehg6drsqxq-uc.a.run.app";
 export const getAccountsFromTwitterHandleEndpointLocal =
   "https://1e7b-122-172-83-25.ngrok-free.app/mint-toast/us-central1/getAccountsFromTwitterHandle";
+
+export const checkSecretEndpointMainnet = "";
+export const checkSecretEndpointTestnet =
+  "https://checksecret-ehg6drsqxq-uc.a.run.app";
+export const checkSecretEndpointLocal =
+  "https://1e7b-122-172-83-25.ngrok-free.app/mint-toast/us-central1/checkSecret";

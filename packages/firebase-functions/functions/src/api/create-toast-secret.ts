@@ -60,6 +60,18 @@ export default async function handler(req: Request, res: e.Response<Data>) {
       return;
     }
 
+    const querySnapshot = await db
+      .collection("events")
+      .where("secret", "==", fields.secret)
+      .get();
+
+    if (!querySnapshot.empty) {
+      res
+        .status(400)
+        .json({ error: "Secret already exists, choose different secret" });
+      return;
+    }
+
     const id = await createToastObj(fields, true, db);
     res.status(200).json({ success: true, id });
     return;

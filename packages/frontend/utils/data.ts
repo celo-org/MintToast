@@ -1,5 +1,8 @@
 import {
   NETWORK_MODE,
+  checkSecretEndpointLocal,
+  checkSecretEndpointMainnet,
+  checkSecretEndpointTestnet,
   createToastQREndpointLocal,
   createToastQREndpointMainnet,
   createToastQREndpointTestnet,
@@ -98,6 +101,7 @@ export const getApiEndpoint = () => {
         registerTwitter: registerTwitterEndpointMainnet,
         getAccountsFromTwitterHandle:
           getAccountsFromTwitterHandleEndpointMainnet,
+        checkSecret: checkSecretEndpointMainnet,
       };
     case "testnet":
       return {
@@ -113,6 +117,7 @@ export const getApiEndpoint = () => {
         registerTwitter: registerTwitterEndpointTestnet,
         getAccountsFromTwitterHandle:
           getAccountsFromTwitterHandleEndpointTestnet,
+        checkSecret: checkSecretEndpointTestnet,
       };
     case "local":
       return {
@@ -127,6 +132,7 @@ export const getApiEndpoint = () => {
         revokeTwitter: revokeTwitterEndpointLocal,
         registerTwitter: registerTwitterEndpointLocal,
         getAccountsFromTwitterHandle: getAccountsFromTwitterHandleEndpointLocal,
+        checkSecret: checkSecretEndpointLocal,
       };
     default:
       return {
@@ -141,6 +147,7 @@ export const getApiEndpoint = () => {
         revokeTwitter: revokeTwitterEndpointLocal,
         registerTwitter: registerTwitterEndpointLocal,
         getAccountsFromTwitterHandle: getAccountsFromTwitterHandleEndpointLocal,
+        checkSecret: checkSecretEndpointLocal,
       };
   }
 };
