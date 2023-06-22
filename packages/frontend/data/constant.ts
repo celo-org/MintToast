@@ -105,3 +105,21 @@ export const mintEndpointMainnet = "https://mint-gf4tpo3gda-uc.a.run.app";
 export const mintEndpointTestnet = "https://mint-ehg6drsqxq-uc.a.run.app";
 export const mintEndpointLocal =
   "http://localhost:5000/mint-toast/us-central1/mint";
+
+export const registerTwitterEndpointMainnet = "";
+export const registerTwitterEndpointTestnet =
+  "https://registertwitter-ehg6drsqxq-uc.a.run.app";
+export const registerTwitterEndpointLocal =
+  "https://1e7b-122-172-83-25.ngrok-free.app/mint-toast/us-central1/registerTwitter";
+
+export const revokeTwitterEndpointMainnet = "";
+export const revokeTwitterEndpointTestnet =
+  "https://revoketwitter-ehg6drsqxq-uc.a.run.app";
+export const revokeTwitterEndpointLocal =
+  "https://1e7b-122-172-83-25.ngrok-free.app/mint-toast/us-central1/revokeTwitter";
+
+export const getAccountsFromTwitterHandleEndpointMainnet = "";
+export const getAccountsFromTwitterHandleEndpointTestnet =
+  "https://getaccountsfromtwitterhandle-ehg6drsqxq-uc.a.run.app";
+export const getAccountsFromTwitterHandleEndpointLocal =
+  "https://1e7b-122-172-83-25.ngrok-free.app/mint-toast/us-central1/getAccountsFromTwitterHandle";

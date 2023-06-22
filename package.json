@@ -19,7 +19,8 @@
     "url": "git+https://github.com/celo-org/celo-composer.git"
   },
   "workspaces": [
-    "packages/*"
+    "packages/*",
+    "packages/firebase-functions/functions"
   ],
   "devDependencies": {
     "@openzeppelin/hardhat-upgrades": "^1.22.1",

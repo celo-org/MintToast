@@ -1,11 +1,17 @@
 import useMobileDetect from "@/hooks/useMobileDetect";
+import { getApiEndpoint } from "@/utils/data";
 import { auth } from "@/utils/firebase";
 import { Menu, Transition } from "@headlessui/react";
-import { ClipboardDocumentIcon, LinkIcon } from "@heroicons/react/24/outline";
+import {
+  ArrowDownIcon,
+  ClipboardDocumentIcon,
+  LinkIcon,
+} from "@heroicons/react/24/outline";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
+import axios from "axios";
 import { TwitterAuthProvider, signInWithPopup } from "firebase/auth";
 import Image from "next/image";
-import { Fragment } from "react";
+import { Fragment, useState } from "react";
 import { toast } from "react-toastify";
 import IconButton from "./common/IconButton";
 import PrimaryButton from "./common/PrimaryButton";
@@ -14,40 +20,125 @@ import OpenUrlIcon from "./icons/OpenUrlIcon";
 import PowerOffIcon from "./icons/PowerOffIcon";
 import TwitterIcon from "./icons/TwitterIcon";
 
-type Props = {};
+type TwitterDataProp = {
+  secret: string;
+  token: string;
+  username: string;
+  displayName: string;
+  photoURL: string;
+};
+
+enum View {
+  ACCOUNT = "ACCOUNT",
+  LINKWALLET = "LINKWALLET",
+  LOADING = "LOADING",
+  MINTTOAST = "MINTTOAST",
+  ALREADYLINKED = "ALREADYLINKED",
+}
 
 export const CustomConnectButton = () => {
+  const [view, setView] = useState<View>(View.ACCOUNT);
+  const [twitterAuthLoading, setTwitterAuthLoading] = useState(false);
   const isMobile = useMobileDetect();
+  const [twitterData, setTwitterData] = useState<TwitterDataProp | undefined>();
 
-  const handleTwitter = async () => {
+  const handleTwitterAuth = async () => {
+    setTwitterAuthLoading(true);
     try {
       const provider = new TwitterAuthProvider();
       const result = await signInWithPopup(auth, provider);
       const credential = TwitterAuthProvider.credentialFromResult(result);
-      console.log(
-        "🚀 ~ file: CustomConnectButton.tsx:27 ~ handleTwitter ~ credential:",
-        credential
-      );
       if (credential) {
         const token = credential.accessToken;
-        console.log(
-          "🚀 ~ file: CustomConnectButton.tsx:29 ~ handleTwitter ~ token:",
-          token
-        );
         const secret = credential.secret;
-        console.log(
-          "🚀 ~ file: CustomConnectButton.tsx:31 ~ handleTwitter ~ secret:",
-          secret
-        );
+        const user = result.user;
+        setTwitterData({
+          secret: secret ?? "",
+          token: token ?? "",
+          displayName: user?.displayName ?? "",
+          photoURL: user?.photoURL ?? "",
+          username: (user as any)?.reloadUserInfo.screenName,
+        });
+        setView(View.LINKWALLET);
       }
-      const user = result.user;
-      console.log(
-        "🚀 ~ file: CustomConnectButton.tsx:41 ~ handleTwitter ~ user:",
-        user
-      );
     } catch (error: any) {
       toast.error(error.message);
+    } finally {
+      setTwitterAuthLoading(false);
     }
+  };
+
+  const handleTwitterLink = async (address: string) => {
+    console.log("HERE");
+    if (!twitterData) {
+      toast.error("Twitter data not found");
+      return;
+    }
+    setTwitterAuthLoading(true);
+    try {
+      console.log("DATE", {
+        accessToken: twitterData?.token,
+        secret: twitterData?.secret,
+        address: address,
+      });
+      console.log(
+        "getApiEndpoint().registerTwitter",
+        getApiEndpoint().registerTwitter
+      );
+      setView(View.LOADING);
+      const response = await axios({
+        method: "post",
+        url: getApiEndpoint().registerTwitter,
+        data: {
+          accessToken: twitterData?.token,
+          secret: twitterData?.secret,
+          address: address,
+        },
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (response.data.success) {
+        setView(View.MINTTOAST);
+      }
+    } catch (error: any) {
+      toast.error(error.message);
+      setView(View.LINKWALLET);
+    } finally {
+      setTwitterAuthLoading(false);
+    }
+  };
+
+  const getAccountControls = (account: any, openAccountModal: () => void) => {
+    return (
+      <div className="flex flex-row justify-between border-b-2 border-black py-0 md:py-3 pr-3">
+        <div className="flex flex-col items-start px-4 py-3 ">
+          <div className="text-sm mb-1 block md:hidden">Accounts</div>
+          <div className="flex flex-row space-x-3 justify-end items-center text-xl md:text-base font-bold md:font-normal">
+            <div>👾 {account.displayName}</div>
+          </div>
+        </div>
+        <div className="md:flex flex-row space-x-2 hidden">
+          <IconButton
+            icon={<CopyIcon />}
+            onClick={async () => {
+              await navigator.clipboard.writeText(account.address);
+              toast.success("Copied to clipboard");
+            }}
+          />
+          <IconButton
+            icon={<OpenUrlIcon />}
+            onClick={() => {
+              window.open(
+                `https://explorer.celo.org/address/${account.address}/transactions`,
+                "_blank"
+              );
+            }}
+          />
+          <IconButton icon={<PowerOffIcon />} onClick={openAccountModal} />
+        </div>
+      </div>
+    );
   };
 
   return (
@@ -113,7 +204,7 @@ export const CustomConnectButton = () => {
                           </div>
                         </Menu.Button>
                       ) : (
-                        <Menu.Button className="font-bold border border-black px-4 py-1">
+                        <Menu.Button className="font-bold border-black border-2 px-4 py-1">
                           👾 {account.displayName}
                         </Menu.Button>
                       )}
@@ -132,121 +223,206 @@ export const CustomConnectButton = () => {
                         style={{ zIndex: 9999 }}
                         className="absolute -right-5 md:right-0 mt-2 origin-top-right bg-background shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none w-screen md:w-[400px] border-2 border-black"
                       >
-                        <div className="flex flex-row justify-between border-b-2 border-black py-0 md:py-3 pr-3">
-                          <div className="flex flex-col items-start px-4 py-3 ">
-                            <div className="text-sm mb-1 block md:hidden">
-                              Accounts
-                            </div>
-                            <div className="flex flex-row space-x-3 justify-end items-center text-xl md:text-base font-bold md:font-normal">
-                              <div>👾 {account.displayName}</div>
-                            </div>
-                          </div>
-                          <div className="md:flex flex-row space-x-2 hidden">
-                            <IconButton
-                              icon={<CopyIcon />}
-                              onClick={async () => {
-                                await navigator.clipboard.writeText(
-                                  account.address
-                                );
-                                toast.success("Copied to clipboard");
-                              }}
-                            />
-                            <IconButton
-                              icon={<OpenUrlIcon />}
-                              onClick={() => {
-                                window.open(
-                                  `https://explorer.celo.org/address/${account.address}/transactions`,
-                                  "_blank"
-                                );
-                              }}
-                            />
-                            <IconButton
-                              icon={<PowerOffIcon />}
-                              onClick={openAccountModal}
-                            />
-                          </div>
-                        </div>
+                        {view == View.ACCOUNT && (
+                          <div className="flex flex-col">
+                            {getAccountControls(account, openAccountModal)}
 
-                        <div className="flex flex-col items-start px-4 py-3 border-b-2 border-black">
-                          <div className="text-sm mb-1">Network</div>
-                          <div className="flex flex-row space-x-3 justify-end items-center">
-                            <Image
-                              src="https://images.ctfassets.net/wr0no19kwov9/1kUyahp0Q6X7T9sVXZ16Ho/d553a9dd0e18fac0f14c8bf8b789a303/brand-kit-symbol-image-01.png?fm=webp&w=3840&q=70"
-                              alt="Celo Logo"
-                              width={25}
-                              height={25}
-                            />
-                            <span className="text-xl font-bold">Celo</span>
-                          </div>
-                        </div>
-                        <div className="flex flex-col items-start px-4 py-3 border-b-2 border-black">
-                          <div className="text-sm mb-1">Balance</div>
-                          <div className="flex flex-row space-x-3 justify-end items-center">
-                            <span className="text-xl font-bold">5.4 CELO</span>
-                          </div>
-                        </div>
-                        <div className="flex flex-col items-start px-4 py-3 border-b-2 border-black">
-                          <div className="text-sm mb-1">MintToast Balance</div>
-                          <div className="flex flex-row space-x-3 justify-end items-center">
-                            <span className="text-xl font-bold">26 Toasts</span>
-                          </div>
-                        </div>
-                        <div className="px-6 py-5 flex flex-col">
-                          <div className="flex flex-col space-y-4 md:space-y-3">
-                            {isMobile && (
-                              <PrimaryButton
-                                onClick={async () => {
-                                  await navigator.clipboard.writeText(
-                                    account.address
-                                  );
-                                  toast.success("Copied to clipboard");
-                                }}
-                                text="Copy address"
-                                varient="secondary"
-                                icon={
-                                  <ClipboardDocumentIcon className="text-black h-5 w-5" />
-                                }
-                              />
-                            )}
-                            {isMobile && (
-                              <PrimaryButton
-                                onClick={() => {
-                                  window.open(
-                                    `https://explorer.celo.org/address/${account.address}/transactions`,
-                                    "_blank"
-                                  );
-                                }}
-                                text="View on Explorer"
-                                varient="secondary"
-                                icon={
-                                  <LinkIcon className="text-black h-5 w-5" />
-                                }
-                              />
-                            )}
-                            <PrimaryButton
-                              onClick={() => {
-                                handleTwitter();
-                              }}
-                              text="Link your Twitter handle"
-                              varient="twitter"
-                              icon={<TwitterIcon />}
-                            />
-                            <div className="text-xs mt-4 text-gray-400 hidden md:block">
-                              You will be directed to Twitter and asked to
-                              authorize MintToast to have access to your handle
-                              and Tweets.
+                            <div className="flex flex-col items-start px-4 py-3 border-b-2 border-black">
+                              <div className="text-sm mb-1">Network</div>
+                              <div className="flex flex-row space-x-3 justify-end items-center">
+                                <Image
+                                  src="https://images.ctfassets.net/wr0no19kwov9/1kUyahp0Q6X7T9sVXZ16Ho/d553a9dd0e18fac0f14c8bf8b789a303/brand-kit-symbol-image-01.png?fm=webp&w=3840&q=70"
+                                  alt="Celo Logo"
+                                  width={25}
+                                  height={25}
+                                />
+                                <span className="text-xl font-bold">Celo</span>
+                              </div>
+                            </div>
+                            <div className="flex flex-col items-start px-4 py-3 border-b-2 border-black">
+                              <div className="text-sm mb-1">Balance</div>
+                              <div className="flex flex-row space-x-3 justify-end items-center">
+                                <span className="text-xl font-bold">
+                                  5.4 CELO
+                                </span>
+                              </div>
+                            </div>
+                            <div className="flex flex-col items-start px-4 py-3 border-b-2 border-black">
+                              <div className="text-sm mb-1">
+                                MintToast Balance
+                              </div>
+                              <div className="flex flex-row space-x-3 justify-end items-center">
+                                <span className="text-xl font-bold">
+                                  26 Toasts
+                                </span>
+                              </div>
+                            </div>
+                            <div className="px-6 py-5 flex flex-col">
+                              <div className="flex flex-col space-y-4 md:space-y-3">
+                                {isMobile && (
+                                  <PrimaryButton
+                                    onClick={async () => {
+                                      await navigator.clipboard.writeText(
+                                        account.address
+                                      );
+                                      toast.success("Copied to clipboard");
+                                    }}
+                                    text="Copy address"
+                                    varient="secondary"
+                                    icon={
+                                      <ClipboardDocumentIcon className="text-black h-5 w-5" />
+                                    }
+                                  />
+                                )}
+                                {isMobile && (
+                                  <PrimaryButton
+                                    onClick={() => {
+                                      window.open(
+                                        `https://explorer.celo.org/address/${account.address}/transactions`,
+                                        "_blank"
+                                      );
+                                    }}
+                                    text="View on Explorer"
+                                    varient="secondary"
+                                    icon={
+                                      <LinkIcon className="text-black h-5 w-5" />
+                                    }
+                                  />
+                                )}
+                                <PrimaryButton
+                                  onClick={() => {
+                                    if (!twitterAuthLoading) {
+                                      handleTwitterAuth();
+                                    }
+                                  }}
+                                  text="Link your Twitter handle"
+                                  varient="twitter"
+                                  isLoading={twitterAuthLoading}
+                                  icon={<TwitterIcon />}
+                                />
+                                <div className="text-xs mt-4 text-gray-400 hidden md:block">
+                                  You will be directed to Twitter and asked to
+                                  authorize MintToast to have access to your
+                                  handle and Tweets.
+                                </div>
+                              </div>
+                            </div>
+                            <div className="px-6 pt-5 pb-4 border-t-2 border-black flex flex-col md:hidden">
+                              <div className="flex flex-col space-y-4">
+                                <PrimaryButton
+                                  onClick={openAccountModal}
+                                  text="Disconnect"
+                                  varient="primary"
+                                />
+                              </div>
                             </div>
                           </div>
-                        </div>
-                        <div className="px-6 pt-5 pb-4 border-t-2 border-black flex flex-col md:hidden">
-                          <div className="flex flex-col space-y-4">
-                            <PrimaryButton
-                              onClick={openAccountModal}
-                              text="Disconnect"
-                              varient="primary"
-                            />
+                        )}
+                        {view == View.LINKWALLET && (
+                          <div className="flex flex-col">
+                            {getAccountControls(account, openAccountModal)}
+                            <div
+                              className="p-4 font-bold cursor-pointer"
+                              onClick={() => {
+                                setView(View.ACCOUNT);
+                              }}
+                            >
+                              👈 Go Back
+                            </div>
+                            <div className="flex flex-col py-5 px-4">
+                              <div className="flex flex-row justify-between">
+                                <div className="flex flex-row font-bold">
+                                  <div className="w-10 flex items-center justify-center">
+                                    <TwitterIcon color="blue" />
+                                  </div>
+                                  <span>Handle</span>
+                                </div>
+                                <span className="text-right">
+                                  @{twitterData?.username ?? ""}
+                                </span>
+                              </div>
+                              <div className="flex flex-row justify-center w-full">
+                                <ArrowDownIcon className="w-6 h-6" />
+                              </div>
+                              <div className="flex flex-row justify-between">
+                                <div className="flex flex-row font-bold">
+                                  <div className="w-10 flex items-center justify-center">
+                                    👛
+                                  </div>
+                                  <span>Wallet</span>
+                                </div>
+                                <span>{account.displayName}</span>
+                              </div>
+                            </div>
+                            <div className="flex flex-col px-4 my-6">
+                              <PrimaryButton
+                                text="👍 Link Wallet"
+                                onClick={() => {
+                                  handleTwitterLink(account.address);
+                                }}
+                              />
+                            </div>
                           </div>
-                        </div>
+                        )}
+                        {view == View.LOADING && (
+                          <div className="flex flex-col h-96">
+                            {getAccountControls(account, openAccountModal)}
+                            <div className="h-full w-full flex items-center font-bold px-10">
+                              <div className="flex justify-center items-center">
+                                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-black mr-4"></div>
+                              </div>
+                              Almost done...
+                            </div>
+                          </div>
+                        )}
+                        {view == View.MINTTOAST && (
+                          <div className="flex flex-col h-96">
+                            {getAccountControls(account, openAccountModal)}
+                            <div className="h-full w-full flex flex-col justify-between items-center px-6 py-6">
+                              <div className="h-full flex flex-col items-start justify-center">
+                                <span className="text-2xl">🎁</span>
+                                <span className="font-bold">
+                                  A Toast for you
+                                </span>
+                                <span className="">
+                                  Your Twitter handle has been successfuly
+                                  mapped to your wallet
+                                </span>
+                              </div>
+
+                              <PrimaryButton
+                                text="🤍 Mint a well deserved Toast"
+                                onClick={() => {}}
+                                fullWidth
+                              />
+                            </div>
+                          </div>
+                        )}
+                        {view == View.ALREADYLINKED && (
+                          <div className="flex flex-col h-96">
+                            {getAccountControls(account, openAccountModal)}
+                            <div className="h-full w-full flex flex-col justify-between items-center px-6 py-6">
+                              <div className="h-full flex flex-col items-start justify-center">
+                                <span className="text-2xl text-red-500">
+                                  ‼️
+                                </span>
+                                <span className="font-bold">
+                                  Already Linked!
+                                </span>
+                                <span className="">
+                                  If you continue, the current address will also
+                                  be linked to your Twitter handle
+                                </span>
+                              </div>
+
+                              <PrimaryButton
+                                text="🤍 Mint a well deserved Toast"
+                                onClick={() => {}}
+                                fullWidth
+                              />
+                            </div>
+                          </div>
+                        )}
                       </Menu.Items>
                     </Transition>
                   </Menu>

@@ -45,8 +45,9 @@ export const getUserCollection = onRequest((req, res) =>
   corsHandler(req, res, () => getUserCollectionHandler(req, res))
 );
 
-export const registerTwitter = onRequest({ timeoutSeconds: 300 }, (req, res) =>
-  corsHandler(req, res, () => registerTwitterHandler(req, res))
+export const registerTwitter = onRequest(
+  { timeoutSeconds: 300, cors: true },
+  (req, res) => registerTwitterHandler(req, res)
 );
 
 export const revokeTwitter = onRequest({ timeoutSeconds: 300 }, (req, res) =>

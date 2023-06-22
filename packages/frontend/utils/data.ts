@@ -6,6 +6,9 @@ import {
   createToastSecretEndpointLocal,
   createToastSecretEndpointMainnet,
   createToastSecretEndpointTestnet,
+  getAccountsFromTwitterHandleEndpointLocal,
+  getAccountsFromTwitterHandleEndpointMainnet,
+  getAccountsFromTwitterHandleEndpointTestnet,
   getAllEventUUIDEndpointLocal,
   getAllEventUUIDEndpointMainnet,
   getAllEventUUIDEndpointTestnet,
@@ -24,6 +27,12 @@ import {
   mintEndpointLocal,
   mintEndpointMainnet,
   mintEndpointTestnet,
+  registerTwitterEndpointLocal,
+  registerTwitterEndpointMainnet,
+  registerTwitterEndpointTestnet,
+  revokeTwitterEndpointLocal,
+  revokeTwitterEndpointMainnet,
+  revokeTwitterEndpointTestnet,
 } from "@/data/constant";
 import { IPFSDataProps } from "./props";
 
@@ -85,6 +94,10 @@ export const getApiEndpoint = () => {
         getSecretDataEndpoint: getSecretDataEndpointMainnet,
         getUserCollectionEndpoint: getUserCollectionEndpointMainnet,
         mintEndpoint: mintEndpointMainnet,
+        revokeTwitter: revokeTwitterEndpointMainnet,
+        registerTwitter: registerTwitterEndpointMainnet,
+        getAccountsFromTwitterHandle:
+          getAccountsFromTwitterHandleEndpointMainnet,
       };
     case "testnet":
       return {
@@ -96,6 +109,10 @@ export const getApiEndpoint = () => {
         getSecretDataEndpoint: getSecretDataEndpointTestnet,
         getUserCollectionEndpoint: getUserCollectionEndpointTestnet,
         mintEndpoint: mintEndpointTestnet,
+        revokeTwitter: revokeTwitterEndpointTestnet,
+        registerTwitter: registerTwitterEndpointTestnet,
+        getAccountsFromTwitterHandle:
+          getAccountsFromTwitterHandleEndpointTestnet,
       };
     case "local":
       return {
@@ -107,6 +124,9 @@ export const getApiEndpoint = () => {
         getSecretDataEndpoint: getSecretDataEndpointLocal,
         getUserCollectionEndpoint: getUserCollectionEndpointLocal,
         mintEndpoint: mintEndpointLocal,
+        revokeTwitter: revokeTwitterEndpointLocal,
+        registerTwitter: registerTwitterEndpointLocal,
+        getAccountsFromTwitterHandle: getAccountsFromTwitterHandleEndpointLocal,
       };
     default:
       return {
@@ -118,6 +138,9 @@ export const getApiEndpoint = () => {
         getSecretDataEndpoint: getSecretDataEndpointLocal,
         getUserCollectionEndpoint: getUserCollectionEndpointLocal,
         mintEndpoint: mintEndpointLocal,
+        revokeTwitter: revokeTwitterEndpointLocal,
+        registerTwitter: registerTwitterEndpointLocal,
+        getAccountsFromTwitterHandle: getAccountsFromTwitterHandleEndpointLocal,
       };
   }
 };

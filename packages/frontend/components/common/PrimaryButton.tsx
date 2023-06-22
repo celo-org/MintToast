@@ -52,7 +52,9 @@ const PrimaryButton: React.FC<Props> = ({
       }`}
     >
       <div
-        className={`front rounded-sm border-2 border-black text-black font-bold text-base flex justify-center items-center py-3 px-8 ${getBgColor()}`}
+        className={`front rounded-sm border-2 border-black text-black font-bold text-base flex justify-center items-center py-3 ${
+          fullWidth ? "px-2" : "px-8"
+        } ${getBgColor()}`}
       >
         {isLoading ? (
           <div className="flex justify-center items-center">

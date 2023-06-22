@@ -1,5 +1,6 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import e from "express";
+import admin from "firebase-admin";
 import { Request } from "firebase-functions/v2/https";
 import { TwitterApi } from "twitter-api-v2";
 import { TWITTER_API_KEY, TWITTER_API_SECRET } from "../../data/constant";
@@ -9,6 +10,7 @@ import {
 } from "../../utils/odis";
 
 export default async function handler(req: Request, res: e.Response) {
+  const db = admin.firestore();
   res.setHeader("Access-Control-Allow-Origin", "*");
   if (req.method !== "POST") {
     res.status(405).json({ error: "Method Not Allowed" });
@@ -40,10 +42,9 @@ export default async function handler(req: Request, res: e.Response) {
       res.status(500).json({ error: "Failed to register identifier" });
       return;
     }
+    await db.collection("odis").doc(address).delete();
     res.status(200).json({ success: true, receipt });
   } catch (error: any) {
     res.status(500).json({ error: error.message });
   }
 }
-// 0x1ee88b8bf623609f0ce76659e30ba42b0948e9a7;
-// 0x1ee88b8bf623609f0ce76659e30ba42b0948e9a7;
