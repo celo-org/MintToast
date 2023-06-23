@@ -2,7 +2,6 @@ import { fetchImageUrl } from "@/utils/ipfs";
 import { IPFSDataProps } from "@/utils/props";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { useEffect, useState } from "react";
-import { toast } from "react-toastify";
 import { useAccount } from "wagmi";
 import InputField from "../InputField";
 import PrimaryButton from "../PrimaryButton";
@@ -69,10 +68,7 @@ function MintView({
             text="🍞 Mint"
             fullWidth={true}
             onClick={() => {
-              if (!address) {
-                toast.error("Please enter an Address");
-                return;
-              } else handleSubmit();
+              handleSubmit();
             }}
           />
           {!connected && (

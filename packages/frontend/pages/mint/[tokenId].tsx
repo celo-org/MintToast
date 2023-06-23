@@ -1,7 +1,6 @@
 import MintLoading from "@/components/common/mint/MintLoading";
 import MintSuccess from "@/components/common/mint/MintSuccess";
 import MintView from "@/components/common/mint/MintView";
-import { CAPTCH_SITEKEY } from "@/data/constant";
 import { getMintCollectionData } from "@/graphql/queries/getMintCollectionData";
 import { ResolveMasa } from "@/utils/masa";
 import { getNetworkNameByChainId } from "@masa-finance/masa-sdk";
@@ -10,10 +9,7 @@ import { doc, getDoc } from "firebase/firestore";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { useCallback, useEffect, useState } from "react";
-import {
-  GoogleReCaptchaProvider,
-  useGoogleReCaptcha,
-} from "react-google-recaptcha-v3";
+import { useGoogleReCaptcha } from "react-google-recaptcha-v3";
 import { toast } from "react-toastify";
 import { useAccount } from "wagmi";
 import { formatIpfsData, getApiEndpoint } from "../../utils/data";
@@ -127,18 +123,10 @@ const QRPage: React.FC<Props> = ({ tokenId, uriData, data, docId }) => {
         }
       });
     }
-  }, [address, docId, executeRecaptcha, router, tokenId]);
+  }, [address, connector, docId, executeRecaptcha, router, tokenId]);
 
   return (
-    <GoogleReCaptchaProvider
-      reCaptchaKey={CAPTCH_SITEKEY as string}
-      scriptProps={{
-        async: false,
-        defer: false,
-        appendTo: "head",
-        nonce: undefined,
-      }}
-    >
+    <>
       <Head>
         <title>Mint Toast | Mint</title>
       </Head>
@@ -153,7 +141,7 @@ const QRPage: React.FC<Props> = ({ tokenId, uriData, data, docId }) => {
       )}
       {view == View.MINTLOADING && <MintLoading />}
       {view == View.SUCCESS && <MintSuccess />}
-    </GoogleReCaptchaProvider>
+    </>
   );
 };
 

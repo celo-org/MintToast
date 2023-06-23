@@ -15,6 +15,7 @@ export class ResolveMasa implements NameResolver {
     networkName: NetworkName;
     masa?: Masa;
   }) {
+    console.log("signer", signer);
     this.masa = masa
       ? masa
       : new Masa({

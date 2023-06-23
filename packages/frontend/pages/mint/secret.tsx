@@ -2,19 +2,16 @@ import PrimaryButton from "@/components/common/PrimaryButton";
 import MintLoading from "@/components/common/mint/MintLoading";
 import MintSuccess from "@/components/common/mint/MintSuccess";
 import MintView from "@/components/common/mint/MintView";
-import { CAPTCH_SITEKEY } from "@/data/constant";
 import { getMintCollectionData } from "@/graphql/queries/getMintCollectionData";
 import { formatIpfsData, getApiEndpoint } from "@/utils/data";
+import { isEthereumAddress } from "@/utils/helper";
 import { ResolveMasa } from "@/utils/masa";
 import { getNetworkNameByChainId } from "@masa-finance/masa-sdk";
 import axios from "axios";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { useCallback, useEffect, useState } from "react";
-import {
-  GoogleReCaptchaProvider,
-  useGoogleReCaptcha,
-} from "react-google-recaptcha-v3";
+import { useGoogleReCaptcha } from "react-google-recaptcha-v3";
 import OTPInput from "react-otp-input";
 import { toast } from "react-toastify";
 import { useAccount } from "wagmi";
@@ -86,27 +83,48 @@ const Secret: React.FC<Props> = ({}) => {
     if (address) {
       toast.loading("Minting your toast, please wait...");
       var resolvedAddress: string = "";
-      if (address.length < 42 && !address.includes(".celo")) {
-        toast.error("Please enter a valid address!");
-        return;
+      console.log("address", address);
+      if (address.length != 42) {
+        if (!address.includes(".celo")) {
+          toast.error("Please enter a valid address!");
+          return;
+        }
+      } else {
+        if (!isEthereumAddress(address)) {
+          toast.error("Please enter a valid address!");
+          return;
+        }
       }
 
       if (address.includes(".celo")) {
         const signer = await connector?.getSigner();
-        let resolver = new ResolveMasa({
-          networkName: getNetworkNameByChainId(42220),
-          signer,
-        });
-        const { resolutions, errors } = await resolver?.resolve(address);
-        if (errors.length) {
-          console.log(errors);
-          toast.error("Something went wrong!");
-        } else {
-          if (resolutions.length) {
-            resolvedAddress = resolutions[0].address;
+        if (!signer) {
+          console.log("HERE");
+          toast.dismiss();
+          toast.error("Please connect wallet to mint!");
+          return;
+        }
+        try {
+          let resolver = new ResolveMasa({
+            networkName: getNetworkNameByChainId(42220),
+            signer,
+          });
+
+          const { resolutions, errors } = await resolver?.resolve(
+            address.split(".celo")[0]
+          );
+          if (errors.length) {
+            toast.error("Something went wrong!");
           } else {
-            toast.error("No .celo name found!");
+            if (resolutions.length) {
+              resolvedAddress = resolutions[0].address;
+              console.log("resolutions[0].address", resolutions[0].address);
+            } else {
+              toast.error("No .celo name found!");
+            }
           }
+        } catch (e) {
+          return;
         }
       } else {
         resolvedAddress = address;
@@ -134,6 +152,7 @@ const Secret: React.FC<Props> = ({}) => {
             toast.success(
               "💪🏼 Successfully minted Toast, redirecting to collection..."
             );
+            setView(View.SUCCESS);
             setTimeout(() => {
               router.push("/collections");
             }, 5000);
@@ -145,68 +164,66 @@ const Secret: React.FC<Props> = ({}) => {
           toast.dismiss();
           toast.error(e as string);
           setView(View.MINT);
-        } finally {
-          setView(View.SUCCESS);
         }
       });
+    } else {
+      toast.error("Please enter a valid address!");
     }
-  }, [address, data.docId, data.tokenId, executeRecaptcha, otp, router]);
+  }, [
+    address,
+    connector,
+    data.docId,
+    data.tokenId,
+    executeRecaptcha,
+    otp,
+    router,
+  ]);
 
   return (
-    <GoogleReCaptchaProvider
-      reCaptchaKey={CAPTCH_SITEKEY as string}
-      scriptProps={{
-        async: false,
-        defer: false,
-        appendTo: "head",
-        nonce: undefined,
-      }}
-    >
-      <div className="mt-10">
-        {view == View.SECRET && (
-          <>
-            <Link href="/mint" className="font-bold mx-3">
-              👈 Back
-            </Link>
-            <div className="flex flex-col justify-center w-full mt-10 items-center">
-              <div className="md:w-[400px] w-full px-2 md:mx-0 mt-10 flex flex-col">
-                <span className="font-semibold ">
-                  Enter a six character password:
-                </span>
-                <div className="flex items-center justify-center w-full mt-5 mb-10">
-                  <OTPInput
-                    value={otp}
-                    onChange={(val) => {
-                      setOtp(val);
-                    }}
-                    numInputs={6}
-                    containerStyle="flex flex-row space-x-5"
-                    inputStyle="bg-white border border-black text-black text-base focus:ring-blue-500 focus:border-blue-500 block !w-[30px] p-2.5"
-                    renderInput={(props) => <input {...props} />}
-                  />
-                </div>
-                <PrimaryButton
-                  onClick={fetchDataFromFirebase}
-                  text="Continue"
-                  isLoading={loading}
+    <div className="mt-10">
+      {view == View.SECRET && (
+        <>
+          <Link href="/mint" className="font-bold mx-3">
+            👈 Back
+          </Link>
+          <div className="flex flex-col justify-center w-full mt-10 items-center">
+            <div className="md:w-[400px] w-full px-2 md:mx-0 mt-10 flex flex-col">
+              <span className="font-semibold ">
+                Enter a six character password:
+              </span>
+              <div className="flex items-center justify-center w-full mt-5 mb-10">
+                <OTPInput
+                  value={otp}
+                  onChange={(val) => {
+                    setOtp(val);
+                  }}
+                  numInputs={6}
+                  containerStyle="flex flex-row space-x-5"
+                  inputStyle="bg-white border border-black text-black text-base focus:ring-blue-500 focus:border-blue-500 block !w-[30px] py-2.5"
+                  renderInput={(props) => <input {...props} />}
                 />
               </div>
+              <PrimaryButton
+                onClick={fetchDataFromFirebase}
+                text="Continue"
+                isLoading={loading}
+              />
             </div>
-          </>
-        )}
-        {view == View.MINT && (
-          <MintView
-            currentSupply={data?.currentSupply}
-            account={address ?? ""}
-            handleSubmit={handleSubmit}
-            setAddress={setAddress}
-            uriData={data.uriData}
-          />
-        )}
-        {view == View.MINTLOADING && <MintLoading />}
-        {view == View.SUCCESS && <MintSuccess />}
-      </div>
-    </GoogleReCaptchaProvider>
+          </div>
+        </>
+      )}
+      {view == View.MINT && (
+        <MintView
+          currentSupply={data?.currentSupply}
+          account={address ?? ""}
+          handleSubmit={handleSubmit}
+          setAddress={setAddress}
+          uriData={data.uriData}
+        />
+      )}
+      {view == View.MINTLOADING && <MintLoading />}
+      {view == View.SUCCESS && <MintSuccess />}
+    </div>
   );
 };
 

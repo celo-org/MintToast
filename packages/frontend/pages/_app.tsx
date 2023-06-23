@@ -24,7 +24,10 @@ import { CeloDance, CeloWallet, Valora } from "@celo/rainbowkit-celo/wallets";
 // Import CELO chain information
 import { Alfajores, Celo } from "@celo/rainbowkit-celo/chains";
 
+import { CAPTCH_SITEKEY } from "@/data/constant";
 import Head from "next/head";
+import { useRouter } from "next/router";
+import { GoogleReCaptchaProvider } from "react-google-recaptcha-v3";
 import Layout from "../components/Layout";
 
 const { chains, provider } = configureChains(
@@ -63,43 +66,68 @@ const roboto_mono = Roboto_Mono({
 });
 
 function App({ Component, pageProps }: AppProps) {
-  return (
-    <main className={roboto_mono.className}>
-      <NextNProgress
-        color="#FF84E2"
-        startPosition={0.3}
-        stopDelayMs={200}
-        height={3}
-        showOnShallow={true}
-      />
-      <Head>
-        <link
-          rel="icon"
-          href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍞</text></svg>"
+  const router = useRouter();
+  console.log(router.pathname);
+  const getApp = () => {
+    return (
+      <main className={roboto_mono.className}>
+        <NextNProgress
+          color="#FF84E2"
+          startPosition={0.3}
+          stopDelayMs={200}
+          height={3}
+          showOnShallow={true}
         />
-      </Head>
+        <Head>
+          <link
+            rel="icon"
+            href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍞</text></svg>"
+          />
+        </Head>
 
-      <WagmiConfig client={wagmiClient}>
-        <RainbowKitProvider chains={chains} coolMode={true}>
-          <Layout>
-            <Component {...pageProps} />
-            <ToastContainer
-              position="top-right"
-              autoClose={5000}
-              hideProgressBar={false}
-              newestOnTop
-              closeOnClick
-              rtl={false}
-              pauseOnFocusLoss
-              draggable
-              pauseOnHover
-              theme="dark"
-            />
-          </Layout>
-        </RainbowKitProvider>
-      </WagmiConfig>
-    </main>
+        <WagmiConfig client={wagmiClient}>
+          <RainbowKitProvider chains={chains} coolMode={true}>
+            <Layout>
+              <Component {...pageProps} />
+              <ToastContainer
+                position="top-right"
+                autoClose={5000}
+                hideProgressBar={false}
+                newestOnTop
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="dark"
+              />
+            </Layout>
+          </RainbowKitProvider>
+        </WagmiConfig>
+      </main>
+    );
+  };
+  console.log(
+    'router.pathname.includes("/mint")',
+    router.pathname.includes("/mint")
   );
+  if (router.pathname.includes("/mint")) {
+    return (
+      <GoogleReCaptchaProvider
+        reCaptchaKey={CAPTCH_SITEKEY as string}
+        scriptProps={{
+          async: false,
+          defer: false,
+          appendTo: "head",
+          nonce: undefined,
+        }}
+      >
+        {getApp()}
+      </GoogleReCaptchaProvider>
+    );
+  }
+
+  return <>{getApp()}</>;
 }
 
 export default App;
