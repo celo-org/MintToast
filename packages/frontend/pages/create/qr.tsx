@@ -34,7 +34,7 @@ export default function New() {
   useEffect(() => {
     if (address) {
       setIsConnected(true);
-      if (WHITELISTED_ADDRESS.includes(address)) {
+      if (WHITELISTED_ADDRESS.includes(address.toLowerCase())) {
         setCanCreate(true);
       }
     }

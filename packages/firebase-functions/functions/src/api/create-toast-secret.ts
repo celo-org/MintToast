@@ -27,7 +27,7 @@ export default async function handler(req: Request, res: e.Response<Data>) {
   }
   try {
     const fields = req.body;
-    if (!WHITELISTED_ADDRESS.includes(fields.ownerAddress)) {
+    if (!WHITELISTED_ADDRESS.includes(fields.ownerAddress.toLowerCase())) {
       res.status(401).json({ error: "Unauthorized" });
       return;
     }

@@ -20,7 +20,7 @@ export default function Home() {
 
   useEffect(() => {
     if (address) {
-      if (WHITELISTED_ADDRESS.includes(address)) {
+      if (WHITELISTED_ADDRESS.includes(address.toLowerCase())) {
         setCanCreate(true);
       }
     }
