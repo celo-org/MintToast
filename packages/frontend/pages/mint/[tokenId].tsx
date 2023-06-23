@@ -1,6 +1,5 @@
 import InputField from "@/components/common/InputField";
 import PrimaryButton from "@/components/common/PrimaryButton";
-import { CAPTCH_SITEKEY } from "@/data/constant";
 import { getMintCollectionData } from "@/graphql/queries/getMintCollectionData";
 import { fetchImageUrl } from "@/utils/ipfs";
 import axios from "axios";
@@ -11,10 +10,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { useCallback, useEffect, useState } from "react";
 import Emoji from "react-emoji-render";
-import {
-  GoogleReCaptchaProvider,
-  useGoogleReCaptcha,
-} from "react-google-recaptcha-v3";
+import { useGoogleReCaptcha } from "react-google-recaptcha-v3";
 import { toast } from "react-toastify";
 import { useAccount } from "wagmi";
 import NewToastDropping from "../../public/images/NewToastDropping.png";
@@ -102,15 +98,7 @@ const QRPage: React.FC<Props> = ({ tokenId, uriData, data, docId }) => {
   }, [address, docId, executeRecaptcha, router, tokenId]);
 
   return (
-    <GoogleReCaptchaProvider
-      reCaptchaKey={CAPTCH_SITEKEY as string}
-      scriptProps={{
-        async: false,
-        defer: false,
-        appendTo: "head",
-        nonce: undefined,
-      }}
-    >
+    <>
       <Head>
         <title>Mint Toast | Mint</title>
       </Head>
@@ -186,7 +174,7 @@ const QRPage: React.FC<Props> = ({ tokenId, uriData, data, docId }) => {
           </span>
         </div>
       )}
-    </GoogleReCaptchaProvider>
+    </>
   );
 };
 
