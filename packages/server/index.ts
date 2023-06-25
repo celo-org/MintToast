@@ -1,4 +1,5 @@
 import bodyParser from "body-parser";
+import cors from "cors";
 import dotenv from "dotenv";
 import express, { Express } from "express";
 import admin from "firebase-admin";
@@ -25,6 +26,11 @@ admin.initializeApp({
 const app: Express = express();
 const port = process.env.PORT;
 
+app.use(
+  cors({
+    origin: "*",
+  })
+);
 app.use(bodyParser.json());
 
 app.post("/api/mint", mintHandler);
