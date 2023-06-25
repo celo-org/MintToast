@@ -67,7 +67,6 @@ const roboto_mono = Roboto_Mono({
 
 function App({ Component, pageProps }: AppProps) {
   const router = useRouter();
-  console.log(router.pathname);
   const getApp = () => {
     return (
       <main className={roboto_mono.className}>
@@ -107,10 +106,7 @@ function App({ Component, pageProps }: AppProps) {
       </main>
     );
   };
-  console.log(
-    'router.pathname.includes("/mint")',
-    router.pathname.includes("/mint")
-  );
+
   if (router.pathname.includes("/mint")) {
     return (
       <GoogleReCaptchaProvider

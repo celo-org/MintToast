@@ -140,7 +140,7 @@ export default function New() {
     try {
       const response = await axios({
         method: "post",
-        url: getApiEndpoint().checkSecret,
+        url: getApiEndpoint().checkSecretEndpoint,
         data: { secret: otp },
       });
       if (response.data && response.data.success) {
