@@ -4,11 +4,11 @@ export const NETWORK_MODE = process.env.NEXT_PUBLIC_NETWORK_MODE || "testnet";
 
 export const TESTNET_SITE_URL = "https://minttoast-testnet.netlify.app";
 export const MAINNET_SITE_URL = "http://minttoast.xyz";
-export const LOCAL_SITE_URL = "http://localhost:3000/api/";
+export const LOCAL_SITE_URL = "http://localhost:3000/";
 
 export const TESTNET_API_ENDPOINT = "http://157.245.126.16:7000/api";
 export const MAINNET_API_ENDPOINT = "http://157.245.126.16:8000/api";
-export const LOCAL_API_ENDPOINT = "http://localhost:3000/api";
+export const LOCAL_API_ENDPOINT = "http://localhost:8001/api";
 
 export const TESTNET_CHAINID = 44787;
 export const MAINNET_CHAINID = 42220;

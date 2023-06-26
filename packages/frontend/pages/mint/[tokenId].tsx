@@ -60,8 +60,10 @@ const QRPage: React.FC<Props> = ({ tokenId, uriData, data, docId }) => {
   }, [isConnected, walletAddress]);
 
   const handleSubmit = useCallback(async () => {
-    if (address) {
-      toast.loading("Minting your toast, please wait...");
+    try {
+      if (address) {
+        toast.loading("Minting your toast, please wait...");
+      }
       var resolvedAddress: string = "";
       if (address.length < 42 && !address.includes(".celo")) {
         toast.error("Please enter a valid address!");
@@ -93,35 +95,36 @@ const QRPage: React.FC<Props> = ({ tokenId, uriData, data, docId }) => {
         return;
       }
       executeRecaptcha("enquiryFormSubmit").then(async (token) => {
-        try {
-          setView(View.MINTLOADING);
-          var res = await axios.post(getApiEndpoint().mintEndpoint, {
-            tokenId,
-            resolvedAddress,
-            token,
-            docId,
-          });
-          if (res.data["success"]) {
-            setAddress("");
-            toast.dismiss();
-            toast.success(
-              "💪🏼 Successfully minted Toast, redirecting to collection..."
-            );
-            setTimeout(() => {
-              router.push("/collections");
-            }, 5000);
-          } else if (res.data["error"]) {
-            toast.dismiss();
-            toast.error(res.data["error"]);
-          }
-        } catch (e) {
+        console.log("token", token);
+        console.log("resolvedAddress", resolvedAddress);
+        setView(View.MINTLOADING);
+        var res = await axios.post(getApiEndpoint().mintEndpoint, {
+          tokenId,
+          address: resolvedAddress,
+          token,
+          docId,
+        });
+        console.log("resres", res);
+        if (res.data["success"]) {
+          setAddress("");
           toast.dismiss();
-          toast.error(e as string);
-          setView(View.MINT);
-        } finally {
-          setView(View.SUCCESS);
+          toast.success(
+            "💪🏼 Successfully minted Toast, redirecting to collection..."
+          );
+          setTimeout(() => {
+            router.push("/collections");
+          }, 5000);
+        } else if (res.data["error"]) {
+          toast.dismiss();
+          toast.error(res.data["error"]);
         }
       });
+    } catch (e) {
+      toast.dismiss();
+      toast.error(e as string);
+      setView(View.MINT);
+    } finally {
+      setView(View.SUCCESS);
     }
   }, [address, connector, docId, executeRecaptcha, router, tokenId]);
 

@@ -2,8 +2,8 @@
 import DatePickerField from "@/components/common/DatePickerField";
 import InputField from "@/components/common/InputField";
 import PrimaryButton from "@/components/common/PrimaryButton";
+import SecretImageView from "@/components/common/SecretImageView";
 import TextArea from "@/components/common/TextField";
-import SecretImageView from "@/components/create/SecretImageView";
 import SecretShare from "@/components/create/SecretShare";
 import { WHITELISTED_ADDRESS } from "@/data/constant";
 import { getApiEndpoint } from "@/utils/data";
@@ -29,7 +29,6 @@ export default function New() {
   const [canCreate, setCanCreate] = useState(false);
   const [otp, setOtp] = useState("");
   const [secretCheckLoading, setSecretCheckLoading] = useState(false);
-
   const { connector } = useAccount();
 
   useEffect(() => {
@@ -94,9 +93,7 @@ export default function New() {
       try {
         setLoading(true);
         toast.loading("Creating your event, don't close the window...");
-
         const imageID = await uploadImageToIpfs(image);
-
         const reqObj = {
           title: values.title,
           description: values.description,
@@ -131,6 +128,7 @@ export default function New() {
       } finally {
         setLoading(false);
         clearForm();
+        setOtp("");
       }
     },
   });
@@ -245,6 +243,7 @@ export default function New() {
                       onChange={formik.setFieldValue}
                       fieldName="startDate"
                       label="Start Date"
+                      isEndDate={false}
                     />
                   </div>
                   <div className="w-1/2">
@@ -254,6 +253,7 @@ export default function New() {
                       onChange={formik.setFieldValue}
                       fieldName="endDate"
                       label="End Date"
+                      isEndDate={true}
                     />
                   </div>
                 </div>
@@ -307,8 +307,8 @@ export default function New() {
                 <div className="w-full flex justify-center my-8">
                   <PrimaryButton
                     text="👉 Preview"
-                    onClick={() => {
-                      const errors = formik.validateForm();
+                    onClick={async () => {
+                      const errors = await formik.validateForm();
                       formik.setTouched({
                         title: true,
                         description: true,
@@ -340,17 +340,11 @@ export default function New() {
             </div>
             <div className="flex flex-col justify-start items-start md:pt-2 pt-0 max-w-xl mx-auto">
               <span className="mt-16 mb-2">Preview your Toast</span>
-              <div className="flex flex-col justify-center w-full items-center border-t-2 border-b-2 border-black py-9">
+              <div className="flex md:w-[400px] flex-col justify-center w-full items-center border-t-2 border-b-2 border-black py-9">
                 <span className="text-3xl font-bold text-center">
                   {formik.values.title}
                 </span>
-                <img
-                  height={285}
-                  width={285}
-                  src={imageSrc}
-                  className="mt-8"
-                  alt={"Event Toast"}
-                />
+                <img src={imageSrc} className="mt-8" alt={"Event Toast"} />
                 <div className="flex flex-row justify-between w-[285px] mt-3">
                   <span className="font-semibold">
                     {0}/{formik.values.toastCount ?? 0}
@@ -387,6 +381,7 @@ export default function New() {
                   onClick={() => {
                     formik.handleSubmit();
                   }}
+                  isLoading={loading}
                   text="🍻 Create"
                 />
               </div>

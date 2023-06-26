@@ -7,6 +7,7 @@ type Props = {
   placeholder?: string;
   className?: string;
   fieldName: string;
+  isEndDate: boolean;
 };
 
 function DatePickerField({
@@ -15,8 +16,8 @@ function DatePickerField({
   onChange,
   placeholder,
   className,
-  onBlur,
   fieldName,
+  isEndDate,
 }: Props) {
   return (
     <div className={className}>
@@ -30,6 +31,12 @@ function DatePickerField({
         onChange={(val, e) => {
           onChange(fieldName, val);
         }}
+        allowSameDay={true}
+        minDate={
+          isEndDate
+            ? new Date(new Date().setDate(new Date().getDate() + 1))
+            : new Date()
+        }
       />
     </div>
   );

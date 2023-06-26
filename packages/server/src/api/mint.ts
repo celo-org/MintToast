@@ -29,7 +29,6 @@ export default async function handler(req: e.Request, res: e.Response<Data>) {
       }
     );
     const reCaptchaResJson = await reCaptchaRes.json();
-
     if (reCaptchaResJson?.score > 0.5) {
       const address = fields.address;
       const tokenId = fields.tokenId;

@@ -128,6 +128,7 @@ export default function New() {
         toast.dismiss();
         toast.error("🚨 Oops, toast burned, please try again...");
       } finally {
+        setLoading(false);
       }
     },
   });
@@ -217,6 +218,7 @@ export default function New() {
                       onChange={formik.setFieldValue}
                       fieldName="startDate"
                       label="Start Date"
+                      isEndDate={false}
                     />
                   </div>
                   <div className="w-1/2">
@@ -226,6 +228,7 @@ export default function New() {
                       onChange={formik.setFieldValue}
                       fieldName="endDate"
                       label="End Date"
+                      isEndDate={true}
                     />
                   </div>
                 </div>
@@ -279,8 +282,19 @@ export default function New() {
                 <div className="w-full flex justify-center mt-8">
                   <PrimaryButton
                     text="👉 Preview"
-                    onClick={() => {
-                      setView(View.PREVIEW);
+                    onClick={async () => {
+                      const errors = await formik.validateForm();
+                      formik.setTouched({
+                        title: true,
+                        description: true,
+                        startDate: true,
+                        endDate: true,
+                        url: true,
+                        toastCount: true,
+                      });
+                      if (Object.keys(errors).length == 0) {
+                        setView(View.PREVIEW);
+                      }
                     }}
                   />
                 </div>
@@ -342,6 +356,7 @@ export default function New() {
                   onClick={() => {
                     formik.handleSubmit();
                   }}
+                  isLoading={loading}
                   text="🍻 Create"
                 />
               </div>

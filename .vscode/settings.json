@@ -1,5 +1,11 @@
 {
-    "solidity.compileUsingLocalVersion": "/Users/harpalsinhjadeja/Downloads/MintToast/soljson-v0.8.18+commit.87f61d96.js",
-    "solidity.defaultCompiler": "localFile",
-    "solidity.compileUsingRemoteVersion": "v0.8.18+commit.87f61d96"
+  "solidity.compileUsingLocalVersion": "/Users/harpalsinhjadeja/Downloads/MintToast/soljson-v0.8.18+commit.87f61d96.js",
+  "solidity.defaultCompiler": "localFile",
+  "solidity.compileUsingRemoteVersion": "v0.8.18+commit.87f61d96",
+  "debug.javascript.autoAttachFilter": "disabled",
+  "debug.javascript.autoAttachSmartPattern": [
+    "packages/server",
+    "!**/node_modules/**",
+    "**/$KNOWN_TOOLS$/**"
+  ]
 }
