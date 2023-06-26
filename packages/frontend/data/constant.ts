@@ -7,7 +7,7 @@ export const MAINNET_SITE_URL = "http://minttoast.xyz";
 export const LOCAL_SITE_URL = "http://localhost:3000/";
 
 export const TESTNET_API_ENDPOINT = "http://157.245.126.16:7000/api";
-export const MAINNET_API_ENDPOINT = "http://157.245.126.16:8000/api";
+export const MAINNET_API_ENDPOINT = "http://157.245.126.16:7000/api";
 export const LOCAL_API_ENDPOINT = "http://localhost:8001/api";
 
 export const TESTNET_CHAINID = 44787;
@@ -68,6 +68,8 @@ export const getUserCollectionEndpoint = API_ENDPOINT + "/get-user-collection";
 export const mintEndpoint = API_ENDPOINT + "/mint";
 export const registerTwitterEndpoint = API_ENDPOINT + "/register-twitter";
 export const revokeTwitterEndpoint = API_ENDPOINT + "/revoke-twitter";
+export const checkSecretEndpoint = API_ENDPOINT + "/check-secret";
 export const getAccountsFromTwitterHandleEndpoint =
   API_ENDPOINT + "/get-accounts-from-twitter";
-export const checkSecretEndpoint = API_ENDPOINT + "/check-secret";
+export const getTwitterFromAddressEndpoint =
+  API_ENDPOINT + "/get-twitter-from-address";

@@ -7,6 +7,7 @@ import {
   getEventIdEndpoint,
   getOwnerEndpoint,
   getSecretDataEndpoint,
+  getTwitterFromAddressEndpoint,
   getUserCollectionEndpoint,
   mintEndpoint,
   registerTwitterEndpoint,
@@ -74,5 +75,6 @@ export const getApiEndpoint = () => {
     registerTwitterEndpoint,
     getAccountsFromTwitterHandleEndpoint,
     checkSecretEndpoint,
+    getTwitterFromAddressEndpoint,
   };
 };

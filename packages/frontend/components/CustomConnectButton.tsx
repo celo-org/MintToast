@@ -1,3 +1,4 @@
+import { useGlobalContext } from "@/context/GlobalContext";
 import useMobileDetect from "@/hooks/useMobileDetect";
 import { getApiEndpoint } from "@/utils/data";
 import { auth } from "@/utils/firebase";
@@ -13,6 +14,7 @@ import { TwitterAuthProvider, signInWithPopup } from "firebase/auth";
 import Image from "next/image";
 import { Fragment, useState } from "react";
 import { toast } from "react-toastify";
+import { useAccount } from "wagmi";
 import IconButton from "./common/IconButton";
 import PrimaryButton from "./common/PrimaryButton";
 import CopyIcon from "./icons/CopyIcon";
@@ -20,7 +22,7 @@ import OpenUrlIcon from "./icons/OpenUrlIcon";
 import PowerOffIcon from "./icons/PowerOffIcon";
 import TwitterIcon from "./icons/TwitterIcon";
 
-type TwitterDataProp = {
+type TwitterIntegrationDataProp = {
   secret: string;
   token: string;
   username: string;
@@ -40,7 +42,11 @@ export const CustomConnectButton = () => {
   const [view, setView] = useState<View>(View.ACCOUNT);
   const [twitterAuthLoading, setTwitterAuthLoading] = useState(false);
   const isMobile = useMobileDetect();
-  const [twitterData, setTwitterData] = useState<TwitterDataProp | undefined>();
+  const [twitterIntegrationData, setTwitterIntegrationData] = useState<
+    TwitterIntegrationDataProp | undefined
+  >();
+  const { twitterData } = useGlobalContext();
+  const { address } = useAccount();
 
   const handleTwitterAuth = async () => {
     setTwitterAuthLoading(true);
@@ -52,7 +58,7 @@ export const CustomConnectButton = () => {
         const token = credential.accessToken;
         const secret = credential.secret;
         const user = result.user;
-        setTwitterData({
+        setTwitterIntegrationData({
           secret: secret ?? "",
           token: token ?? "",
           displayName: user?.displayName ?? "",
@@ -68,26 +74,21 @@ export const CustomConnectButton = () => {
     }
   };
 
-  const handleTwitterLink = async (address: string) => {
-    console.log("HERE");
-    if (!twitterData) {
+  const handleTwitterLink = async () => {
+    console.log("address", address);
+    if (!twitterIntegrationData) {
       toast.error("Twitter data not found");
       return;
     }
     setTwitterAuthLoading(true);
     try {
-      console.log("DATE", {
-        accessToken: twitterData?.token,
-        secret: twitterData?.secret,
-        address: address,
-      });
       setView(View.LOADING);
       const response = await axios({
         method: "post",
         url: getApiEndpoint().registerTwitterEndpoint,
         data: {
-          accessToken: twitterData?.token,
-          secret: twitterData?.secret,
+          accessToken: twitterIntegrationData?.token,
+          secret: twitterIntegrationData?.secret,
           address: address,
         },
         headers: {
@@ -98,23 +99,28 @@ export const CustomConnectButton = () => {
         setView(View.MINTTOAST);
       }
     } catch (error: any) {
-      toast.error(error.message);
+      toast.error(error.response.data.error);
       setView(View.LINKWALLET);
     } finally {
       setTwitterAuthLoading(false);
     }
   };
 
-  const getAccountControls = (account: any, openAccountModal: () => void) => {
+  const getAccountControls = (
+    account: any,
+    openAccountModal: () => void,
+    twitterUsername: string
+  ) => {
     return (
-      <div className="flex flex-row justify-between border-b-2 border-black py-0 md:py-3 pr-3">
+      <div className="flex flex-row justify-between items-center border-b-2 border-black py-0 md:py-3 pr-3">
         <div className="flex flex-col items-start px-4 py-3 ">
           <div className="text-sm mb-1 block md:hidden">Accounts</div>
-          <div className="flex flex-row space-x-3 justify-end items-center text-xl md:text-base font-bold md:font-normal">
+          <div className="flex flex-col justify-end items-start text-xl md:text-base font-bold md:font-normal">
             <div>👾 {account.displayName}</div>
+            {twitterUsername && <div className="">@{twitterUsername}</div>}
           </div>
         </div>
-        <div className="md:flex flex-row space-x-2 hidden">
+        <div className="md:flex flex-row space-x-2 hidden h-14">
           <IconButton
             icon={<CopyIcon />}
             onClick={async () => {
@@ -221,7 +227,11 @@ export const CustomConnectButton = () => {
                       >
                         {view == View.ACCOUNT && (
                           <div className="flex flex-col">
-                            {getAccountControls(account, openAccountModal)}
+                            {getAccountControls(
+                              account,
+                              openAccountModal,
+                              twitterData?.username ?? ""
+                            )}
 
                             <div className="flex flex-col items-start px-4 py-3 border-b-2 border-black">
                               <div className="text-sm mb-1">Network</div>
@@ -285,17 +295,31 @@ export const CustomConnectButton = () => {
                                     }
                                   />
                                 )}
-                                <PrimaryButton
-                                  onClick={() => {
-                                    if (!twitterAuthLoading) {
-                                      handleTwitterAuth();
-                                    }
-                                  }}
-                                  text="Link your Twitter handle"
-                                  varient="twitter"
-                                  isLoading={twitterAuthLoading}
-                                  icon={<TwitterIcon />}
-                                />
+                                {twitterData?.username ? (
+                                  <PrimaryButton
+                                    onClick={() => {
+                                      if (!twitterAuthLoading) {
+                                        handleTwitterAuth();
+                                      }
+                                    }}
+                                    text={`Manage @${twitterData.username}`}
+                                    varient="twitter"
+                                    isLoading={twitterAuthLoading}
+                                    icon={<TwitterIcon />}
+                                  />
+                                ) : (
+                                  <PrimaryButton
+                                    onClick={() => {
+                                      if (!twitterAuthLoading) {
+                                        handleTwitterAuth();
+                                      }
+                                    }}
+                                    text="Link your Twitter handle"
+                                    varient="twitter"
+                                    isLoading={twitterAuthLoading}
+                                    icon={<TwitterIcon />}
+                                  />
+                                )}
                                 <div className="text-xs mt-4 text-gray-400 hidden md:block">
                                   You will be directed to Twitter and asked to
                                   authorize MintToast to have access to your
@@ -316,7 +340,11 @@ export const CustomConnectButton = () => {
                         )}
                         {view == View.LINKWALLET && (
                           <div className="flex flex-col">
-                            {getAccountControls(account, openAccountModal)}
+                            {getAccountControls(
+                              account,
+                              openAccountModal,
+                              twitterData?.username ?? ""
+                            )}
                             <div
                               className="p-4 font-bold cursor-pointer"
                               onClick={() => {
@@ -334,7 +362,7 @@ export const CustomConnectButton = () => {
                                   <span>Handle</span>
                                 </div>
                                 <span className="text-right">
-                                  @{twitterData?.username ?? ""}
+                                  @{twitterIntegrationData?.username ?? ""}
                                 </span>
                               </div>
                               <div className="flex flex-row justify-center w-full">
@@ -354,7 +382,7 @@ export const CustomConnectButton = () => {
                               <PrimaryButton
                                 text="👍 Link Wallet"
                                 onClick={() => {
-                                  handleTwitterLink(account.address);
+                                  handleTwitterLink();
                                 }}
                               />
                             </div>
@@ -362,7 +390,11 @@ export const CustomConnectButton = () => {
                         )}
                         {view == View.LOADING && (
                           <div className="flex flex-col h-96">
-                            {getAccountControls(account, openAccountModal)}
+                            {getAccountControls(
+                              account,
+                              openAccountModal,
+                              twitterData?.username ?? ""
+                            )}
                             <div className="h-full w-full flex items-center font-bold px-10">
                               <div className="flex justify-center items-center">
                                 <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-black mr-4"></div>
@@ -373,7 +405,11 @@ export const CustomConnectButton = () => {
                         )}
                         {view == View.MINTTOAST && (
                           <div className="flex flex-col h-96">
-                            {getAccountControls(account, openAccountModal)}
+                            {getAccountControls(
+                              account,
+                              openAccountModal,
+                              twitterData?.username ?? ""
+                            )}
                             <div className="h-full w-full flex flex-col justify-between items-center px-6 py-6">
                               <div className="h-full flex flex-col items-start justify-center">
                                 <span className="text-2xl">🎁</span>
@@ -391,12 +427,25 @@ export const CustomConnectButton = () => {
                                 onClick={() => {}}
                                 fullWidth
                               />
+                              <div className="mt-3 w-full">
+                                <PrimaryButton
+                                  fullWidth
+                                  text="Done"
+                                  onClick={() => {
+                                    handleTwitterLink();
+                                  }}
+                                />
+                              </div>
                             </div>
                           </div>
                         )}
                         {view == View.ALREADYLINKED && (
                           <div className="flex flex-col h-96">
-                            {getAccountControls(account, openAccountModal)}
+                            {getAccountControls(
+                              account,
+                              openAccountModal,
+                              twitterData?.username ?? ""
+                            )}
                             <div className="h-full w-full flex flex-col justify-between items-center px-6 py-6">
                               <div className="h-full flex flex-col items-start justify-center">
                                 <span className="text-2xl text-red-500">
@@ -412,7 +461,7 @@ export const CustomConnectButton = () => {
                               </div>
 
                               <PrimaryButton
-                                text="🤍 Mint a well deserved Toast"
+                                text="🔁 Override"
                                 onClick={() => {}}
                                 fullWidth
                               />

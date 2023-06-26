@@ -12,6 +12,7 @@ import getAllEventUUIDHandler from "./src/api/get-all-event-uuid";
 import getEventIdHandler from "./src/api/get-event-id";
 import getOwnerHandler from "./src/api/get-owner";
 import getSecretDataHandler from "./src/api/get-secret-data";
+import getTwitterFromAddress from "./src/api/get-twitter-from-address";
 import getUserCollectionHandler from "./src/api/get-user-collection";
 import mintHandler from "./src/api/mint";
 import registerTwitterHandler from "./src/api/register-twitter";
@@ -47,6 +48,7 @@ app.post("/api/check-secret", checkSecretHandler);
 app.post("/api/register-twitter", registerTwitterHandler);
 app.post("/api/revoke-twitter", revokeTwitterHandler);
 app.post("/api/get-accounts-from-twitter", getAccountsFromTwitter);
+app.post("/api/get-twitter-from-address", getTwitterFromAddress);
 
 app.listen(port, () => {
   console.log(`⚡️[server]: Server is running at http://localhost:${port}`);

@@ -24,6 +24,7 @@ import { CeloDance, CeloWallet, Valora } from "@celo/rainbowkit-celo/wallets";
 // Import CELO chain information
 import { Alfajores, Celo } from "@celo/rainbowkit-celo/chains";
 
+import { GlobalContextProvider } from "@/context/GlobalContext";
 import { CAPTCH_SITEKEY } from "@/data/constant";
 import Head from "next/head";
 import { useRouter } from "next/router";
@@ -54,7 +55,7 @@ const connectors = connectorsForWallets([
 ]);
 
 const wagmiClient = createClient({
-  autoConnect: false,
+  autoConnect: true,
   connectors,
   provider,
 });
@@ -86,21 +87,23 @@ function App({ Component, pageProps }: AppProps) {
 
         <WagmiConfig client={wagmiClient}>
           <RainbowKitProvider chains={chains} coolMode={true}>
-            <Layout>
-              <Component {...pageProps} />
-              <ToastContainer
-                position="top-right"
-                autoClose={5000}
-                hideProgressBar={false}
-                newestOnTop
-                closeOnClick
-                rtl={false}
-                pauseOnFocusLoss
-                draggable
-                pauseOnHover
-                theme="dark"
-              />
-            </Layout>
+            <GlobalContextProvider>
+              <Layout>
+                <Component {...pageProps} />
+                <ToastContainer
+                  position="top-right"
+                  autoClose={5000}
+                  hideProgressBar={false}
+                  newestOnTop
+                  closeOnClick
+                  rtl={false}
+                  pauseOnFocusLoss
+                  draggable
+                  pauseOnHover
+                  theme="dark"
+                />
+              </Layout>
+            </GlobalContextProvider>
           </RainbowKitProvider>
         </WagmiConfig>
       </main>

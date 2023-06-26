@@ -26,7 +26,7 @@ export default function Header() {
                 href="/collections"
                 className={`font-bold text-base text-gray-900 px-4 py-2 rounded-xl ${
                   getActiveTab() === "collection"
-                    ? "bg-white border border-black"
+                    ? "bg-white border-2 border-black"
                     : ""
                 }`}
               >
@@ -38,7 +38,7 @@ export default function Header() {
                 href="/mint"
                 className={`font-bold text-base text-gray-900 px-4 py-1 rounded-xl ${
                   getActiveTab() === "mint"
-                    ? "bg-white border border-black"
+                    ? "bg-white border-2 border-black"
                     : ""
                 }`}
               >
@@ -50,7 +50,7 @@ export default function Header() {
                 href="/create"
                 className={`font-bold text-base text-gray-900 px-4 py-1 rounded-xl ${
                   getActiveTab() === "create"
-                    ? "bg-white border border-black"
+                    ? "bg-white border-2 border-black"
                     : ""
                 }`}
               >
