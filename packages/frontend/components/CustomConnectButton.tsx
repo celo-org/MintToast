@@ -81,14 +81,10 @@ export const CustomConnectButton = () => {
         secret: twitterData?.secret,
         address: address,
       });
-      console.log(
-        "getApiEndpoint().registerTwitter",
-        getApiEndpoint().registerTwitter
-      );
       setView(View.LOADING);
       const response = await axios({
         method: "post",
-        url: getApiEndpoint().registerTwitter,
+        url: getApiEndpoint().registerTwitterEndpoint,
         data: {
           accessToken: twitterData?.token,
           secret: twitterData?.secret,
