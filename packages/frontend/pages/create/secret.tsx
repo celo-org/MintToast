@@ -2,8 +2,8 @@
 import DatePickerField from "@/components/common/DatePickerField";
 import InputField from "@/components/common/InputField";
 import PrimaryButton from "@/components/common/PrimaryButton";
+import SecretImageView from "@/components/common/SecretImageView";
 import TextArea from "@/components/common/TextField";
-import SecretImageView from "@/components/create/SecretImageView";
 import SecretShare from "@/components/create/SecretShare";
 import { WHITELISTED_ADDRESS } from "@/data/constant";
 import { getApiEndpoint } from "@/utils/data";
@@ -28,6 +28,8 @@ export default function New() {
   const [isConnected, setIsConnected] = useState(false);
   const [canCreate, setCanCreate] = useState(false);
   const [otp, setOtp] = useState("");
+  const [secretCheckLoading, setSecretCheckLoading] = useState(false);
+  const { connector } = useAccount();
 
   useEffect(() => {
     if (address) {
@@ -91,38 +93,67 @@ export default function New() {
       try {
         setLoading(true);
         toast.loading("Creating your event, don't close the window...");
-
         const imageID = await uploadImageToIpfs(image);
+        const reqObj = {
+          title: values.title,
+          description: values.description,
+          startDate: formatDateFromString(values.startDate),
+          endDate: formatDateFromString(values.endDate),
+          websiteLink: values.url,
+          totalToastSupply: values.toastCount.toString(),
+          ownerAddress: address ?? "",
+          imageID,
+          secret: otp,
+        };
+
+        const signer = await connector?.getSigner();
+        const signature = await signer?.signMessage(JSON.stringify(reqObj));
+
         var firebaseRes = await axios({
           method: "post",
           url: getApiEndpoint().createToastSecretEndpoint,
-          data: {
-            title: values.title,
-            description: values.description,
-            startDate: formatDateFromString(values.startDate),
-            endDate: formatDateFromString(values.endDate),
-            websiteLink: values.url,
-            totalToastSupply: values.toastCount.toString(),
-            ownerAddress: address ?? "",
-            imageID,
-            secret: otp,
-          },
+          data: { ...reqObj, signature },
           headers: { "Content-Type": "application/json" },
         });
         toast.dismiss();
         toast.success(
           "💪🏼 We are working on creating your toast. Please check you profile section after 10-15 seconds."
         );
+        if (firebaseRes.data) {
+          setView(View.SUBMITTED);
+        }
       } catch (e) {
         toast.dismiss();
         toast.error("🚨 Oops, toast burned, please try again...");
       } finally {
         setLoading(false);
         clearForm();
-        setView(View.SUBMITTED);
+        setOtp("");
       }
     },
   });
+
+  const handleSecretCheck = async () => {
+    setSecretCheckLoading(true);
+    try {
+      const response = await axios({
+        method: "post",
+        url: getApiEndpoint().checkSecretEndpoint,
+        data: { secret: otp },
+      });
+      if (response.data && response.data.success) {
+        setView(View.ATTRIBUTES);
+      } else {
+        toast.error(
+          "🚨 Secret already used, please choose another secret phrase."
+        );
+      }
+    } catch (e) {
+      toast.error("🚨 Oops, something went wrong, please try again...");
+    } finally {
+      setSecretCheckLoading(false);
+    }
+  };
 
   if (!isConnected) {
     return (
@@ -157,9 +188,10 @@ export default function New() {
           <SecretImageView
             handleImageUpload={handleImageUpload}
             imageSrc={imageSrc}
-            setView={setView}
+            handleSecretCheck={handleSecretCheck}
             otp={otp}
             setOtp={setOtp}
+            secretCheckLoading={secretCheckLoading}
           />
         )}
         {view == View.ATTRIBUTES && (
@@ -211,6 +243,7 @@ export default function New() {
                       onChange={formik.setFieldValue}
                       fieldName="startDate"
                       label="Start Date"
+                      isEndDate={false}
                     />
                   </div>
                   <div className="w-1/2">
@@ -220,6 +253,7 @@ export default function New() {
                       onChange={formik.setFieldValue}
                       fieldName="endDate"
                       label="End Date"
+                      isEndDate={true}
                     />
                   </div>
                 </div>
@@ -273,8 +307,19 @@ export default function New() {
                 <div className="w-full flex justify-center my-8">
                   <PrimaryButton
                     text="👉 Preview"
-                    onClick={() => {
-                      setView(View.PREVIEW);
+                    onClick={async () => {
+                      const errors = await formik.validateForm();
+                      formik.setTouched({
+                        title: true,
+                        description: true,
+                        startDate: true,
+                        endDate: true,
+                        url: true,
+                        toastCount: true,
+                      });
+                      if (Object.keys(errors).length == 0) {
+                        setView(View.PREVIEW);
+                      }
                     }}
                   />
                 </div>
@@ -295,7 +340,7 @@ export default function New() {
             </div>
             <div className="flex flex-col justify-start items-start md:pt-2 pt-0 max-w-xl mx-auto">
               <span className="mt-16 mb-2">Preview your Toast</span>
-              <div className="flex flex-col justify-center w-full items-center border-t-2 border-b-2 border-black py-9">
+              <div className="flex md:w-[400px] flex-col justify-center w-full items-center border-t-2 border-b-2 border-black py-9">
                 <span className="text-3xl font-bold text-center">
                   {formik.values.title}
                 </span>
@@ -336,6 +381,7 @@ export default function New() {
                   onClick={() => {
                     formik.handleSubmit();
                   }}
+                  isLoading={loading}
                   text="🍻 Create"
                 />
               </div>

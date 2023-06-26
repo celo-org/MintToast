@@ -56,6 +56,12 @@ export default function MyToast() {
             return res;
           })
         );
+        tempCollection.sort((a: any, b: any) => {
+          return (
+            parseInt(b.serie.creationTimestamp) -
+            parseInt(a.serie.creationTimestamp)
+          );
+        });
         setCollection(tempCollection);
         setView(View.MyToasts);
       } else {

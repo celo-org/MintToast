@@ -99,7 +99,7 @@ export default function Home() {
             </>
           ) : (
             <>
-              <div className="flex flex-row flex-wrap justify-evenly">
+              <div className="flex flex-row space-x-16 flex-wrap justify-evenly">
                 {/* Card 1 */}
                 <div className="flex flex-col justify-start w-[170px]">
                   <Link

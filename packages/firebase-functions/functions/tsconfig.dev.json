@@ -1,3 +1,0 @@
-{
-  "include": [".eslintrc.js", "src", "utils", "data", "helper"]
-}

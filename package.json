@@ -8,6 +8,7 @@
   "scripts": {
     "build": "turbo run build --parallel",
     "dev": "turbo run dev --parallel",
+    "server:dev": "yarn run dev --scope packages/server",
     "start": "turbo run start --parallel",
     "lint": "turbo run lint --parallel",
     "typecheck": "turbo run typecheck --parallel",
@@ -19,7 +20,8 @@
     "url": "git+https://github.com/celo-org/celo-composer.git"
   },
   "workspaces": [
-    "packages/*"
+    "packages/*",
+    "packages/firebase-functions/functions"
   ],
   "devDependencies": {
     "@openzeppelin/hardhat-upgrades": "^1.22.1",

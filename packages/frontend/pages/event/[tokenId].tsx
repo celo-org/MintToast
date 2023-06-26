@@ -1,8 +1,6 @@
 import Loading from "@/components/common/Loading";
 import PrimaryButton from "@/components/common/PrimaryButton";
-import TwitterIcon from "@/components/icons/TwitterIcon";
 import QRCodeModal from "@/components/modals/QRCodeModal";
-import { WEBSITE_URL } from "@/data/constant";
 import { getMintCollectionData } from "@/graphql/queries/getMintCollectionData";
 import { formatIpfsData } from "@/utils/data";
 import { database } from "@/utils/firebase";
@@ -192,22 +190,6 @@ const EventPage: React.FC<Props> = ({
                   </div>
                 </>
               )}
-              <div className="mt-12 w-full flex justify-center">
-                <PrimaryButton
-                  onClick={() => {
-                    // route to <a href="http://www.twitter.com/share?url=http://www.google.com/>Tweet</a>
-                    window.open(
-                      "https://twitter.com/intent/tweet?text=I%20just%20minted%20a%20Toast%20on%20MintToast!%20Check%20it%20out%20at%20" +
-                        WEBSITE_URL +
-                        "%2Fevent%2F" +
-                        tokenId,
-                      "_blank"
-                    );
-                  }}
-                  text="Share on Twitter"
-                  icon={<TwitterIcon />}
-                />
-              </div>
             </div>
             <div className="flex w-full justify-start px-8"></div>
           </div>

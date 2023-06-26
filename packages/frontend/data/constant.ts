@@ -2,9 +2,16 @@ import { getEnvConfig } from "./utils/getEnvConfig";
 
 export const NETWORK_MODE = process.env.NEXT_PUBLIC_NETWORK_MODE || "testnet";
 
-export const TESTNET_API_ENDPOINT = "https://minttoast-testnet.netlify.app";
-export const MAINNET_API_ENDPOINT = "http://minttoast.xyz";
-export const LOCAL_API_ENDPOINT = "http://localhost:3000";
+export const TESTNET_SITE_URL = "https://minttoast-testnet.netlify.app";
+export const MAINNET_SITE_URL = "http://minttoast.xyz";
+export const LOCAL_SITE_URL = "http://localhost:3000/";
+
+export const TESTNET_API_ENDPOINT = "http://157.245.126.16:7000/api";
+export const MAINNET_API_ENDPOINT = "http://157.245.126.16:8000/api";
+export const LOCAL_API_ENDPOINT = "http://localhost:8001/api";
+
+export const TESTNET_CHAINID = 44787;
+export const MAINNET_CHAINID = 42220;
 
 export const LOCAL_FIREBASE_FUNCTION_ENDPOINT =
   "http://127.0.0.1:5001/mint-toast/us-central1";
@@ -29,11 +36,14 @@ export const TESTNET_CONTRACT_ADDRESS =
 export const MAINNET_CONTRACT_ADDRESS =
   "0x6145602B5AA5646f54cd551097C74A189839D326";
 
+export const SITE_URL = getEnvConfig().siteUrl;
 export const API_ENDPOINT = getEnvConfig().apiEndpoint;
 export const RPC_ENDPOINT = getEnvConfig().rpcEndpoint;
 export const TOASTMASTER_PK = getEnvConfig().toastMasterPK;
 export const CONTRACT_ADDRESS = getEnvConfig().contractAddress;
 export const GRAPHQL_API = getEnvConfig().graphqlApi;
+export const NETWORK_NAME = getEnvConfig().networkName;
+export const CHAINID = getEnvConfig().chainId;
 
 export const IPFS_PROJECT_ID = process.env.IPFS_PROJECT_ID;
 export const IPFS_API_KEY = process.env.IPFS_API_KEY;
@@ -48,56 +58,16 @@ export const WHITELISTED_ADDRESS = [
 export const CAPTCH_SITEKEY = process.env.NEXT_PUBLIC_CAPTCH_SITEKEY;
 export const CAPTCH_SECRETKEY = process.env.CAPTCH_SECRETKEY;
 
-export const createToastQREndpointMainnet =
-  "https://createtoastqr-gf4tpo3gda-uc.a.run.app";
-export const createToastQREndpointTestnet =
-  "https://createtoastqr-ehg6drsqxq-uc.a.run.app";
-export const createToastQREndpointLocal =
-  "http://localhost:5000/mint-toast/us-central1/createToastQR";
-
-export const createToastSecretEndpointMainnet =
-  "https://createtoastsecret-gf4tpo3gda-uc.a.run.app";
-export const createToastSecretEndpointTestnet =
-  "https://createtoastsecret-ehg6drsqxq-uc.a.run.app";
-export const createToastSecretEndpointLocal =
-  "http://localhost:5000/mint-toast/us-central1/createToastSecret";
-
-export const getAllEventUUIDEndpointMainnet =
-  "https://getalleventuuid-gf4tpo3gda-uc.a.run.app";
-export const getAllEventUUIDEndpointTestnet =
-  "https://getalleventuuid-ehg6drsqxq-uc.a.run.app";
-export const getAllEventUUIDEndpointLocal =
-  "http://localhost:5000/mint-toast/us-central1/getAllEventUUID";
-
-export const getEventIdEndpointMainnet =
-  "https://geteventid-gf4tpo3gda-uc.a.run.app";
-export const getEventIdEndpointTestnet =
-  "https://geteventid-ehg6drsqxq-uc.a.run.app";
-export const getEventIdEndpointLocal =
-  "http://localhost:5000/mint-toast/us-central1/getEventId";
-
-export const getOwnerEndpointMainnet =
-  "https://getowner-gf4tpo3gda-uc.a.run.app";
-export const getOwnerEndpointTestnet =
-  "https://getowner-ehg6drsqxq-uc.a.run.app";
-export const getOwnerEndpointLocal =
-  "http://localhost:5000/mint-toast/us-central1/getOwner";
-
-export const getSecretDataEndpointMainnet =
-  "https://getsecretdata-gf4tpo3gda-uc.a.run.app";
-export const getSecretDataEndpointTestnet =
-  "https://getsecretdata-ehg6drsqxq-uc.a.run.app";
-export const getSecretDataEndpointLocal =
-  "http://localhost:5000/mint-toast/us-central1/getSecretData";
-
-export const getUserCollectionEndpointMainnet =
-  "https://getusercollection-gf4tpo3gda-uc.a.run.app";
-export const getUserCollectionEndpointTestnet =
-  "https://getusercollection-ehg6drsqxq-uc.a.run.app";
-export const getUserCollectionEndpointLocal =
-  "http://localhost:5000/mint-toast/us-central1/getUserCollection";
-
-export const mintEndpointMainnet = "https://mint-gf4tpo3gda-uc.a.run.app";
-export const mintEndpointTestnet = "https://mint-ehg6drsqxq-uc.a.run.app";
-export const mintEndpointLocal =
-  "http://localhost:5000/mint-toast/us-central1/mint";
+export const createToastQREndpoint = API_ENDPOINT + "/create-toast-qr";
+export const createToastSecretEndpoint = API_ENDPOINT + "/create-toast-secret";
+export const getAllEventUUIDEndpoint = API_ENDPOINT + "/get-all-event-uuid";
+export const getEventIdEndpoint = API_ENDPOINT + "/get-event-id";
+export const getOwnerEndpoint = API_ENDPOINT + "/get-owner";
+export const getSecretDataEndpoint = API_ENDPOINT + "/get-secret-data";
+export const getUserCollectionEndpoint = API_ENDPOINT + "/get-user-collection";
+export const mintEndpoint = API_ENDPOINT + "/mint";
+export const registerTwitterEndpoint = API_ENDPOINT + "/register-twitter";
+export const revokeTwitterEndpoint = API_ENDPOINT + "/revoke-twitter";
+export const getAccountsFromTwitterHandleEndpoint =
+  API_ENDPOINT + "/get-accounts-from-twitter";
+export const checkSecretEndpoint = API_ENDPOINT + "/check-secret";

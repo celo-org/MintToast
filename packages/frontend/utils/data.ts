@@ -1,29 +1,16 @@
 import {
-  NETWORK_MODE,
-  createToastQREndpointLocal,
-  createToastQREndpointMainnet,
-  createToastQREndpointTestnet,
-  createToastSecretEndpointLocal,
-  createToastSecretEndpointMainnet,
-  createToastSecretEndpointTestnet,
-  getAllEventUUIDEndpointLocal,
-  getAllEventUUIDEndpointMainnet,
-  getAllEventUUIDEndpointTestnet,
-  getEventIdEndpointLocal,
-  getEventIdEndpointMainnet,
-  getEventIdEndpointTestnet,
-  getOwnerEndpointLocal,
-  getOwnerEndpointMainnet,
-  getOwnerEndpointTestnet,
-  getSecretDataEndpointLocal,
-  getSecretDataEndpointMainnet,
-  getSecretDataEndpointTestnet,
-  getUserCollectionEndpointLocal,
-  getUserCollectionEndpointMainnet,
-  getUserCollectionEndpointTestnet,
-  mintEndpointLocal,
-  mintEndpointMainnet,
-  mintEndpointTestnet,
+  checkSecretEndpoint,
+  createToastQREndpoint,
+  createToastSecretEndpoint,
+  getAccountsFromTwitterHandleEndpoint,
+  getAllEventUUIDEndpoint,
+  getEventIdEndpoint,
+  getOwnerEndpoint,
+  getSecretDataEndpoint,
+  getUserCollectionEndpoint,
+  mintEndpoint,
+  registerTwitterEndpoint,
+  revokeTwitterEndpoint,
 } from "@/data/constant";
 import { IPFSDataProps } from "./props";
 
@@ -74,50 +61,18 @@ const getAttr = (key: string, list: Array<any>) => {
 };
 
 export const getApiEndpoint = () => {
-  switch (NETWORK_MODE) {
-    case "mainnet":
-      return {
-        createToastQREndpoint: createToastQREndpointMainnet,
-        createToastSecretEndpoint: createToastSecretEndpointMainnet,
-        getAllEventUUIDEndpoint: getAllEventUUIDEndpointMainnet,
-        getEventIdEndpoint: getEventIdEndpointMainnet,
-        getOwnerEndpoint: getOwnerEndpointMainnet,
-        getSecretDataEndpoint: getSecretDataEndpointMainnet,
-        getUserCollectionEndpoint: getUserCollectionEndpointMainnet,
-        mintEndpoint: mintEndpointMainnet,
-      };
-    case "testnet":
-      return {
-        createToastQREndpoint: createToastQREndpointTestnet,
-        createToastSecretEndpoint: createToastSecretEndpointTestnet,
-        getAllEventUUIDEndpoint: getAllEventUUIDEndpointTestnet,
-        getEventIdEndpoint: getEventIdEndpointTestnet,
-        getOwnerEndpoint: getOwnerEndpointTestnet,
-        getSecretDataEndpoint: getSecretDataEndpointTestnet,
-        getUserCollectionEndpoint: getUserCollectionEndpointTestnet,
-        mintEndpoint: mintEndpointTestnet,
-      };
-    case "local":
-      return {
-        createToastQREndpoint: createToastQREndpointLocal,
-        createToastSecretEndpoint: createToastSecretEndpointLocal,
-        getAllEventUUIDEndpoint: getAllEventUUIDEndpointLocal,
-        getEventIdEndpoint: getEventIdEndpointLocal,
-        getOwnerEndpoint: getOwnerEndpointLocal,
-        getSecretDataEndpoint: getSecretDataEndpointLocal,
-        getUserCollectionEndpoint: getUserCollectionEndpointLocal,
-        mintEndpoint: mintEndpointLocal,
-      };
-    default:
-      return {
-        createToastQREndpoint: createToastQREndpointLocal,
-        createToastSecretEndpoint: createToastSecretEndpointLocal,
-        getAllEventUUIDEndpoint: getAllEventUUIDEndpointLocal,
-        getEventIdEndpoint: getEventIdEndpointLocal,
-        getOwnerEndpoint: getOwnerEndpointLocal,
-        getSecretDataEndpoint: getSecretDataEndpointLocal,
-        getUserCollectionEndpoint: getUserCollectionEndpointLocal,
-        mintEndpoint: mintEndpointLocal,
-      };
-  }
+  return {
+    createToastQREndpoint,
+    createToastSecretEndpoint,
+    getAllEventUUIDEndpoint,
+    getEventIdEndpoint,
+    getOwnerEndpoint,
+    getSecretDataEndpoint,
+    getUserCollectionEndpoint,
+    mintEndpoint,
+    revokeTwitterEndpoint,
+    registerTwitterEndpoint,
+    getAccountsFromTwitterHandleEndpoint,
+    checkSecretEndpoint,
+  };
 };

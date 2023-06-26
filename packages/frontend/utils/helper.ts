@@ -13,3 +13,7 @@ export const uploadImageToIpfs = async (file: File) => {
   const imageID = res.data.imageID;
   return imageID;
 };
+
+export const isEthereumAddress = (address: string) => {
+  return /^0x[a-fA-F0-9]{40}$/.test(address);
+};

@@ -1,8 +1,0 @@
-{
-  "projects": {
-    "default": "mint-toast",
-    "mainnet": "mint-toast-mainnet"
-  },
-  "targets": {},
-  "etags": {}
-}

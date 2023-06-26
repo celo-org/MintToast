@@ -1,3 +1,4 @@
+import { useConnectModal } from "@rainbow-me/rainbowkit";
 import Image from "next/image";
 import ConnectWallet from "../../public/images/connect-wallet.png";
 import PrimaryButton from "./PrimaryButton";
@@ -5,6 +6,8 @@ import PrimaryButton from "./PrimaryButton";
 type Props = {};
 
 function ConnectWalletMessage({}: Props) {
+  const { openConnectModal } = useConnectModal();
+
   return (
     <div className="flex flex-col justify-center items-center md:pt-0 pt-1 max-w-xl mx-auto">
       <Image
@@ -16,7 +19,9 @@ function ConnectWalletMessage({}: Props) {
         Please connect your wallet to see your collection
       </span>
       <PrimaryButton
-        onClick={() => {}}
+        onClick={() => {
+          if (openConnectModal) openConnectModal();
+        }}
         text="👾 Connect Wallet to get started"
       />
     </div>

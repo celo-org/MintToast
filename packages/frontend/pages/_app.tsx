@@ -26,6 +26,7 @@ import { Alfajores, Celo } from "@celo/rainbowkit-celo/chains";
 
 import { CAPTCH_SITEKEY } from "@/data/constant";
 import Head from "next/head";
+import { useRouter } from "next/router";
 import { GoogleReCaptchaProvider } from "react-google-recaptcha-v3";
 import Layout from "../components/Layout";
 
@@ -53,7 +54,7 @@ const connectors = connectorsForWallets([
 ]);
 
 const wagmiClient = createClient({
-  autoConnect: true,
+  autoConnect: false,
   connectors,
   provider,
 });
@@ -65,30 +66,24 @@ const roboto_mono = Roboto_Mono({
 });
 
 function App({ Component, pageProps }: AppProps) {
-  return (
-    <main className={roboto_mono.className}>
-      <NextNProgress
-        color="#FF84E2"
-        startPosition={0.3}
-        stopDelayMs={200}
-        height={3}
-        showOnShallow={true}
-      />
-      <Head>
-        <link
-          rel="icon"
-          href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍞</text></svg>"
+  const router = useRouter();
+  const getApp = () => {
+    return (
+      <main className={roboto_mono.className}>
+        <NextNProgress
+          color="#FF84E2"
+          startPosition={0.3}
+          stopDelayMs={200}
+          height={3}
+          showOnShallow={true}
         />
-      </Head>
-      <GoogleReCaptchaProvider
-        reCaptchaKey={CAPTCH_SITEKEY as string}
-        scriptProps={{
-          async: false,
-          defer: false,
-          appendTo: "head",
-          nonce: undefined,
-        }}
-      >
+        <Head>
+          <link
+            rel="icon"
+            href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍞</text></svg>"
+          />
+        </Head>
+
         <WagmiConfig client={wagmiClient}>
           <RainbowKitProvider chains={chains} coolMode={true}>
             <Layout>
@@ -108,9 +103,27 @@ function App({ Component, pageProps }: AppProps) {
             </Layout>
           </RainbowKitProvider>
         </WagmiConfig>
+      </main>
+    );
+  };
+
+  if (router.pathname.includes("/mint")) {
+    return (
+      <GoogleReCaptchaProvider
+        reCaptchaKey={CAPTCH_SITEKEY as string}
+        scriptProps={{
+          async: false,
+          defer: false,
+          appendTo: "head",
+          nonce: undefined,
+        }}
+      >
+        {getApp()}
       </GoogleReCaptchaProvider>
-    </main>
-  );
+    );
+  }
+
+  return <>{getApp()}</>;
 }
 
 export default App;

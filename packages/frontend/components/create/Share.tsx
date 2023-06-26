@@ -1,4 +1,4 @@
-import { API_ENDPOINT } from "@/data/constant";
+import { SITE_URL } from "@/data/constant";
 import { toast } from "react-toastify";
 import PrimaryButton from "../common/PrimaryButton";
 
@@ -7,7 +7,7 @@ type Props = {
 };
 
 function Share({ id }: Props) {
-  const url = API_ENDPOINT + "/mint/" + id;
+  const url = SITE_URL + "mint/" + id;
   return (
     <>
       <div className="flex flex-col justify-start items-start md:pt-2 pt-0 max-w-xl mx-auto">

@@ -1,20 +1,17 @@
-import InputField from "@/components/common/InputField";
-import PrimaryButton from "@/components/common/PrimaryButton";
+import MintLoading from "@/components/common/mint/MintLoading";
+import MintSuccess from "@/components/common/mint/MintSuccess";
+import MintView from "@/components/common/mint/MintView";
 import { getMintCollectionData } from "@/graphql/queries/getMintCollectionData";
-import { fetchImageUrl } from "@/utils/ipfs";
+import { ResolveMasa } from "@/utils/masa";
+import { getNetworkNameByChainId } from "@masa-finance/masa-sdk";
 import axios from "axios";
 import { doc, getDoc } from "firebase/firestore";
 import Head from "next/head";
-import Image from "next/image";
-import Link from "next/link";
 import { useRouter } from "next/router";
 import { useCallback, useEffect, useState } from "react";
-import Emoji from "react-emoji-render";
 import { useGoogleReCaptcha } from "react-google-recaptcha-v3";
 import { toast } from "react-toastify";
 import { useAccount } from "wagmi";
-import NewToastDropping from "../../public/images/NewToastDropping.png";
-import SuccessfulMinting from "../../public/images/SuccessfulMinting.png";
 import { formatIpfsData, getApiEndpoint } from "../../utils/data";
 import { database } from "../../utils/firebase";
 
@@ -52,28 +49,62 @@ const QRPage: React.FC<Props> = ({ tokenId, uriData, data, docId }) => {
   const { address: walletAddress, isConnected } = useAccount();
   const [address, setAddress] = useState<string>("");
   const [view, setView] = useState<View>(View.MINT);
+  const { connector } = useAccount();
 
   useEffect(() => {
     if (isConnected) {
       setAddress(walletAddress as string);
+    } else {
+      setAddress("");
     }
   }, [isConnected, walletAddress]);
 
   const handleSubmit = useCallback(async () => {
-    if (!executeRecaptcha) {
-      return;
-    }
+    try {
+      if (address) {
+        toast.loading("Minting your toast, please wait...");
+      }
+      var resolvedAddress: string = "";
+      if (address.length < 42 && !address.includes(".celo")) {
+        toast.error("Please enter a valid address!");
+        return;
+      }
 
-    executeRecaptcha("enquiryFormSubmit").then(async (token) => {
-      toast.loading("Minting your toast, please wait...");
-      try {
+      if (address.includes(".celo")) {
+        const signer = await connector?.getSigner();
+        let resolver = new ResolveMasa({
+          networkName: getNetworkNameByChainId(42220),
+          signer,
+        });
+        const { resolutions, errors } = await resolver?.resolve(address);
+        if (errors.length) {
+          console.log(errors);
+          toast.error("Something went wrong!");
+        } else {
+          if (resolutions.length) {
+            resolvedAddress = resolutions[0].address;
+          } else {
+            toast.error("No .celo name found!");
+          }
+        }
+      } else {
+        resolvedAddress = address;
+      }
+
+      if (!executeRecaptcha) {
+        return;
+      }
+      executeRecaptcha("enquiryFormSubmit").then(async (token) => {
+        console.log("token", token);
+        console.log("resolvedAddress", resolvedAddress);
         setView(View.MINTLOADING);
         var res = await axios.post(getApiEndpoint().mintEndpoint, {
           tokenId,
-          address,
+          address: resolvedAddress,
           token,
           docId,
         });
+        console.log("resres", res);
         if (res.data["success"]) {
           setAddress("");
           toast.dismiss();
@@ -87,15 +118,15 @@ const QRPage: React.FC<Props> = ({ tokenId, uriData, data, docId }) => {
           toast.dismiss();
           toast.error(res.data["error"]);
         }
-      } catch (e) {
-        toast.dismiss();
-        toast.error(e as string);
-        setView(View.MINT);
-      } finally {
-        setView(View.SUCCESS);
-      }
-    });
-  }, [address, docId, executeRecaptcha, router, tokenId]);
+      });
+    } catch (e) {
+      toast.dismiss();
+      toast.error(e as string);
+      setView(View.MINT);
+    } finally {
+      setView(View.SUCCESS);
+    }
+  }, [address, connector, docId, executeRecaptcha, router, tokenId]);
 
   return (
     <>
@@ -103,77 +134,16 @@ const QRPage: React.FC<Props> = ({ tokenId, uriData, data, docId }) => {
         <title>Mint Toast | Mint</title>
       </Head>
       {view === View.MINT && (
-        <div className="flex flex-col justify-center w-full mt-10 items-center">
-          <div className="md:w-[400px] w-full px-2 md:mx-0 mt-0 flex flex-col">
-            <InputField
-              label="What is your Address?"
-              value={address}
-              onChange={(e) => {
-                setAddress(e.target.value);
-              }}
-              placeholder="0x0..."
-              fieldName="address"
-            />
-
-            <div className="w-full flex justify-center mt-8">
-              <PrimaryButton
-                text="👉 Mint Toast"
-                onClick={() => {
-                  if (!address) {
-                    toast.error("Please enter an Address");
-                    return;
-                  } else handleSubmit();
-                }}
-              />
-            </div>
-          </div>
-          <span className="text-3xl font-bold mt-8 text-center">
-            {uriData?.name ?? ""}
-          </span>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            className="border-2 border-black w-[285px] h-[285px] mt-5"
-            src={fetchImageUrl(uriData?.imageHash ?? "")}
-            alt={uriData?.name + " Image"}
-          />
-
-          <span className="font-semibold mt-8">
-            {data?.currentSupply}/{uriData?.totalToastSupply ?? "0"}
-          </span>
-
-          <div className="md:w-[400px] w-full px-2 md:mx-0 mt-8 flex flex-col">
-            <div className="text-gray-500 whitespace-pre-wrap">
-              <Emoji>{uriData?.description ?? ""}</Emoji>
-            </div>
-            <Link
-              className="justify-self-start mt-10 text-green"
-              href={uriData?.websiteLink ?? "#"}
-              target={"_blank"}
-            >
-              🌐 {uriData?.websiteLink ?? ""}
-            </Link>
-          </div>
-        </div>
+        <MintView
+          currentSupply={data?.currentSupply}
+          account={address}
+          handleSubmit={handleSubmit}
+          setAddress={setAddress}
+          uriData={uriData}
+        />
       )}
-      {view == View.MINTLOADING && (
-        <div className="flex flex-col justify-center w-full mt-10 items-center">
-          <span className="text-2xl font-bold">
-            Your new Toast is about to drop
-          </span>
-          <Image src={NewToastDropping} alt="Loading" />
-        </div>
-      )}
-      {view == View.SUCCESS && (
-        <div className="flex flex-col justify-center w-full mt-10 items-center">
-          <span className="text-2xl font-bold mb-5">
-            You have successfully minted a new Toast!
-          </span>
-          <Image src={SuccessfulMinting} alt="Success" />
-          <span className="text-2xl font-bold mt-5">
-            Go to your collection to see it
-          </span>
-        </div>
-      )}
+      {view == View.MINTLOADING && <MintLoading />}
+      {view == View.SUCCESS && <MintSuccess />}
     </>
   );
 };
