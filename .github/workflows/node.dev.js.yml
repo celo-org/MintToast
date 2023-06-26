@@ -40,7 +40,7 @@ jobs:
           port: ${{ secrets.SSH_PORT }}
           script: |
             cd ~/MintToast/packages/server
-            git pull origin master
+            git pull origin main
             npm install
             npm run build
             pm2 restart node-app
