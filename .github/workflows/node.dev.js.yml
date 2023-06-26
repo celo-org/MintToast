@@ -5,7 +5,7 @@ name: Node.js CI
 
 on:
   push:
-    branches: [ "development" ]
+    branches: [ "main" ]
 
 jobs:
   build:
@@ -39,7 +39,7 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           port: ${{ secrets.SSH_PORT }}
           script: |
-            cd ~/MintToast-testnet/packages/server
+            cd ~/MintToast/packages/server
             git pull origin master
             npm install
             npm run build
