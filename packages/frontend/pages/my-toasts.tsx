@@ -38,6 +38,7 @@ export default function MyToast() {
   useEffect(() => {
     const fetchUserCollections = async () => {
       setView(View.Loading);
+      console.log('getApiEndpoint().getUserCollectionEndpoint', getApiEndpoint().getUserCollectionEndpoint)
       const res = await axios({
         method: "post",
         url: getApiEndpoint().getUserCollectionEndpoint,
@@ -56,6 +57,10 @@ export default function MyToast() {
             return res;
           })
         );
+        tempCollection.filter((n: any) => n)
+        var tempCollection = tempCollection.filter(function (el: any) {
+          return el != null;
+        });
         tempCollection.sort((a: any, b: any) => {
           return (
             parseInt(b.serie.creationTimestamp) -

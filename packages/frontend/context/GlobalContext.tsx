@@ -51,7 +51,7 @@ export function GlobalContextProvider({ children }: { children: ReactNode }) {
       }
     };
     if (address) {
-      getTwitterData();
+      // getTwitterData();
     }
   }, [address]);
 

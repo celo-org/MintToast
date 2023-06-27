@@ -55,8 +55,5 @@
   },
   "browser": {
     "net": false
-  },
-  "engines": {
-    "node": ">=16.20.0"
   }
 }
