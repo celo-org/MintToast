@@ -2,9 +2,9 @@
 import e from "express";
 import admin from "firebase-admin";
 import { Request } from "firebase-functions/v2/https";
-import { WHITELISTED_ADDRESS } from "../../data/constant";
 import { createToastObj } from "../../helper/create-helpers";
 import { verifySignature } from "../../utils/web3";
+import { isWhitelisted } from "./check-whitelist";
 
 export const config = {
   api: {
@@ -27,7 +27,8 @@ export default async function handler(req: Request, res: e.Response<Data>) {
   }
   try {
     const fields = req.body;
-    if (!WHITELISTED_ADDRESS.includes(fields.ownerAddress)) {
+    const addressWhitelisted = await isWhitelisted(db, fields.ownerAddress);
+    if (!addressWhitelisted) {
       res.status(401).json({ error: "Unauthorized" });
       return;
     }

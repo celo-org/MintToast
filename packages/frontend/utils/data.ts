@@ -13,6 +13,7 @@ import {
   registerTwitterEndpoint,
   revokeTwitterEndpoint,
 } from "@/data/constant";
+import { checkWhitelistEndpoint } from './../data/constant';
 import { IPFSDataProps } from "./props";
 
 export const formatIpfsData = (data: any): IPFSDataProps => {
@@ -76,5 +77,6 @@ export const getApiEndpoint = () => {
     getAccountsFromTwitterHandleEndpoint,
     checkSecretEndpoint,
     getTwitterFromAddressEndpoint,
+    checkWhitelistEndpoint,
   };
 };

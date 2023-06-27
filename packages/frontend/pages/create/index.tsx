@@ -1,6 +1,7 @@
 import ConnectWalletMessage from "@/components/common/ConnectWalletMessage";
+import Loading from "@/components/common/Loading";
 import PrimaryButton from "@/components/common/PrimaryButton";
-import { WHITELISTED_ADDRESS } from "@/data/constant";
+import { useGlobalContext } from "@/context/GlobalContext";
 import useMobileDetect from "@/hooks/useMobileDetect";
 import Head from "next/head";
 import Image from "next/image";
@@ -17,20 +18,23 @@ export default function Home() {
   const router = useRouter();
   const isMobile = useMobileDetect();
   const [isConnected, setIsConnected] = useState(false);
+  const { isWhitelited, checkingWhitelist } = useGlobalContext();
 
   useEffect(() => {
-    if (address) {
-      if (WHITELISTED_ADDRESS.includes(address.toLowerCase())) {
-        setCanCreate(true);
-      }
+    if (address && isWhitelited) {
+      setCanCreate(true);
     }
-  }, [address]);
+  }, [address, isWhitelited]);
 
   useEffect(() => {
     if (address) {
       setIsConnected(true);
     }
   }, [address]);
+
+  if (checkingWhitelist) {
+    return <Loading />;
+  }
 
   if (!isConnected) {
     return <ConnectWalletMessage />;

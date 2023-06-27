@@ -1,11 +1,12 @@
 /* eslint-disable @next/next/no-img-element */
 import DatePickerField from "@/components/common/DatePickerField";
 import InputField from "@/components/common/InputField";
+import Loading from "@/components/common/Loading";
 import PrimaryButton from "@/components/common/PrimaryButton";
 import TextArea from "@/components/common/TextField";
 import ImageView from "@/components/create/ImageView";
 import Share from "@/components/create/Share";
-import { WHITELISTED_ADDRESS } from "@/data/constant";
+import { useGlobalContext } from "@/context/GlobalContext";
 import { getApiEndpoint } from "@/utils/data";
 import { uploadImageToIpfs } from "@/utils/helper";
 import { View, formatDateFromString } from "@/utils/utils";
@@ -28,17 +29,16 @@ export default function New() {
   const [isConnected, setIsConnected] = useState(false);
   const [canCreate, setCanCreate] = useState(false);
   const [id, setId] = useState<string | null>(null);
+  const { isWhitelited, checkingWhitelist } = useGlobalContext();
 
   const { connector } = useAccount();
 
   useEffect(() => {
-    if (address) {
+    if (address && isWhitelited) {
       setIsConnected(true);
-      if (WHITELISTED_ADDRESS.includes(address.toLowerCase())) {
-        setCanCreate(true);
-      }
+      setCanCreate(true);
     }
-  }, [address]);
+  }, [address, isWhitelited]);
 
   const handleImageUpload = (e: any) => {
     const file = e.target.files[0];
@@ -132,6 +132,10 @@ export default function New() {
       }
     },
   });
+
+  if (checkingWhitelist) {
+    return <Loading />;
+  }
 
   if (!isConnected) {
     return (

@@ -1,11 +1,12 @@
 /* eslint-disable @next/next/no-img-element */
 import DatePickerField from "@/components/common/DatePickerField";
 import InputField from "@/components/common/InputField";
+import Loading from "@/components/common/Loading";
 import PrimaryButton from "@/components/common/PrimaryButton";
 import SecretImageView from "@/components/common/SecretImageView";
 import TextArea from "@/components/common/TextField";
 import SecretShare from "@/components/create/SecretShare";
-import { WHITELISTED_ADDRESS } from "@/data/constant";
+import { useGlobalContext } from "@/context/GlobalContext";
 import { getApiEndpoint } from "@/utils/data";
 import { uploadImageToIpfs } from "@/utils/helper";
 import { View, formatDateFromString } from "@/utils/utils";
@@ -30,15 +31,14 @@ export default function New() {
   const [otp, setOtp] = useState("");
   const [secretCheckLoading, setSecretCheckLoading] = useState(false);
   const { connector } = useAccount();
+  const { isWhitelited, checkingWhitelist } = useGlobalContext();
 
   useEffect(() => {
-    if (address) {
+    if (address && isWhitelited) {
       setIsConnected(true);
-      if (WHITELISTED_ADDRESS.includes(address.toLowerCase())) {
-        setCanCreate(true);
-      }
+      setCanCreate(true);
     }
-  }, [address]);
+  }, [address, isWhitelited]);
 
   const handleImageUpload = (e: any) => {
     const file = e.target.files[0];
@@ -154,6 +154,10 @@ export default function New() {
       setSecretCheckLoading(false);
     }
   };
+
+  if (checkingWhitelist) {
+    return <Loading />;
+  }
 
   if (!isConnected) {
     return (

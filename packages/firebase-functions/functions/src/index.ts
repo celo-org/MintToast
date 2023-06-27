@@ -1,5 +1,6 @@
 import * as cors from "cors";
 import { onRequest } from "firebase-functions/v2/https";
+import checkWhitelistHandler from "./api/check-whitelist";
 import createToastQRHandler from "./api/create-toast-qr";
 import createToastSecretHandler from "./api/create-toast-secret";
 import getAllEventUUIDHandler from "./api/get-all-event-uuid";
@@ -43,6 +44,10 @@ export const getSecretData = onRequest((req, res) =>
 );
 export const getUserCollection = onRequest((req, res) =>
   corsHandler(req, res, () => getUserCollectionHandler(req, res))
+);
+
+export const checkWhitelist = onRequest((req, res) =>
+  corsHandler(req, res, () => checkWhitelistHandler(req, res))
 );
 
 // export const registerTwitter = onRequest(

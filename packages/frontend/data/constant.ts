@@ -71,3 +71,4 @@ export const registerTwitterEndpoint = NETWORK_MODE == "local" ? "" : "https://r
 export const getAccountsFromTwitterHandleEndpoint = NETWORK_MODE == "local" ? "" : "https://getaccountsfromtwitterhandle" + API_ENDPOINT;
 export const checkSecretEndpoint = NETWORK_MODE == "local" ? "" : "https://checksecret" + API_ENDPOINT;
 export const getTwitterFromAddressEndpoint = NETWORK_MODE == "local" ? "" : "https://" + API_ENDPOINT;
+export const checkWhitelistEndpoint = NETWORK_MODE == "local" ? "" : "https://checkwhitelist" + API_ENDPOINT;

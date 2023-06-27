@@ -20,12 +20,16 @@ interface TwitterDataProp {
 
 interface GlobalContextProp {
   twitterData?: TwitterDataProp;
+  isWhitelited?: boolean;
+  checkingWhitelist?: boolean;
 }
 
 const GlobalContext = createContext<GlobalContextProp | undefined>(undefined);
 
 export function GlobalContextProvider({ children }: { children: ReactNode }) {
   const [twitter, setTwitter] = useState<TwitterDataProp>();
+  const [isWhitelited, setIsWhitelisted] = useState<boolean>(false);
+  const [checkingWhitelist, setCheckingWhitelist] = useState<boolean>(true);
   const { address } = useAccount();
 
   useEffect(() => {
@@ -50,8 +54,30 @@ export function GlobalContextProvider({ children }: { children: ReactNode }) {
         setTwitter(undefined);
       }
     };
+    const checkWhitelisted = async () => {
+      try {
+        setCheckingWhitelist(true);
+        const res = await axios({
+          method: "POST",
+          url: getApiEndpoint().checkWhitelistEndpoint,
+          data: {
+            address,
+          },
+        });
+        if (res.data.success) {
+          setIsWhitelisted(true);
+        } else {
+          setIsWhitelisted(false);
+        }
+      } catch (err: any) {
+        setIsWhitelisted(false);
+      } finally {
+        setCheckingWhitelist(false);
+      }
+    };
     if (address) {
       // getTwitterData();
+      checkWhitelisted();
     }
   }, [address]);
 
@@ -59,6 +85,8 @@ export function GlobalContextProvider({ children }: { children: ReactNode }) {
     <GlobalContext.Provider
       value={{
         twitterData: twitter,
+        isWhitelited: isWhitelited,
+        checkingWhitelist,
       }}
     >
       {children}
