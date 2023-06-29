@@ -2,8 +2,6 @@ import MintLoading from "@/components/common/mint/MintLoading";
 import MintSuccess from "@/components/common/mint/MintSuccess";
 import MintView from "@/components/common/mint/MintView";
 import { getMintCollectionData } from "@/graphql/queries/getMintCollectionData";
-import { ResolveMasa } from "@/utils/masa";
-import { getNetworkNameByChainId } from "@masa-finance/masa-sdk";
 import axios from "axios";
 import { doc, getDoc } from "firebase/firestore";
 import Head from "next/head";
@@ -71,22 +69,23 @@ const QRPage: React.FC<Props> = ({ tokenId, uriData, data, docId }) => {
       }
 
       if (address.includes(".celo")) {
-        const signer = await connector?.getSigner();
-        let resolver = new ResolveMasa({
-          networkName: getNetworkNameByChainId(42220),
-          signer,
-        });
-        const { resolutions, errors } = await resolver?.resolve(address);
-        if (errors.length) {
-          console.log(errors);
-          toast.error("Something went wrong!");
-        } else {
-          if (resolutions.length) {
-            resolvedAddress = resolutions[0].address;
-          } else {
-            toast.error("No .celo name found!");
-          }
-        }
+        // const signer = await connector?.getWalletClient();
+        // let resolver = new ResolveMasa({
+        //   networkName: getNetworkNameByChainId(42220),
+        //   signer,
+        // });
+        // const { resolutions, errors } = await resolver?.resolve(address);
+        // if (errors.length) {
+        //   console.log(errors);
+        //   toast.error("Something went wrong!");
+        // } else {
+        //   if (resolutions.length) {
+        //     resolvedAddress = resolutions[0].address;
+        //   } else {
+        //     toast.error("No .celo name found!");
+        //   }
+        // }
+        resolvedAddress = address;
       } else {
         resolvedAddress = address;
       }
@@ -104,7 +103,6 @@ const QRPage: React.FC<Props> = ({ tokenId, uriData, data, docId }) => {
           token,
           docId,
         });
-        console.log("resres", res);
         if (res.data["success"]) {
           setAddress("");
           toast.dismiss();
@@ -126,7 +124,7 @@ const QRPage: React.FC<Props> = ({ tokenId, uriData, data, docId }) => {
     } finally {
       setView(View.SUCCESS);
     }
-  }, [address, connector, docId, executeRecaptcha, router, tokenId]);
+  }, [address, docId, executeRecaptcha, router, tokenId]);
 
   return (
     <>

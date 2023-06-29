@@ -105,8 +105,10 @@ export default function New() {
           imageID,
         };
 
-        const signer = await connector?.getSigner();
-        const signature = await signer?.signMessage(JSON.stringify(reqObj));
+        const signer = await connector?.getWalletClient();
+        const signature = await signer?.signMessage({
+          message: JSON.stringify(reqObj)
+        });
 
         var firebaseRes = await axios({
           method: "post",

@@ -5,8 +5,6 @@ import MintView from "@/components/common/mint/MintView";
 import { getMintCollectionData } from "@/graphql/queries/getMintCollectionData";
 import { formatIpfsData, getApiEndpoint } from "@/utils/data";
 import { isEthereumAddress } from "@/utils/helper";
-import { ResolveMasa } from "@/utils/masa";
-import { getNetworkNameByChainId } from "@masa-finance/masa-sdk";
 import axios from "axios";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -97,35 +95,36 @@ const Secret: React.FC<Props> = ({}) => {
       }
 
       if (address.includes(".celo")) {
-        const signer = await connector?.getSigner();
-        if (!signer) {
-          console.log("HERE");
-          toast.dismiss();
-          toast.error("Please connect wallet to mint!");
-          return;
-        }
-        try {
-          let resolver = new ResolveMasa({
-            networkName: getNetworkNameByChainId(42220),
-            signer,
-          });
+        // const signer = await connector?.getSigner();
+        // if (!signer) {
+        //   console.log("HERE");
+        //   toast.dismiss();
+        //   toast.error("Please connect wallet to mint!");
+        //   return;
+        // }
+        // try {
+        //   let resolver = new ResolveMasa({
+        //     networkName: getNetworkNameByChainId(42220),
+        //     signer,
+        //   });
 
-          const { resolutions, errors } = await resolver?.resolve(
-            address.split(".celo")[0]
-          );
-          if (errors.length) {
-            toast.error("Something went wrong!");
-          } else {
-            if (resolutions.length) {
-              resolvedAddress = resolutions[0].address;
-              console.log("resolutions[0].address", resolutions[0].address);
-            } else {
-              toast.error("No .celo name found!");
-            }
-          }
-        } catch (e) {
-          return;
-        }
+        //   const { resolutions, errors } = await resolver?.resolve(
+        //     address.split(".celo")[0]
+        //   );
+        //   if (errors.length) {
+        //     toast.error("Something went wrong!");
+        //   } else {
+        //     if (resolutions.length) {
+        //       resolvedAddress = resolutions[0].address;
+        //       console.log("resolutions[0].address", resolutions[0].address);
+        //     } else {
+        //       toast.error("No .celo name found!");
+        //     }
+        //   }
+        // } catch (e) {
+        //   return;
+        // }
+        resolvedAddress = address;
       } else {
         resolvedAddress = address;
       }
@@ -169,15 +168,7 @@ const Secret: React.FC<Props> = ({}) => {
     } else {
       toast.error("Please enter a valid address!");
     }
-  }, [
-    address,
-    connector,
-    data.docId,
-    data.tokenId,
-    executeRecaptcha,
-    otp,
-    router,
-  ]);
+  }, [address, data.docId, data.tokenId, executeRecaptcha, otp, router]);
 
   return (
     <div className="mt-10">
