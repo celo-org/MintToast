@@ -7,7 +7,7 @@ type Props = {
 };
 
 function Share({ id }: Props) {
-  const url = SITE_URL + "mint/" + id;
+  const url = SITE_URL + "/mint/" + id;
   return (
     <>
       <div className="flex flex-col justify-start items-start md:pt-2 pt-0 max-w-xl mx-auto">
