@@ -54,12 +54,12 @@ function MintView({
 
       <div className="md:w-[400px] px-4 md:px-0 w-full flex flex-col mt-10">
         <InputField
-          label="Paste your address or your .celo name to mint this Toast "
+          label="Paste your address"
           value={account}
           onChange={(e) => {
             setAddress(e.target.value);
           }}
-          placeholder="0x0... or .celo name"
+          placeholder="0x0..."
           fieldName="address"
         />
 
