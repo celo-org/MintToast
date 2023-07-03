@@ -1,13 +1,12 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import e from "express";
-import admin from "firebase-admin";
 import { Request } from "firebase-functions/v2/https";
 import { TwitterApi } from "twitter-api-v2";
 import { TWITTER_API_KEY, TWITTER_API_SECRET } from "../../data/constant";
 import { registerIdentifier } from "../../utils/odis";
 
 export default async function handler(req: Request, res: e.Response) {
-  const db = admin.firestore();
+  // const db = admin.firestore();
   res.setHeader("Access-Control-Allow-Origin", "*");
   if (req.method !== "POST") {
     res.status(405).json({ error: "Method Not Allowed" });
@@ -15,6 +14,10 @@ export default async function handler(req: Request, res: e.Response) {
   }
   try {
     const { accessToken, secret, address } = req.body;
+    console.log(
+      "🚀 ~ file: register-twitter.ts:18 ~ handler ~ address:",
+      address
+    );
 
     const client = new TwitterApi({
       appKey: TWITTER_API_KEY ?? "",
@@ -29,6 +32,11 @@ export default async function handler(req: Request, res: e.Response) {
       profile_image_url_https: profileImageUrlHttps,
       name,
     } = result;
+    console.log("🚀 ~ file: register-twitter.ts:33 ~ handler ~ name:", name);
+    console.log(
+      "🚀 ~ file: register-twitter.ts:33 ~ handler ~ profileImageUrlHttps:",
+      profileImageUrlHttps
+    );
 
     const receipt = await registerIdentifier(screenName, address);
     if (!receipt) {
@@ -36,13 +44,13 @@ export default async function handler(req: Request, res: e.Response) {
       return;
     }
 
-    await db.collection("odis").doc(address).set({
-      username: screenName,
-      timestamp: admin.firestore.FieldValue.serverTimestamp(),
-      address,
-      profileImageUrlHttps,
-      name,
-    });
+    // await db.collection("odis").doc(address).set({
+    //   username: screenName,
+    //   timestamp: admin.firestore.FieldValue.serverTimestamp(),
+    //   address,
+    //   profileImageUrlHttps,
+    //   name,
+    // });
 
     res.status(200).json({ success: true });
   } catch (error: any) {

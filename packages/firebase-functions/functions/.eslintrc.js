@@ -31,5 +31,7 @@ module.exports = {
     "require-jsdoc": 0,
     // allow any type
     "@typescript-eslint/no-explicit-any": 0,
+    // disable max-len
+    "max-len": 0,
   },
 };
