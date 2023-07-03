@@ -116,7 +116,7 @@ export default function Home() {
                     </span>
                   </Link>
                   <span className="text-sm text-gray-400 mt-4">
-                    • Upto 420 mints per collection
+                    • Up to 420 mints per collection
                   </span>
                   <span className="text-sm text-gray-400">• Free</span>
                 </div>
