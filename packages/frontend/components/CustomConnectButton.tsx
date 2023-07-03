@@ -45,8 +45,9 @@ export const CustomConnectButton = () => {
   const [twitterIntegrationData, setTwitterIntegrationData] = useState<
     TwitterIntegrationDataProp | undefined
   >();
-  const { twitterData, resolveMasaFromAddress } = useGlobalContext();
   const { address } = useAccount();
+  const { twitterData, resolveMasaFromAddress, totalMintsCount } =
+    useGlobalContext();
   const [masaName, setMasaName] = useState<string[] | undefined>();
 
   const handleTwitterAuth = async () => {
@@ -283,7 +284,7 @@ export const CustomConnectButton = () => {
                               </div>
                               <div className="flex flex-row space-x-3 justify-end items-center">
                                 <span className="text-xl font-bold">
-                                  26 Toasts
+                                  {totalMintsCount} Toasts
                                 </span>
                               </div>
                             </div>

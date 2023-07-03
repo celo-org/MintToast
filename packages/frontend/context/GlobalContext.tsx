@@ -1,5 +1,7 @@
 // contexts/GlobalContext.tsx
 
+import { getHistoricalTotalMints } from "@/graphql/queries/getHistoricalTotalMints";
+import { getTotalMints } from "@/graphql/queries/getTotalMints";
 import { getApiEndpoint, MASA_CDN_ADDRESS } from "@/utils/data";
 import { MASA_CDN_ABI } from "@/utils/masa-cdn-abi";
 import axios from "axios";
@@ -10,7 +12,7 @@ import {
   useEffect,
   useState,
 } from "react";
-import { readContracts, useAccount, useWalletClient } from "wagmi";
+import { readContracts, useAccount } from "wagmi";
 
 interface TwitterDataProp {
   username: string;
@@ -23,6 +25,8 @@ interface GlobalContextProp {
   twitterData?: TwitterDataProp;
   isWhitelited?: boolean;
   checkingWhitelist?: boolean;
+  totalMintsCount: number;
+  totalHisttoricalMintsCount: number;
   resolveMasaFromName: (
     userAddedAddress: string
   ) => Promise<"" | `0x${string}` | undefined | string>;
@@ -35,8 +39,10 @@ export function GlobalContextProvider({ children }: { children: ReactNode }) {
   const [twitter, setTwitter] = useState<TwitterDataProp>();
   const [isWhitelited, setIsWhitelisted] = useState<boolean>(false);
   const [checkingWhitelist, setCheckingWhitelist] = useState<boolean>(true);
-  const { address, connector } = useAccount();
-  const { data: walletClient } = useWalletClient();
+  const [totalMintsCount, setTotalMintsCount] = useState<number>(0);
+  const [totalHisttoricalMintsCount, setTotalHistoricalMintsCount] =
+    useState<number>(0);
+  const { address } = useAccount();
 
   useEffect(() => {
     const getTwitterData = async () => {
@@ -81,9 +87,24 @@ export function GlobalContextProvider({ children }: { children: ReactNode }) {
         setCheckingWhitelist(false);
       }
     };
+
+    const getTotalMintsCount = async () => {
+      const mints = await getTotalMints(
+        (address as string).toLocaleLowerCase()
+      );
+      if (mints) {
+        setTotalMintsCount(mints);
+      }
+      const historicalMints = await getHistoricalTotalMints();
+      if (historicalMints) {
+        setTotalHistoricalMintsCount(historicalMints);
+      }
+    };
+
     if (address) {
       // getTwitterData();
       checkWhitelisted();
+      getTotalMintsCount();
     }
   }, [address]);
 
@@ -109,7 +130,6 @@ export function GlobalContextProvider({ children }: { children: ReactNode }) {
           },
         ],
       });
-      console.log("owner", owner);
       if (owner) {
         return owner[0].result as any;
       } else {
@@ -144,6 +164,8 @@ export function GlobalContextProvider({ children }: { children: ReactNode }) {
         twitterData: twitter,
         isWhitelited: isWhitelited,
         checkingWhitelist,
+        totalMintsCount,
+        totalHisttoricalMintsCount,
         resolveMasaFromName,
         resolveMasaFromAddress,
       }}

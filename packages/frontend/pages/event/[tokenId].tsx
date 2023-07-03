@@ -33,7 +33,6 @@ const UserAddress = ({ fullAddress }: { fullAddress: string }) => {
   useEffect(() => {
     const getMasaName = async () => {
       const names = await resolveMasaFromAddress(fullAddress);
-      console.log("names", names);
       if (names.length > 0) {
         setMasaName(names);
       }

@@ -105,9 +105,7 @@ export default function Home() {
           <div className="mt-10 mx-4">
             <PrimaryButton
               text={`🤔 ${
-                isMobile
-                  ? "FAQ"
-                  : "gm? Toast? Toastmaster? Help me, I am toasted"
+                isMobile ? "FAQ" : "gm? Toast? Help me, I am toasted"
               } `}
               varient="secondary"
               fullWidth={isMobile}

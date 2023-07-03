@@ -1,3 +1,6 @@
+import { useGlobalContext } from "@/context/GlobalContext";
+import useMobileDetect from "@/hooks/useMobileDetect";
+
 type Props = {
   className?: string;
 };
@@ -28,11 +31,18 @@ const navigation = [
 ];
 
 export default function Footer() {
+  const { totalHisttoricalMintsCount } = useGlobalContext();
+  const isMobile = useMobileDetect();
+  console.log("🚀 ~ file: Footer.tsx:36 ~ Footer ~ isMobile:", isMobile);
   return (
     <footer className="mt-auto border-black border-t-2 bg-white mb-14 md:mb-0">
-      <div className="mx-auto max-w-7xl py-6 px-4 flex items-center justify-center">
-        <p className="text-center text-base text-black font-bold">
+      <div className=" py-6 px-4 flex items-center justify-between">
+        {!isMobile && <div></div>}
+        <p className="text-center text-xs md:text-base text-black font-bold">
           Toasting on Celo
+        </p>
+        <p className="text-center text-xs md:text-base text-black font-bold">
+          {totalHisttoricalMintsCount} TOASTS Given 🍞
         </p>
       </div>
     </footer>
