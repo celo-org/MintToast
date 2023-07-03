@@ -125,12 +125,12 @@ export const CustomConnectButton = () => {
     return (
       <div className="flex flex-row justify-between items-center border-b-2 border-black py-0 md:py-3 pr-3">
         <div className="flex flex-col items-start px-4 py-3 ">
-          <div className="text-sm mb-1 block md:hidden">Accounts</div>
-          <div className="flex flex-col justify-end items-start text-xl md:text-base font-bold md:font-normal">
+          <div className="text-xs mb-1 block md:hidden">Accounts</div>
+          <div className="flex flex-col justify-end items-start text-lg md:text-base font-bold md:font-normal">
             <div>👾 {account.displayName}</div>
             {twitterUsername && <div className="">@{twitterUsername}</div>}
             {masaName && (
-              <div className="text-sm">
+              <div className="text-xs">
                 {/* // only show first 3 masa names */}
                 {masaName.slice(0, 3).map((name) => (
                   <div key={name}>{name}.celo</div>
@@ -259,7 +259,7 @@ export const CustomConnectButton = () => {
                             )}
 
                             <div className="flex flex-col items-start px-4 py-3 border-b-2 border-black">
-                              <div className="text-sm mb-1">Network</div>
+                              <div className="text-xs mb-1">Network</div>
                               <div className="flex flex-row space-x-3 justify-end items-center">
                                 <Image
                                   src="https://images.ctfassets.net/wr0no19kwov9/1kUyahp0Q6X7T9sVXZ16Ho/d553a9dd0e18fac0f14c8bf8b789a303/brand-kit-symbol-image-01.png?fm=webp&w=3840&q=70"
@@ -267,23 +267,23 @@ export const CustomConnectButton = () => {
                                   width={25}
                                   height={25}
                                 />
-                                <span className="text-xl font-bold">Celo</span>
+                                <span className="text-lg font-bold">Celo</span>
                               </div>
                             </div>
                             <div className="flex flex-col items-start px-4 py-3 border-b-2 border-black">
-                              <div className="text-sm mb-1">Balance</div>
+                              <div className="text-xs mb-1">Balance</div>
                               <div className="flex flex-row space-x-3 justify-end items-center">
-                                <span className="text-xl font-bold">
+                                <span className="text-lg font-bold">
                                   {account.displayBalance} CELO
                                 </span>
                               </div>
                             </div>
                             <div className="flex flex-col items-start px-4 py-3 border-b-2 border-black">
-                              <div className="text-sm mb-1">
+                              <div className="text-xs mb-1">
                                 MintToast Balance
                               </div>
                               <div className="flex flex-row space-x-3 justify-end items-center">
-                                <span className="text-xl font-bold">
+                                <span className="text-lg font-bold">
                                   {totalMintsCount} Toasts
                                 </span>
                               </div>
