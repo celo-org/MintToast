@@ -22,7 +22,7 @@
 .front-card {
   will-change: transform ;
   transition: transform 600ms cubic-bezier(.3, .7, .4, 1);;
-  transform: translateY(-1px) translateX(-1px);
+  transform: translateY(-4px) translateX(-4px);
 }
 
 

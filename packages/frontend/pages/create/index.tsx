@@ -74,7 +74,7 @@ export default function Home() {
         <div className="flex flex-col items-center justify-start w-full mt-6">
           {isMobile ? (
             <>
-              <div className="flex flex-col">
+              <div className="flex flex-col w-full">
                 <PrimaryButton
                   onClick={() => {
                     router.push("/create/secret");
@@ -87,7 +87,7 @@ export default function Home() {
                   420 mints max. Free
                 </div>
               </div>
-              <div className="flex flex-col mt-8">
+              <div className="flex flex-col mt-8 w-full">
                 <PrimaryButton
                   onClick={() => {
                     router.push("/create/qr");
