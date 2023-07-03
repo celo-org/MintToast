@@ -24,7 +24,6 @@ import { GoogleReCaptchaProvider } from "react-google-recaptcha-v3";
 import Layout from "../components/Layout";
 
 const projectId = process.env.NEXT_PUBLIC_WC_PROJECT_ID as string;
-console.log("projectId", projectId);
 const { chains, publicClient } = configureChains(
   [Alfajores, Celo, Cannoli],
   [

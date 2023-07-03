@@ -1,6 +1,7 @@
 // contexts/GlobalContext.tsx
 
-import { getApiEndpoint } from "@/utils/data";
+import { getApiEndpoint, MASA_CDN_ADDRESS } from "@/utils/data";
+import { MASA_CDN_ABI } from "@/utils/masa-cdn-abi";
 import axios from "axios";
 import {
   createContext,
@@ -9,7 +10,7 @@ import {
   useEffect,
   useState,
 } from "react";
-import { useAccount } from "wagmi";
+import { readContracts, useAccount, useWalletClient } from "wagmi";
 
 interface TwitterDataProp {
   username: string;
@@ -22,6 +23,10 @@ interface GlobalContextProp {
   twitterData?: TwitterDataProp;
   isWhitelited?: boolean;
   checkingWhitelist?: boolean;
+  resolveMasaFromName: (
+    userAddedAddress: string
+  ) => Promise<"" | `0x${string}` | undefined | string>;
+  resolveMasaFromAddress: (userAddedAddress: string) => Promise<any>;
 }
 
 const GlobalContext = createContext<GlobalContextProp | undefined>(undefined);
@@ -30,7 +35,8 @@ export function GlobalContextProvider({ children }: { children: ReactNode }) {
   const [twitter, setTwitter] = useState<TwitterDataProp>();
   const [isWhitelited, setIsWhitelisted] = useState<boolean>(false);
   const [checkingWhitelist, setCheckingWhitelist] = useState<boolean>(true);
-  const { address } = useAccount();
+  const { address, connector } = useAccount();
+  const { data: walletClient } = useWalletClient();
 
   useEffect(() => {
     const getTwitterData = async () => {
@@ -81,12 +87,65 @@ export function GlobalContextProvider({ children }: { children: ReactNode }) {
     }
   }, [address]);
 
+  const resolveMasaFromName = async (userAddedAddress: string) => {
+    const tokenId = await readContracts({
+      contracts: [
+        {
+          address: MASA_CDN_ADDRESS,
+          abi: MASA_CDN_ABI as any,
+          functionName: "getTokenId",
+          args: [userAddedAddress.replace(".celo", "")],
+        },
+      ],
+    });
+    if (tokenId) {
+      const owner = await readContracts({
+        contracts: [
+          {
+            address: MASA_CDN_ADDRESS,
+            abi: MASA_CDN_ABI as any,
+            functionName: "ownerOf",
+            args: [tokenId[0].result as any],
+          },
+        ],
+      });
+      console.log("owner", owner);
+      if (owner) {
+        return owner[0].result as any;
+      } else {
+        return undefined;
+      }
+    } else {
+      return undefined;
+    }
+  };
+
+  const resolveMasaFromAddress = async (userAddedAddress: string) => {
+    const soulNames = await readContracts({
+      contracts: [
+        {
+          address: MASA_CDN_ADDRESS,
+          abi: MASA_CDN_ABI as any,
+          functionName: "getSoulNames",
+          args: [userAddedAddress],
+        },
+      ],
+    });
+    if (soulNames) {
+      return soulNames[0].result as any;
+    } else {
+      return undefined;
+    }
+  };
+
   return (
     <GlobalContext.Provider
       value={{
         twitterData: twitter,
         isWhitelited: isWhitelited,
         checkingWhitelist,
+        resolveMasaFromName,
+        resolveMasaFromAddress,
       }}
     >
       {children}

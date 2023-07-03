@@ -12,7 +12,7 @@ import { ConnectButton } from "@rainbow-me/rainbowkit";
 import axios from "axios";
 import { TwitterAuthProvider, signInWithPopup } from "firebase/auth";
 import Image from "next/image";
-import { Fragment, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { useAccount } from "wagmi";
 import IconButton from "./common/IconButton";
@@ -45,8 +45,9 @@ export const CustomConnectButton = () => {
   const [twitterIntegrationData, setTwitterIntegrationData] = useState<
     TwitterIntegrationDataProp | undefined
   >();
-  const { twitterData } = useGlobalContext();
+  const { twitterData, resolveMasaFromAddress } = useGlobalContext();
   const { address } = useAccount();
+  const [masaName, setMasaName] = useState<string[] | undefined>();
 
   const handleTwitterAuth = async () => {
     setTwitterAuthLoading(true);
@@ -74,8 +75,17 @@ export const CustomConnectButton = () => {
     }
   };
 
+  useEffect(() => {
+    const getMasaName = async () => {
+      const names = await resolveMasaFromAddress(address as string);
+      setMasaName(names);
+    };
+    if (address) {
+      getMasaName();
+    }
+  }, [address, resolveMasaFromAddress]);
+
   const handleTwitterLink = async () => {
-    console.log("address", address);
     if (!twitterIntegrationData) {
       toast.error("Twitter data not found");
       return;
@@ -118,6 +128,20 @@ export const CustomConnectButton = () => {
           <div className="flex flex-col justify-end items-start text-xl md:text-base font-bold md:font-normal">
             <div>👾 {account.displayName}</div>
             {twitterUsername && <div className="">@{twitterUsername}</div>}
+            {masaName && (
+              <div className="text-sm">
+                {/* // only show first 3 masa names */}
+                {masaName.slice(0, 3).map((name) => (
+                  <div key={name}>{name}.celo</div>
+                ))}
+                {masaName.length > 3 && "..."}
+                {masaName.length > 0 && (
+                  <div className="text-xs text-gray-400">
+                    {masaName.length} MASA
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </div>
         <div className="md:flex flex-row space-x-2 hidden h-14">
@@ -249,7 +273,7 @@ export const CustomConnectButton = () => {
                               <div className="text-sm mb-1">Balance</div>
                               <div className="flex flex-row space-x-3 justify-end items-center">
                                 <span className="text-xl font-bold">
-                                  5.4 CELO
+                                  {account.displayBalance} CELO
                                 </span>
                               </div>
                             </div>

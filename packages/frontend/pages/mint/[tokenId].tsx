@@ -1,6 +1,7 @@
 import MintLoading from "@/components/common/mint/MintLoading";
 import MintSuccess from "@/components/common/mint/MintSuccess";
 import MintView from "@/components/common/mint/MintView";
+import { useGlobalContext } from "@/context/GlobalContext";
 import { getMintCollectionData } from "@/graphql/queries/getMintCollectionData";
 import axios from "axios";
 import { doc, getDoc } from "firebase/firestore";
@@ -47,7 +48,7 @@ const QRPage: React.FC<Props> = ({ tokenId, uriData, data, docId }) => {
   const { address: walletAddress, isConnected } = useAccount();
   const [address, setAddress] = useState<string>("");
   const [view, setView] = useState<View>(View.MINT);
-  const { connector } = useAccount();
+  const { resolveMasaFromName } = useGlobalContext();
 
   useEffect(() => {
     if (isConnected) {
@@ -62,30 +63,14 @@ const QRPage: React.FC<Props> = ({ tokenId, uriData, data, docId }) => {
       if (address) {
         toast.loading("Minting your toast, please wait...");
       }
-      var resolvedAddress: string = "";
+
       if (address.length < 42 && !address.includes(".celo")) {
         toast.error("Please enter a valid address!");
         return;
       }
-
+      let resolvedAddress = "";
       if (address.includes(".celo")) {
-        // const signer = await connector?.getWalletClient();
-        // let resolver = new ResolveMasa({
-        //   networkName: getNetworkNameByChainId(42220),
-        //   signer,
-        // });
-        // const { resolutions, errors } = await resolver?.resolve(address);
-        // if (errors.length) {
-        //   console.log(errors);
-        //   toast.error("Something went wrong!");
-        // } else {
-        //   if (resolutions.length) {
-        //     resolvedAddress = resolutions[0].address;
-        //   } else {
-        //     toast.error("No .celo name found!");
-        //   }
-        // }
-        resolvedAddress = address;
+        resolvedAddress = (await resolveMasaFromName(address)) as string;
       } else {
         resolvedAddress = address;
       }
@@ -94,8 +79,6 @@ const QRPage: React.FC<Props> = ({ tokenId, uriData, data, docId }) => {
         return;
       }
       executeRecaptcha("enquiryFormSubmit").then(async (token) => {
-        console.log("token", token);
-        console.log("resolvedAddress", resolvedAddress);
         setView(View.MINTLOADING);
         var res = await axios.post(getApiEndpoint().mintEndpoint, {
           tokenId,
@@ -161,6 +144,9 @@ export async function getServerSideProps({ params }: { params: any }) {
 
   const eventId = resultData!.eventId;
   const res = await getMintCollectionData(eventId as string);
+  if (!res) {
+    return { notFound: true };
+  }
   return {
     props: {
       tokenId: eventId,

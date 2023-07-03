@@ -13,7 +13,7 @@ import {
   registerTwitterEndpoint,
   revokeTwitterEndpoint,
 } from "@/data/constant";
-import { checkWhitelistEndpoint } from './../data/constant';
+import { checkWhitelistEndpoint } from "./../data/constant";
 import { IPFSDataProps } from "./props";
 
 export const formatIpfsData = (data: any): IPFSDataProps => {
@@ -61,6 +61,8 @@ const getAttr = (key: string, list: Array<any>) => {
     return null;
   }
 };
+
+export const MASA_CDN_ADDRESS = "0x376f5039Df4e9E9c864185d8FaBad4f04A7E394A";
 
 export const getApiEndpoint = () => {
   return {

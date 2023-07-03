@@ -1,6 +1,7 @@
 import Loading from "@/components/common/Loading";
 import PrimaryButton from "@/components/common/PrimaryButton";
 import QRCodeModal from "@/components/modals/QRCodeModal";
+import { useGlobalContext } from "@/context/GlobalContext";
 import { getMintCollectionData } from "@/graphql/queries/getMintCollectionData";
 import { formatIpfsData } from "@/utils/data";
 import { database } from "@/utils/firebase";
@@ -23,6 +24,36 @@ interface Props {
   ownerAddress: string;
   eventUUID: string;
 }
+
+const UserAddress = ({ fullAddress }: { fullAddress: string }) => {
+  const { resolveMasaFromAddress } = useGlobalContext();
+  const [masaName, setMasaName] = useState<string[] | undefined>();
+  const address =
+    fullAddress.substring(0, 4) + "..." + fullAddress.substring(38, 42);
+  useEffect(() => {
+    const getMasaName = async () => {
+      const names = await resolveMasaFromAddress(fullAddress);
+      console.log("names", names);
+      if (names.length > 0) {
+        setMasaName(names);
+      }
+    };
+    getMasaName();
+  }, [fullAddress, resolveMasaFromAddress]);
+
+  return (
+    <td>
+      <a
+        href={"https://celoscan.io/address/" + fullAddress}
+        target="_blank"
+        rel="noreferrer"
+      >
+        {masaName != undefined && masaName?.length > 0 && masaName[0] + ".celo"}
+        {masaName == undefined && address}
+      </a>
+    </td>
+  );
+};
 
 const EventPage: React.FC<Props> = ({
   tokenId,
@@ -118,12 +149,6 @@ const EventPage: React.FC<Props> = ({
               >
                 🌐 {uriData?.websiteLink ?? ""}
               </Link>
-              {/* <div className="text-black font-bold text-lg mt-8 ">
-                How to mint Toast?
-              </div>
-              <div className="text-gray-500">
-                Instructions coming soon. For now ask our Toast Masters.
-              </div> */}
               <Link
                 href={"https://celoscan.io/address/" + uriData?.createdBy ?? ""}
                 target={"_blank"}
@@ -165,18 +190,7 @@ const EventPage: React.FC<Props> = ({
                               className="h-8 text-center border-b border-black"
                             >
                               <td>#{item.idInSeries}</td>
-                              <td>
-                                <a
-                                  href={
-                                    "https://celoscan.io/address/" +
-                                    item.owner.id
-                                  }
-                                  target="_blank"
-                                  rel="noreferrer"
-                                >
-                                  {address}
-                                </a>
-                              </td>
+                              <UserAddress fullAddress={item.owner.id} />
                               <td>
                                 {formatTimestampToTimeElapsedForm(
                                   item.timestamp
