@@ -47,14 +47,20 @@ const Collections: React.FC<Props> = ({ address: userAddress, collection }) => {
       <Head>
         <title>Mint Toast | Collection</title>
       </Head>
-      <div className="flex flex-col justify-center items-center md:pt-20 pt-4 max-w-xl mx-auto">
+      <div className="flex flex-col justify-center items-center md:pt-20 pt-4 max-w-xl mx-auto w-full">
         <div className="flex flex-col justify-start w-full">
           {collection.length > 0 ? (
             <span className="px-5 text-lg font-bold">2023</span>
           ) : (
             <NoToast />
           )}
-          <div className="flex flex-row flex-wrap justify-evenly">
+          <div
+            className={`flex flex-row flex-wrap ${
+              collection.length < 3
+                ? "justify-start space-x-6"
+                : "justify-evenly"
+            } items-start`}
+          >
             {collection.map((item: any) => {
               return <CollectionItem event={item.serie} key={item.serie.id} />;
             })}

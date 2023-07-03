@@ -33,7 +33,6 @@ const navigation = [
 export default function Footer() {
   const { totalHisttoricalMintsCount } = useGlobalContext();
   const isMobile = useMobileDetect();
-  console.log("🚀 ~ file: Footer.tsx:36 ~ Footer ~ isMobile:", isMobile);
   return (
     <footer className="mt-auto border-black border-t-2 bg-white mb-14 md:mb-0">
       <div className=" py-6 px-4 flex items-center justify-between">
