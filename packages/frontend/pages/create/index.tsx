@@ -115,10 +115,14 @@ export default function Home() {
                       Secret
                     </span>
                   </Link>
-                  <span className="text-sm text-gray-400 mt-4">
-                    • Up to 420 mints per collection
-                  </span>
-                  <span className="text-sm text-gray-400">• Free</span>
+                  <div className="flex flex-row text-sm text-gray-400 mt-4">
+                    <span className="mr-2">•</span>
+                    <span className="">Up to 420 mints per collection</span>
+                  </div>
+                  <div className="flex flex-row text-sm text-gray-400 mt-1">
+                    <span className="mr-2">•</span>
+                    <span className="">Free</span>
+                  </div>
                 </div>
                 <div className="flex flex-col justify-start w-[170px]">
                   <Link
@@ -129,10 +133,14 @@ export default function Home() {
                       🔗 <br /> Link/QR
                     </span>
                   </Link>
-                  <span className="text-sm text-gray-400 mt-4">
-                    • Upto 420 mints per collection
-                  </span>
-                  <span className="text-sm text-gray-400">• Free</span>
+                  <div className="flex flex-row text-sm text-gray-400 mt-4">
+                    <span className="mr-2">•</span>
+                    <span className="">Up to 420 mints per collection</span>
+                  </div>
+                  <div className="flex flex-row text-sm text-gray-400 mt-1">
+                    <span className="mr-2">•</span>
+                    <span className="">Free</span>
+                  </div>
                 </div>
               </div>
             </>
