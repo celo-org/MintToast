@@ -14,10 +14,6 @@ export default async function handler(req: Request, res: e.Response) {
   }
   try {
     const { accessToken, secret, address } = req.body;
-    console.log(
-      "🚀 ~ file: register-twitter.ts:18 ~ handler ~ address:",
-      address
-    );
 
     const client = new TwitterApi({
       appKey: TWITTER_API_KEY ?? "",
@@ -32,15 +28,6 @@ export default async function handler(req: Request, res: e.Response) {
       profile_image_url_https: profileImageUrlHttps,
       name,
     } = result;
-    console.log(
-      "🚀 ~ file: register-twitter.ts:35 ~ handler ~ profileImageUrlHttps:",
-      profileImageUrlHttps
-    );
-    console.log("🚀 ~ file: register-twitter.ts:35 ~ handler ~ name:", name);
-    console.log(
-      "🚀 ~ file: register-twitter.ts:35 ~ handler ~ screenName:",
-      screenName
-    );
 
     const receipt = await registerIdentifier(screenName, address);
     if (!receipt) {

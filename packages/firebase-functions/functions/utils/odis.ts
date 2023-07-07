@@ -124,24 +124,18 @@ export const registerIdentifier = async (
   twitterHandle: string,
   address: string
 ) => {
-  console.log("🚀 ~ file: odis.ts:128 ~ address:", address);
   const accounts: string[] = await getAccountsFromTwitterHandle(twitterHandle);
-  console.log("🚀 ~ file: odis.ts:129 ~ accounts:", accounts);
   if (accounts.includes(address)) {
     throw new Error("Identifier already registered");
   }
-  console.log("1");
   const identifier = await getIdentifier(twitterHandle);
-  console.log("2");
   const tx = await federatedAttestationsContract.registerAttestationAsIssuer(
     identifier,
     address,
     NOW_TIMESTAMP
   );
 
-  console.log("3");
   const receipt = await tx.wait();
-  console.log("4");
   return receipt;
 };
 

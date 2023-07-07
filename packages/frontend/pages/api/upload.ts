@@ -34,7 +34,6 @@ export default async function handler(
           return;
         }
         const imageID = await uploadImage(files.image as formidable.File);
-        console.log("imageID", imageID);
         res.status(200).json({ success: true, imageID });
         resolve();
       });

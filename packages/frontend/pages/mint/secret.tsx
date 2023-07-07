@@ -81,7 +81,6 @@ const Secret: React.FC<Props> = ({}) => {
     if (address) {
       toast.loading("Minting your toast, please wait...");
       var resolvedAddress: string = "";
-      console.log("address", address);
       if (address.length != 42) {
         if (!address.includes(".celo")) {
           toast.error("Please enter a valid address!");

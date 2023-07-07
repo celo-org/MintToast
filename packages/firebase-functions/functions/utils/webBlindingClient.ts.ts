@@ -17,7 +17,6 @@ export class WebBlsBlindingClient implements BlsBlindingClient {
   }
 
   async init(path: string) {
-    console.log("HERE");
     await thresholdBls.init(path);
   }
 

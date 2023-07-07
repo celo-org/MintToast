@@ -355,24 +355,6 @@ export const CustomConnectButton = () => {
                                     onClick={async () => {
                                       if (!twitterAuthLoading) {
                                         await handleTwitterAuth();
-                                        console.log(
-                                          "twitterData?.address == account.address",
-                                          twitterData?.address ==
-                                            account.address
-                                        );
-                                        console.log(
-                                          "twitterData.username == twitterIntegrationData?.username",
-                                          twitterData.username ==
-                                            twitterIntegrationData?.username
-                                        );
-                                        console.log(
-                                          "🚀 ~ file: CustomConnectButton.tsx:365 ~ onClick={ ~ twitterIntegrationData?.username:",
-                                          twitterIntegrationData?.username
-                                        );
-                                        console.log(
-                                          "🚀 ~ file: CustomConnectButton.tsx:364 ~ onClick={ ~ twitterData.username:",
-                                          twitterData.username
-                                        );
                                         setView(View.ALREADYLINKED);
                                       }
                                     }}
@@ -544,12 +526,7 @@ export const CustomConnectButton = () => {
                                     twitterIntegrationData.username && (
                                     <PrimaryButton
                                       text="🔁 Override"
-                                      onClick={() => {
-                                        console.log(
-                                          "twitterIntegrationData",
-                                          twitterIntegrationData
-                                        );
-                                      }}
+                                      onClick={() => {}}
                                       fullWidth
                                     />
                                   )}

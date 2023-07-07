@@ -19,7 +19,6 @@ export default async function handler(req: Request, res: e.Response<Data>) {
   }
   try {
     const fields = req.body;
-    console.log("recaptch res fetching");
     const reCaptchaRes = await fetch(
       "https://www.google.com/recaptcha/api/siteverify",
       {
