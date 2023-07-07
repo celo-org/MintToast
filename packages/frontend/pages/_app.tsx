@@ -10,9 +10,6 @@ import { configureChains, createConfig, WagmiConfig } from "wagmi";
 import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
 import "../styles/custom.css";
 import "../styles/globals.css";
-
-// Import known recommended wallets
-
 // Import CELO chain information
 import { Alfajores, Cannoli, Celo } from "@celo/rainbowkit-celo/chains";
 

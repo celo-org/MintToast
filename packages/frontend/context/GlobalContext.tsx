@@ -8,6 +8,7 @@ import axios from "axios";
 import {
   createContext,
   ReactNode,
+  useCallback,
   useContext,
   useEffect,
   useState,
@@ -31,6 +32,7 @@ interface GlobalContextProp {
     userAddedAddress: string
   ) => Promise<"" | `0x${string}` | undefined | string>;
   resolveMasaFromAddress: (userAddedAddress: string) => Promise<any>;
+  getTwitterData: () => Promise<void>;
 }
 
 const GlobalContext = createContext<GlobalContextProp | undefined>(undefined);
@@ -44,28 +46,31 @@ export function GlobalContextProvider({ children }: { children: ReactNode }) {
     useState<number>(0);
   const { address } = useAccount();
 
-  useEffect(() => {
-    const getTwitterData = async () => {
-      try {
-        const res = await axios({
-          method: "POST",
-          url: getApiEndpoint().getTwitterFromAddressEndpoint,
-          data: {
-            address,
-          },
+  const getTwitterData = useCallback(async () => {
+    try {
+      const res = await axios({
+        method: "POST",
+        url: getApiEndpoint().getTwitterFromAddressEndpoint,
+        data: {
+          address,
+        },
+      });
+      if (res.data.success) {
+        setTwitter({
+          username: res.data.data.username,
+          address: res.data.data.address,
+          profileImageUrlHttps: res.data.data.profileImageUrlHttps,
+          name: res.data.data.name,
         });
-        if (res.data.success) {
-          setTwitter({
-            username: res.data.data.username,
-            address: res.data.data.address,
-            profileImageUrlHttps: res.data.data.profileImageUrlHttps,
-            name: res.data.data.name,
-          });
-        }
-      } catch (err: any) {
+      } else {
         setTwitter(undefined);
       }
-    };
+    } catch (err: any) {
+      setTwitter(undefined);
+    }
+  }, [address]);
+
+  useEffect(() => {
     const checkWhitelisted = async () => {
       try {
         setCheckingWhitelist(true);
@@ -102,11 +107,11 @@ export function GlobalContextProvider({ children }: { children: ReactNode }) {
     };
 
     if (address) {
-      // getTwitterData();
+      getTwitterData();
       checkWhitelisted();
       getTotalMintsCount();
     }
-  }, [address]);
+  }, [address, getTwitterData]);
 
   const resolveMasaFromName = async (userAddedAddress: string) => {
     const tokenId = await readContracts({
@@ -168,6 +173,7 @@ export function GlobalContextProvider({ children }: { children: ReactNode }) {
         totalHisttoricalMintsCount,
         resolveMasaFromName,
         resolveMasaFromAddress,
+        getTwitterData,
       }}
     >
       {children}

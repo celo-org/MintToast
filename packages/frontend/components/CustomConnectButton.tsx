@@ -46,8 +46,12 @@ export const CustomConnectButton = () => {
     TwitterIntegrationDataProp | undefined
   >();
   const { address } = useAccount();
-  const { twitterData, resolveMasaFromAddress, totalMintsCount } =
-    useGlobalContext();
+  const {
+    twitterData,
+    totalMintsCount,
+    getTwitterData,
+    resolveMasaFromAddress,
+  } = useGlobalContext();
   const [masaName, setMasaName] = useState<string[] | undefined>();
 
   const handleTwitterAuth = async () => {
@@ -56,18 +60,19 @@ export const CustomConnectButton = () => {
       const provider = new TwitterAuthProvider();
       const result = await signInWithPopup(auth, provider);
       const credential = TwitterAuthProvider.credentialFromResult(result);
-      if (credential) {
+      if (credential && result.user) {
         const token = credential.accessToken;
         const secret = credential.secret;
         const user = result.user;
+        const username = (user as any).reloadUserInfo.screenName;
+
         setTwitterIntegrationData({
           secret: secret ?? "",
           token: token ?? "",
-          displayName: user?.displayName ?? "",
-          photoURL: user?.photoURL ?? "",
-          username: (user as any)?.reloadUserInfo.screenName,
+          displayName: user.displayName ?? "",
+          photoURL: user.photoURL ?? "",
+          username,
         });
-        setView(View.LINKWALLET);
       }
     } catch (error: any) {
       toast.error(error.message);
@@ -84,7 +89,7 @@ export const CustomConnectButton = () => {
     if (address) {
       getMasaName();
     }
-  }, [address, resolveMasaFromAddress]);
+  }, [address, resolveMasaFromAddress, twitterIntegrationData]);
 
   const handleTwitterLink = async () => {
     if (!twitterIntegrationData) {
@@ -114,6 +119,31 @@ export const CustomConnectButton = () => {
       setView(View.LINKWALLET);
     } finally {
       setTwitterAuthLoading(false);
+    }
+  };
+
+  const handleTwitterRevoke = async () => {
+    try {
+      setView(View.LOADING);
+      const response = await axios({
+        method: "post",
+        url: getApiEndpoint().revokeTwitterEndpoint,
+        data: {
+          accessToken: twitterIntegrationData?.token,
+          secret: twitterIntegrationData?.secret,
+          address: address,
+        },
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (response.data.success) {
+        await getTwitterData();
+        setView(View.ACCOUNT);
+      }
+    } catch (error: any) {
+      toast.error(error.response.data.error);
+      setView(View.ACCOUNT);
     }
   };
 
@@ -322,9 +352,28 @@ export const CustomConnectButton = () => {
                                 )}
                                 {twitterData?.username ? (
                                   <PrimaryButton
-                                    onClick={() => {
+                                    onClick={async () => {
                                       if (!twitterAuthLoading) {
-                                        handleTwitterAuth();
+                                        await handleTwitterAuth();
+                                        console.log(
+                                          "twitterData?.address == account.address",
+                                          twitterData?.address ==
+                                            account.address
+                                        );
+                                        console.log(
+                                          "twitterData.username == twitterIntegrationData?.username",
+                                          twitterData.username ==
+                                            twitterIntegrationData?.username
+                                        );
+                                        console.log(
+                                          "🚀 ~ file: CustomConnectButton.tsx:365 ~ onClick={ ~ twitterIntegrationData?.username:",
+                                          twitterIntegrationData?.username
+                                        );
+                                        console.log(
+                                          "🚀 ~ file: CustomConnectButton.tsx:364 ~ onClick={ ~ twitterData.username:",
+                                          twitterData.username
+                                        );
+                                        setView(View.ALREADYLINKED);
                                       }
                                     }}
                                     text={`Manage @${twitterData.username}`}
@@ -334,9 +383,10 @@ export const CustomConnectButton = () => {
                                   />
                                 ) : (
                                   <PrimaryButton
-                                    onClick={() => {
+                                    onClick={async () => {
                                       if (!twitterAuthLoading) {
-                                        handleTwitterAuth();
+                                        await handleTwitterAuth();
+                                        setView(View.LINKWALLET);
                                       }
                                     }}
                                     text="Link your Twitter handle"
@@ -457,7 +507,8 @@ export const CustomConnectButton = () => {
                                   fullWidth
                                   text="Done"
                                   onClick={() => {
-                                    handleTwitterLink();
+                                    getTwitterData();
+                                    setView(View.ACCOUNT);
                                   }}
                                 />
                               </div>
@@ -474,22 +525,42 @@ export const CustomConnectButton = () => {
                             <div className="h-full w-full flex flex-col justify-between items-center px-6 py-6">
                               <div className="h-full flex flex-col items-start justify-center">
                                 <span className="text-2xl text-red-500">
-                                  ‼️
+                                  ‼️{" "}
+                                  <span className="font-bold text-black">
+                                    Already Linked!
+                                  </span>
                                 </span>
-                                <span className="font-bold">
-                                  Already Linked!
-                                </span>
+
                                 <span className="">
                                   If you continue, the current address will also
                                   be linked to your Twitter handle
                                 </span>
                               </div>
-
-                              <PrimaryButton
-                                text="🔁 Override"
-                                onClick={() => {}}
-                                fullWidth
-                              />
+                              <div className="w-full space-y-3 flex flex-col">
+                                {twitterIntegrationData &&
+                                  twitterIntegrationData.username &&
+                                  twitterData?.address == account.address &&
+                                  twitterData.username ==
+                                    twitterIntegrationData.username && (
+                                    <PrimaryButton
+                                      text="🔁 Override"
+                                      onClick={() => {
+                                        console.log(
+                                          "twitterIntegrationData",
+                                          twitterIntegrationData
+                                        );
+                                      }}
+                                      fullWidth
+                                    />
+                                  )}
+                                <PrimaryButton
+                                  text="❌ Revoke"
+                                  onClick={() => {
+                                    handleTwitterRevoke();
+                                  }}
+                                  fullWidth
+                                />
+                              </div>
                             </div>
                           </div>
                         )}

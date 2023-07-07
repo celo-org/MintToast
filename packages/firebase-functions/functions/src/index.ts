@@ -9,6 +9,7 @@ import getAllEventUUIDHandler from "./api/get-all-event-uuid";
 import getEventIdHandler from "./api/get-event-id";
 import getOwnerHandler from "./api/get-owner";
 import getSecretDataHandler from "./api/get-secret-data";
+import getTwitterFromAddressHandle from "./api/get-twitter-from-address";
 import getUserCollectionHandler from "./api/get-user-collection";
 import mintHandler from "./api/mint";
 import registerTwitterHandler from "./api/register-twitter";
@@ -62,6 +63,10 @@ export const revokeTwitter = onRequest({ timeoutSeconds: 300 }, (req, res) =>
 
 export const getAccountsFromTwitterHandle = onRequest((req, res) =>
   corsHandler(req, res, () => getAccountsFromTwitter(req, res))
+);
+
+export const getTwitterFromAddress = onRequest((req, res) =>
+  corsHandler(req, res, () => getTwitterFromAddressHandle(req, res))
 );
 
 export const checkSecret = onRequest((req, res) =>

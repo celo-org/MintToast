@@ -58,17 +58,33 @@ export const WHITELISTED_ADDRESS = [
 export const CAPTCH_SITEKEY = process.env.NEXT_PUBLIC_CAPTCH_SITEKEY;
 export const CAPTCH_SECRETKEY = process.env.CAPTCH_SECRETKEY;
 
-export const createToastQREndpoint = NETWORK_MODE == "local" ? "" : "https://createtoastqr" + API_ENDPOINT;
-export const createToastSecretEndpoint = NETWORK_MODE == "local" ? "" : "https://createtoastsecret" + API_ENDPOINT;
-export const getAllEventUUIDEndpoint = NETWORK_MODE == "local" ? "" : "https://getalleventuuid" + API_ENDPOINT;
-export const getEventIdEndpoint = NETWORK_MODE == "local" ? "" : "https://geteventid" + API_ENDPOINT;
-export const getOwnerEndpoint = NETWORK_MODE == "local" ? "" : "https://getowner" + API_ENDPOINT;
-export const getSecretDataEndpoint = NETWORK_MODE == "local" ? "" : "https://getsecretdata" + API_ENDPOINT;
-export const getUserCollectionEndpoint = NETWORK_MODE == "local" ? "" : "https://getusercollection" + API_ENDPOINT;
-export const mintEndpoint = NETWORK_MODE == "local" ? "" : "https://mint" + API_ENDPOINT;
-export const revokeTwitterEndpoint = NETWORK_MODE == "local" ? "" : "https://revoketwitter" + API_ENDPOINT;
-export const registerTwitterEndpoint = NETWORK_MODE == "local" ? "" : "https://registertwitter" + API_ENDPOINT;
-export const getAccountsFromTwitterHandleEndpoint = NETWORK_MODE == "local" ? "" : "https://getaccountsfromtwitterhandle" + API_ENDPOINT;
-export const checkSecretEndpoint = NETWORK_MODE == "local" ? "" : "https://checksecret" + API_ENDPOINT;
-export const getTwitterFromAddressEndpoint = NETWORK_MODE == "local" ? "" : "https://" + API_ENDPOINT;
-export const checkWhitelistEndpoint = NETWORK_MODE == "local" ? "" : "https://checkwhitelist" + API_ENDPOINT;
+export const createToastQREndpoint =
+  NETWORK_MODE == "local" ? "" : "https://createtoastqr" + API_ENDPOINT;
+export const createToastSecretEndpoint =
+  NETWORK_MODE == "local" ? "" : "https://createtoastsecret" + API_ENDPOINT;
+export const getAllEventUUIDEndpoint =
+  NETWORK_MODE == "local" ? "" : "https://getalleventuuid" + API_ENDPOINT;
+export const getEventIdEndpoint =
+  NETWORK_MODE == "local" ? "" : "https://geteventid" + API_ENDPOINT;
+export const getOwnerEndpoint =
+  NETWORK_MODE == "local" ? "" : "https://getowner" + API_ENDPOINT;
+export const getSecretDataEndpoint =
+  NETWORK_MODE == "local" ? "" : "https://getsecretdata" + API_ENDPOINT;
+export const getUserCollectionEndpoint =
+  NETWORK_MODE == "local" ? "" : "https://getusercollection" + API_ENDPOINT;
+export const mintEndpoint =
+  NETWORK_MODE == "local" ? "" : "https://mint" + API_ENDPOINT;
+export const revokeTwitterEndpoint =
+  NETWORK_MODE == "local" ? "" : "https://revoketwitter" + API_ENDPOINT;
+export const registerTwitterEndpoint =
+  NETWORK_MODE == "local" ? "" : "https://registertwitter" + API_ENDPOINT;
+export const getAccountsFromTwitterHandleEndpoint =
+  NETWORK_MODE == "local"
+    ? ""
+    : "https://getaccountsfromtwitterhandle" + API_ENDPOINT;
+export const checkSecretEndpoint =
+  NETWORK_MODE == "local" ? "" : "https://checksecret" + API_ENDPOINT;
+export const getTwitterFromAddressEndpoint =
+  NETWORK_MODE == "local" ? "" : "https://gettwitterfromaddress" + API_ENDPOINT;
+export const checkWhitelistEndpoint =
+  NETWORK_MODE == "local" ? "" : "https://checkwhitelist" + API_ENDPOINT;
