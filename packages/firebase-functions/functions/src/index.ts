@@ -1,5 +1,6 @@
 import * as cors from "cors";
 import { onRequest } from "firebase-functions/v2/https";
+import checkSecretHandler from "./api/check-secret";
 import checkWhitelistHandler from "./api/check-whitelist";
 import createToastQRHandler from "./api/create-toast-qr";
 import createToastSecretHandler from "./api/create-toast-secret";
@@ -61,4 +62,8 @@ export const revokeTwitter = onRequest({ timeoutSeconds: 300 }, (req, res) =>
 
 export const getAccountsFromTwitterHandle = onRequest((req, res) =>
   corsHandler(req, res, () => getAccountsFromTwitter(req, res))
+);
+
+export const checkSecret = onRequest((req, res) =>
+  corsHandler(req, res, () => checkSecretHandler(req, res))
 );

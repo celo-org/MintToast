@@ -18,6 +18,10 @@ export default async function handler(req: Request, res: e.Response) {
   }
   try {
     const { accessToken, secret, address } = req.body;
+    console.log(
+      "🚀 ~ file: revoke-twitter.ts:21 ~ handler ~ address:",
+      address
+    );
 
     const client = new TwitterApi({
       appKey: TWITTER_API_KEY ?? "",
@@ -30,6 +34,11 @@ export default async function handler(req: Request, res: e.Response) {
     const { screen_name: screenName } = result;
     let accounts: string[] = await getAccountsFromTwitterHandle(screenName);
     accounts = accounts.map((item) => item.toLowerCase());
+    console.log(
+      "🚀 ~ file: revoke-twitter.ts:33 ~ handler ~ accounts:",
+      accounts
+    );
+
     if (!accounts.includes(address.toLowerCase())) {
       console.log("HERE");
       res

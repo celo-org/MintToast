@@ -32,10 +32,14 @@ export default async function handler(req: Request, res: e.Response) {
       profile_image_url_https: profileImageUrlHttps,
       name,
     } = result;
-    console.log("🚀 ~ file: register-twitter.ts:33 ~ handler ~ name:", name);
     console.log(
-      "🚀 ~ file: register-twitter.ts:33 ~ handler ~ profileImageUrlHttps:",
+      "🚀 ~ file: register-twitter.ts:35 ~ handler ~ profileImageUrlHttps:",
       profileImageUrlHttps
+    );
+    console.log("🚀 ~ file: register-twitter.ts:35 ~ handler ~ name:", name);
+    console.log(
+      "🚀 ~ file: register-twitter.ts:35 ~ handler ~ screenName:",
+      screenName
     );
 
     const receipt = await registerIdentifier(screenName, address);

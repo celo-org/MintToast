@@ -6,7 +6,6 @@ import {
   OdisContextName,
 } from "@celo/identity/lib/odis/query";
 import { Wallet, ethers } from "ethers";
-import * as path from "path";
 import * as ACCOUNTS_CONTRACT from "../data/abis/Accounts.json";
 import * as FA_CONTRACT from "../data/abis/FederatedAttestations.json";
 import * as ODIS_PAYMENTS_CONTRACT from "../data/abis/OdisPayments.json";
@@ -19,7 +18,6 @@ import {
   ODIS_PAYMENTS_PROXY_ADDRESS,
 } from "../data/constant";
 import { getProvider } from "./web3";
-import { WebBlsBlindingClient } from "./webBlindingClient.ts";
 
 export const serviceContext = OdisUtils.Query.getServiceContext(
   OdisContextName.ALFAJORES
@@ -71,7 +69,7 @@ export async function checkAndTopUpODISQuota() {
   );
 
   if (remainingQuota < 1) {
-    const currentAllowance = await stableTokenContract.allowance(
+    const currentAllowance: any = await stableTokenContract.allowance(
       issuer.address,
       odisPaymentsContract.address
     );
@@ -106,21 +104,13 @@ export async function checkAndTopUpODISQuota() {
 export async function getIdentifier(twitterHandle: string) {
   try {
     await checkAndTopUpODISQuota();
-    const blindingClient = new WebBlsBlindingClient(serviceContext.odisPubKey);
-    const wasmFilePath = path.join(__dirname, "blind_threshold_bls_bg.wasm");
-    console.log("wasmFilePath", wasmFilePath);
-    console.log("blindingClient", blindingClient);
-    await blindingClient.init(wasmFilePath);
     const { obfuscatedIdentifier } =
       await OdisUtils.Identifier.getObfuscatedIdentifier(
         twitterHandle,
         IdentifierPrefix.TWITTER,
         issuer.address,
         authSigner,
-        serviceContext,
-        undefined,
-        undefined,
-        blindingClient
+        serviceContext
       );
 
     return obfuscatedIdentifier;
@@ -135,18 +125,23 @@ export const registerIdentifier = async (
   address: string
 ) => {
   console.log("🚀 ~ file: odis.ts:128 ~ address:", address);
-  const accounts = await getAccountsFromTwitterHandle(twitterHandle);
-  if (accounts.length) {
+  const accounts: string[] = await getAccountsFromTwitterHandle(twitterHandle);
+  console.log("🚀 ~ file: odis.ts:129 ~ accounts:", accounts);
+  if (accounts.includes(address)) {
     throw new Error("Identifier already registered");
   }
+  console.log("1");
   const identifier = await getIdentifier(twitterHandle);
+  console.log("2");
   const tx = await federatedAttestationsContract.registerAttestationAsIssuer(
     identifier,
     address,
     NOW_TIMESTAMP
   );
 
+  console.log("3");
   const receipt = await tx.wait();
+  console.log("4");
   return receipt;
 };
 
