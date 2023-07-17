@@ -57,9 +57,9 @@ const Collections: React.FC<Props> = ({ address: userAddress, collection }) => {
           <div
             className={`flex flex-row flex-wrap ${
               collection.length < 3
-                ? "justify-start space-x-6"
+                ? "justify-start px-4 space-x-2"
                 : "justify-evenly"
-            } items-start`}
+            } items-start `}
           >
             {collection.map((item: any) => {
               return <CollectionItem event={item.serie} key={item.serie.id} />;
