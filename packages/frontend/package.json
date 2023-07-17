@@ -21,7 +21,7 @@
     "express-rate-limit": "^6.7.1",
     "express-slow-down": "^1.6.0",
     "firebase": "^10.0.0",
-    "formidable": "^3.5.0",
+    "formidable": "^2.1.1",
     "formik": "^2.4.2",
     "ipfs-http-client": "^60.0.0",
     "net": "^1.0.2",
