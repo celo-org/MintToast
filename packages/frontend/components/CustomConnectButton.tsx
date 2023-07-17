@@ -12,6 +12,7 @@ import { ConnectButton } from "@rainbow-me/rainbowkit";
 import axios from "axios";
 import { TwitterAuthProvider, signInWithPopup } from "firebase/auth";
 import Image from "next/image";
+import { useRouter } from "next/router";
 import { Fragment, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { useAccount } from "wagmi";
@@ -53,6 +54,7 @@ export const CustomConnectButton = () => {
     resolveMasaFromAddress,
   } = useGlobalContext();
   const [masaName, setMasaName] = useState<string[] | undefined>();
+  const router = useRouter();
 
   const handleTwitterAuth = async () => {
     setTwitterAuthLoading(true);
@@ -481,7 +483,11 @@ export const CustomConnectButton = () => {
 
                               <PrimaryButton
                                 text="🤍 Mint a well deserved Toast"
-                                onClick={() => {}}
+                                onClick={() => {
+                                  router.push(
+                                    "/mint/06238a51-d72c-4c2a-9a1d-df6290775638"
+                                  );
+                                }}
                                 fullWidth
                               />
                               <div className="mt-3 w-full">
