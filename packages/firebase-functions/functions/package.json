@@ -21,7 +21,7 @@
     "@celo/identity": "^4.1.0",
     "@celo/phone-number-privacy-common": "^2.0.2",
     "@types/cors": "^2.8.13",
-    "axios": "^1.4.0",
+    "axios": "^1.6.0",
     "blind-threshold-bls": "https://github.com/celo-org/blind-threshold-bls-wasm#3d1013af",
     "cors": "^2.8.5",
     "ethers": "5.7.2",
