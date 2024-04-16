@@ -42,13 +42,18 @@ export default function New() {
 
   const handleImageUpload = (e: any) => {
     const file = e.target.files[0];
-    setImage(file);
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = () => {
-        setImageSrc(reader.result);
-      };
-      reader.readAsDataURL(file);
+    var fileSize = e.target.files[0].size / 1024;
+    if (fileSize > 1025) {
+      toast.error("🚨 Please make sure file size should not be more than 1MB.");
+    } else {
+      setImage(file);
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = () => {
+          setImageSrc(reader.result);
+        };
+        reader.readAsDataURL(file);
+      }
     }
   };
 
@@ -108,7 +113,7 @@ export default function New() {
 
         const signer = await connector?.getWalletClient();
         const signature = await signer?.signMessage({
-          message: JSON.stringify(reqObj)
+          message: JSON.stringify(reqObj),
         });
 
         var firebaseRes = await axios({
@@ -138,6 +143,11 @@ export default function New() {
   const handleSecretCheck = async () => {
     setSecretCheckLoading(true);
     try {
+      if (!imageSrc) {
+        toast.error("🚨 Please upload an image first.");
+        setSecretCheckLoading(false);
+        return;
+      }
       const response = await axios({
         method: "post",
         url: getApiEndpoint().checkSecretEndpoint,

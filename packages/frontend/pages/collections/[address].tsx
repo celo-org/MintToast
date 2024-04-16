@@ -50,7 +50,7 @@ const Collections: React.FC<Props> = ({ address: userAddress, collection }) => {
       <div className="flex flex-col justify-center items-center md:pt-20 pt-4 max-w-xl mx-auto w-full">
         <div className="flex flex-col justify-start w-full">
           {collection.length > 0 ? (
-            <span className="px-5 text-lg font-bold">2023</span>
+            <span className="px-5 text-lg font-bold">All Collection</span>
           ) : (
             <NoToast />
           )}
@@ -73,6 +73,7 @@ const Collections: React.FC<Props> = ({ address: userAddress, collection }) => {
 
 export async function getServerSideProps({ params }: { params: any }) {
   const res = await getUserCollection(params.address as string);
+  console.log("🚀 ~ getServerSideProps ~ res:", res);
   if (!res) {
     return {
       redirect: {

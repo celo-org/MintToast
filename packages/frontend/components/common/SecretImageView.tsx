@@ -102,7 +102,7 @@ function SecretImageView({
             <span>500 x 500 px max</span>
           </li>
           <li className="text-gray-500 ml-5">
-            <span>Mas 1MB</span>
+            <span>Max 1MB</span>
           </li>
           <li className="text-gray-500 ml-5">
             <span>Square shapes are recommended</span>
